@@ -11,12 +11,14 @@ import {
     mdiResponsive,
     mdiPalette,
     mdiReact,
+    mdiViewDashboard,
+    mdiAmbulance
   } from "@mdi/js";
   
   export default [
     {
       to: "/dashboard",
-      icon: mdiMonitor,
+      icon: mdiViewDashboard,
       label: "Dashboard",
     },
     {
@@ -24,6 +26,11 @@ import {
       label: "Clients",
       icon: mdiAccountCircle,
     },
+    {
+      to: "/referral",
+      label: "BHS Referral",
+      icon: mdiAmbulance,
+    }
     // {
     //   to: "/forms",
     //   label: "Forms",

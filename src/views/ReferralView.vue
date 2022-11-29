@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from "vue";
+import { reactive, ref, computed } from "vue";
 import { useMainStore } from "@/stores/main";
 import {
   mdiMonitorCellphone,
@@ -14,71 +14,36 @@ import {
   mdiMail,
   mdiHomeCityOutline,
   mdiCardAccountPhoneOutline,
-  mdiCalendarEditOutline,
-  mdiCardBulletedSettings
+  mdiAmbulance
 } from "@mdi/js";
 import SectionMain from "@/components/SectionMain.vue";
 import NotificationBar from "@/components/NotificationBar.vue";
-import TableSampleClients from "@/components/TableSampleClients.vue";
+import TableSampleReferral from "@/components/TableSampleReferral.vue";
 import CardBox from "@/components/CardBox.vue";
 import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
-import { getUserBarangay, getUserMunicipality } from '@/api/auth'
 
-import moment from "moment"
-
-const get_barangay = ref([])
-const get_municipality = ref({})
-
-const mainStore = useMainStore();
-const transactionBarItems = computed(() => mainStore.history);
-
-onMounted(() => {
-  _getUserBarangay()
-  _getUserMunicipality()
-})
-
-const _getUserBarangay = async () => {
-  const response = await getUserBarangay()
-  get_barangay.value = await Promise.all(response.map(async (item: any) => {
-      return {
-        id : item.id,
-        label: item.description
-      }
-  }))
+const isModalActive = ref(false);
+const el_modal = ref<HTMLInputElement | null>(null)
+const handleCloseModal = async () => {
+  el_modal.value?.click()
 }
 
-const _getUserMunicipality = async () => {
-  const response = await getUserMunicipality()
-  get_municipality.value = {
-    id : response.id,
-    label : response.description
-  }
-  form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
-}
+const selectOptions = [
+  { id: 1, label: "Lahug" },
+  { id: 2, label: "Day-as" },
+  { id: 3, label: "Labangon" },
+];
 
 const form = reactive({
-  vaccine_id : "",
-	firstname: "",
-	middlename: "",
-	lastname: "",
-	birthdate: "",
-	birthplace: "",
-	sex: "",
-	client_address: 0,
-	guardian_name: "",
-	guardian_contact_number: "",
-	guardian_alternate_number: "",
-	guardian_address: 0,
-	bhw_name: "",
-	bhw_contact_number: "",
-	bhw_address: 0,
-	health_provider_name: "",
-	health_provider_contact: "",
-	health_provider_address: 0,
-	created_by: 0
+  name: "John Doe",
+  email: "john.doe@example.com",
+  phone: "",
+  department: selectOptions[0],
+  subject: "",
+  question: "",
 });
 
 const customElementsForm = reactive({
@@ -88,19 +53,25 @@ const customElementsForm = reactive({
   file: null,
 });
 
-const submit = async () => {
-  console.log(form)
+const submit = () => {
+  //
 };
+
+const mainStore = useMainStore();
+
+const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
+
+const transactionBarItems = computed(() => mainStore.history);
 </script>
 
 <template>
   <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#exampleModalLg"/>
+      <SectionTitleLineWithButton :icon="mdiAmbulance" title="Referral" main>
+        
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableSampleClients checkable />
+        <TableSampleReferral checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -114,88 +85,84 @@ const submit = async () => {
             main
           >
           </SectionTitleLineWithButton>
-          <CardBox is-form @submit.prevent="submit">
-            <FormField label="Personal Information" class="text-xl">
-              <FormField label="Vaccine Card Number ID" class="text-sm">
-                <FormControl v-model="form.vaccine_id" :icon="mdiCardBulletedSettings" :readonly="true"/>
-              </FormField>
-              <FormControl v-model="form.firstname" :icon="mdiAccount" class="mt-7" placeholder="Firstname" required/>
+          <CardBox form @submit.prevent="submit">
+            <FormField label="Personal Information">
+              <FormControl :icon="mdiAccount" placeholder="Vaccine Card Number ID"/>
+              <FormControl :icon="mdiAccount" placeholder="Firstname"/>
             </FormField>
             
             <FormField>
-              <FormControl v-model="form.middlename" :icon="mdiAccount" placeholder="Middlename" required/>
-              <FormControl v-model="form.lastname" :icon="mdiAccount" placeholder="Lastname" required/>
+              <FormControl :icon="mdiAccount" placeholder="Middlename"/>
+              <FormControl :icon="mdiAccount" placeholder="Lastname"/>
             </FormField>
 
             <FormField>
-              <FormField label="Birthdate">
-                <FormControl v-model="form.birthdate" type="date" :icon="mdiCalendarEditOutline" required/>
-              </FormField>
-              <FormControl v-model="form.birthplace" :icon="mdiHomeCityOutline" class="mt-8" placeholder="Birthplace" required/>
+              <FormControl :icon="mdiAccount" placeholder="Birthdate"/>
+              <FormControl :icon="mdiHomeCityOutline" placeholder="Birthplace"/>
             </FormField>
 
             <FormField label="Sex">
               <FormCheckRadioGroup
-                v-model="form.sex"
-                name="sex"
+                v-model="customElementsForm.radio"
+                name="sample-radio"
                 type="radio"
-                :options="{ male: 'Male', female: 'Female' }"
+                :options="{ one: 'Male', two: 'Female' }"
               />
             </FormField>
 
             <FormField label="Client Address">
-              <FormControl v-model="form.client_address" :options="get_barangay"/>
+              <FormControl v-model="form.department" :options="selectOptions" />
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Parents / Guardian">
-              <FormControl v-model="form.guardian_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
             </FormField>
 
             <FormField >
-              <FormControl v-model="form.guardian_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
-              <FormControl v-model="form.guardian_alternate_number" :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number" required/>
+              <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
+              <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number"/>
             </FormField>
 
             <FormField label="Parent/Guardian Address">
-              <FormControl v-model="form.guardian_address" :options="get_barangay" required/>
+              <FormControl v-model="form.department" :options="selectOptions" />
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of BHW">
-              <FormControl v-model="form.bhw_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
             </FormField>
 
             <FormField >
               <FormField label="BHW contact number">
-                <FormControl v-model="form.bhw_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
               </FormField>
               <FormField label="BHW Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                <FormControl v-model="form.department" :options="selectOptions" />
               </FormField>
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Health Provider">
-              <FormControl v-model="form.health_provider_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
             </FormField>
 
             <FormField >
               <FormField label="Health Provider Contact Number">
-                <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
               </FormField>
               <FormField label="Health Provider Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                <FormControl v-model="form.department" :options="selectOptions" />
               </FormField>
             </FormField>
             
             <template #footer>
               <BaseButtons>
                 <BaseButton type="submit" color="info" label="Submit" />
-                <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+                <BaseButton type="reset" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
               </BaseButtons>
             </template>
           </CardBox>

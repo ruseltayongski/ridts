@@ -46,6 +46,7 @@ const inputType = computed(() =>
       :type="inputType"
       :name="name"
       :value="inputValue"
+      required
     />
     <span class="check" />
     <span class="pl-2">{{ label }}</span>

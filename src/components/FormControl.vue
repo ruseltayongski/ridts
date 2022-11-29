@@ -44,6 +44,10 @@ const props = defineProps({
   borderless: Boolean,
   transparent: Boolean,
   ctrlKFocus: Boolean,
+  readonly: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(["update:modelValue", "setRef"]);
@@ -129,11 +133,12 @@ if (props.ctrlKFocus) {
       v-model="computedValue"
       :name="name"
       :class="inputElClass"
+      required
     >
       <option
         v-for="option in options"
         :key="option.id ?? option"
-        :value="option"
+        :value="option.id"
       >
         {{ option.label ?? option }}
       </option>
@@ -159,6 +164,7 @@ if (props.ctrlKFocus) {
       :placeholder="placeholder"
       :type="computedType"
       :class="inputElClass"
+      :readonly="readonly"
     />
     <FormControlIcon v-if="icon" :icon="icon" :h="controlIconH" />
   </div>

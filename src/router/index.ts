@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Home from "@/views/HomeView.vue";
 import Login from '@/views/LoginView.vue'
 import Style from '@/views/StyleView.vue'
+import Referral from '@/views/ReferralView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -13,6 +14,22 @@ const router = createRouter({
           path: "/",
           name: "Login",
           component: Login,
+        },
+        {
+          meta: {
+            title: "StyleView",
+          },
+          path: "/styles",
+          name: "StyleView",
+          component: Style,
+        },
+        {
+          meta: {
+            title: "BHS Referral",
+          },
+          path: "/referral",
+          name: "referral",
+          component: Referral,
         },
         {
           // Document title tag

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
 import { useMainStore } from "@/stores/main";
+import { useTokenStore } from "@/stores"
 import {
   mdiAccountMultiple,
   mdiCartOutline,
@@ -25,6 +26,9 @@ import CardBoxClient from "@/components/CardBoxClient.vue";
 import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
 import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
+
+const tokenStore = useTokenStore()
+console.log(tokenStore.value)
 
 const chartData = ref(null);
 

@@ -4,8 +4,9 @@ import axios from "axios";
 export const useMainStore = defineStore("main", {
   state: () => ({
     /* User */
-    userName: null,
-    userEmail: null,
+    userId: "",
+    userFirstname: "",
+    userLastname: "",
     userAvatar: null,
 
     /* Field focus with ctrl+k (to register only once) */
@@ -17,11 +18,14 @@ export const useMainStore = defineStore("main", {
   }),
   actions: {
     setUser(payload) {
-      if (payload.name) {
-        this.userName = payload.name;
+      if (payload.id) {
+        this.userId = payload.id;
       }
-      if (payload.email) {
-        this.userEmail = payload.email;
+      if (payload.firstname) {
+        this.userFirstname = payload.firstname;
+      }
+      if (payload.lastname) {
+        this.userLastname = payload.lastname;
       }
       if (payload.avatar) {
         this.userAvatar = payload.avatar;
@@ -33,9 +37,12 @@ export const useMainStore = defineStore("main", {
         .get(`data-sources/${sampleDataKey}.json`)
         .then((r) => {
           console.log(r)
-          if (r.data && r.data.data) {
-            this[sampleDataKey] = r.data.data;
+          if (r.data) {
+            this[sampleDataKey] = r.data;
           }
+          // if (r.data && r.data.data) {
+          //   this[sampleDataKey] = r.data.data;
+          // }
         })
         .catch((error) => {
           console.log(error.message);

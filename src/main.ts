@@ -12,12 +12,15 @@ import "./css/main.css";
 
 import 'tw-elements';
 
+import Notifications from 'notiwind'
+
 /* Init Pinia */
 const pinia = createPinia();
 
 const app = createApp(App);
 app.use(router);
 app.use(pinia);
+app.use(Notifications);
 app.mount("#app");
 
 

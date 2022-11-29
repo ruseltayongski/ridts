@@ -58,6 +58,7 @@ declare module '@vue/runtime-core' {
     SectionTitleLineWithButton: typeof import('./src/components/SectionTitleLineWithButton.vue')['default']
     TableCheckboxCell: typeof import('./src/components/TableCheckboxCell.vue')['default']
     TableSampleClients: typeof import('./src/components/TableSampleClients.vue')['default']
+    TableSampleReferral: typeof import('./src/components/TableSampleReferral.vue')['default']
     UserAvatar: typeof import('./src/components/UserAvatar.vue')['default']
     UserAvatarCurrentUser: typeof import('./src/components/UserAvatarCurrentUser.vue')['default']
     UserCard: typeof import('./src/components/UserCard.vue')['default']

@@ -1,48 +1,77 @@
 <script setup lang="ts">
-import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import menuAside from "@/menuAside.ts";
-import menuNavBar from "@/menuNavBar.ts";
-import { useMainStore } from "@/stores/main.ts";
-import { useStyleStore } from "@/stores/style.ts";
-import BaseIcon from "@/components/BaseIcon.vue";
-import FormControl from "@/components/FormControl.vue";
-import NavBar from "@/components/NavBar.vue";
-import NavBarItemPlain from "@/components/NavBarItemPlain.vue";
-import AsideMenu from "@/components/AsideMenu.vue";
-import FooterBar from "@/components/FooterBar.vue";
+  import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
+  import { ref, onMounted } from "vue";
+  import { useRouter } from "vue-router";
+  import { useTokenStore } from "@/stores"
+  import { getUserProfile } from "@/api/auth"
+  import menuAside from "@/menuAside.ts";
+  import menuNavBar from "@/menuNavBar.ts";
+  import { useMainStore } from "@/stores/main.ts";
+  import { useStyleStore } from "@/stores/style.ts";
+  import BaseIcon from "@/components/BaseIcon.vue";
+  import FormControl from "@/components/FormControl.vue";
+  import NavBar from "@/components/NavBar.vue";
+  import NavBarItemPlain from "@/components/NavBarItemPlain.vue";
+  import AsideMenu from "@/components/AsideMenu.vue";
+  import FooterBar from "@/components/FooterBar.vue";
 
-useMainStore().setUser({
-  name: "John Doe",
-  email: "john@example.com",
-  avatar:
-    "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
-});
+  import { S } from "@/utils"
 
-const layoutAsidePadding = "xl:pl-60";
 
-const styleStore = useStyleStore();
+  // useMainStore().setUser({
+  //   firstname: "",
+  //   lastname: "",
+  //   avatar:
+  //     "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
+  // });
 
-const router = useRouter();
+  onMounted(() => {
+    if(!useMainStore().userFirstname) {
+      _getUserProfile()
+    }
+  })
 
-const isAsideMobileExpanded = ref(false);
-const isAsideLgActive = ref(false);
-
-router.beforeEach(() => {
-  isAsideMobileExpanded.value = false;
-  isAsideLgActive.value = false;
-});
-
-const menuClick = (event, item) => {
-  if (item.isToggleLightDark) {
-    styleStore.setDarkMode();
+  const _getUserProfile = async () => {
+      const response = await getUserProfile()
+      useMainStore().setUser({
+        id: response.id,
+        firstname: response.fname,
+        lastname: response.lname,
+        avatar:
+          "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
+      });
   }
 
-  if (item.isLogout) {
-    //
-  }
-};
+  const layoutAsidePadding = "xl:pl-60";
+
+  const styleStore = useStyleStore();
+
+  const router = useRouter()
+  const tokenStore = useTokenStore()
+
+  const isAsideMobileExpanded = ref(false);
+  const isAsideLgActive = ref(false);
+
+  router.beforeEach(() => {
+    isAsideMobileExpanded.value = false;
+    isAsideLgActive.value = false;
+  });
+
+  const menuClick = (event, item) => {
+    if (item.isToggleLightDark) {
+      styleStore.setDarkMode();
+    }
+
+    if (item.isLogout) {
+      // S.delete('authToken')
+      S.deleteAll(true);
+      tokenStore.dispatch("");
+
+      router.push({
+          path: "/",
+      });
+    }
+  };
 </script>
 
 <template>

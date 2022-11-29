@@ -88,10 +88,7 @@
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Refer Client">
-    <FormField label="Barangay" class="mt-6">
-      <FormControl v-model="form.department" :options="selectOptions" />
-    </FormField>
+  <CardBoxModal v-model="isModalActive" title="Accept Referral">
     <FormField label="Remarks">
       <FormControl
         type="textarea"
@@ -105,7 +102,8 @@
     button="danger"
     has-cancel
   >
-    <p>Are you sure you want to delete this client?</p>
+    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
+    <p>This is sample modal</p>
   </CardBoxModal>
 
   <div v-if="checkedRows.length" class="p-3 bg-gray-100/50 dark:bg-slate-800">
@@ -174,21 +172,8 @@
               color="info"
               :icon="mdiNeedle"
               small
-              data-bs-toggle="modal" 
-              data-bs-target="#vaccineeModal"
-            />
-            <BaseButton
-              color="success"
-              :icon="mdiAmbulance"
-              small
               @click="isModalActive = true"
             />
-            <!-- <BaseButton
-              color="info"
-              :icon="mdiNeedle"
-              small
-              @click="isModalActive = true"
-            /> -->
             <BaseButton
               color="danger"
               :icon="mdiTrashCan"
