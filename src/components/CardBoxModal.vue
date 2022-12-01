@@ -18,9 +18,19 @@ const props = defineProps({
   },
   buttonLabel: {
     type: String,
-    default: "Submit",
+    default: "Save",
+  },
+  buttonLabel_confirm: {
+    type: String,
+    default: "Yes",
+  },
+  buttonLabel_refer: {
+    type: String,
+    default: "Refer",
   },
   hasCancel: Boolean,
+  hasConfirm: Boolean,
+  hasRefer: Boolean,
   modelValue: {
     type: [String, Number, Boolean],
     default: null,
@@ -74,7 +84,7 @@ window.addEventListener("keydown", (e) => {
 
       <template #footer>
         <BaseButtons>
-          <BaseButton :label="buttonLabel" :color="button" @click="confirm" />
+          <BaseButton :label="hasConfirm ? buttonLabel_confirm : hasRefer ? buttonLabel_refer : buttonLabel" :color="button" @click="confirm" />
           <BaseButton
             v-if="hasCancel"
             label="Cancel"

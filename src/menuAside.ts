@@ -22,7 +22,7 @@ import {
       label: "Dashboard",
     },
     {
-      to: "/tables",
+      to: "/clients",
       label: "Clients",
       icon: mdiAccountCircle,
     },

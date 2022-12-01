@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, reactive } from "vue";
+  import { computed, ref, reactive, onMounted } from "vue";
   import { useMainStore } from "@/stores/main";
   import { mdiTrashCan,mdiNeedle,mdiAmbulance } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
@@ -8,6 +8,7 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
+  import { getUserBarangay } from '@/api/auth'
 
   defineProps({
     checkable: Boolean,
@@ -85,12 +86,28 @@
     subject: "",
     question: "",
   });
+
+  const get_barangay = ref([])
+
+  onMounted(() => {
+    _getUserBarangay()
+  })
+
+  const _getUserBarangay = async () => {
+    const response = await getUserBarangay()
+    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
+  }
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Refer Client">
+  <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer>
     <FormField label="Barangay" class="mt-6">
-      <FormControl v-model="form.department" :options="selectOptions" />
+      <FormControl v-model="form.department" :options="get_barangay" />
     </FormField>
     <FormField label="Remarks">
       <FormControl
@@ -104,6 +121,7 @@
     title="Please confirm"
     button="danger"
     has-cancel
+    has-confirm
   >
     <p>Are you sure you want to delete this client?</p>
   </CardBoxModal>
@@ -124,8 +142,8 @@
         <th v-if="checkable" />
         <th />
         <th>Name</th>
-        <th>Company</th>
-        <th>City</th>
+        <th>Municipality</th>
+        <th>Barangay</th>
         <th>Progress</th>
         <th>Created</th>
         <th />
@@ -147,10 +165,10 @@
           {{ client.name }}
         </td>
         <td data-label="Company">
-          {{ client.company }}
+          Cebu City
         </td>
         <td data-label="City">
-          {{ client.city }}
+          Sambag II
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress

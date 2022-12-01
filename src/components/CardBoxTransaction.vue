@@ -80,7 +80,7 @@
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Vaccinee Info">
+  <CardBoxModal v-model="isModalActive" title="Vaccinee Info" has-cancel>
     <FormField label="1st Dose">
       <FormField label="Date Scheduled">
         <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>

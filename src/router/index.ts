@@ -45,9 +45,9 @@ const router = createRouter({
           meta: {
             title: "Client",
           },
-          path: "/tables",
-          name: "tables",
-          component: () => import("@/views/TablesView.vue"),
+          path: "/clients",
+          name: "clients",
+          component: () => import("@/views/ClientView.vue"),
         },
         {
           meta: {

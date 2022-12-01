@@ -19,7 +19,7 @@ import {
 } from "@mdi/js";
 import SectionMain from "@/components/SectionMain.vue";
 import NotificationBar from "@/components/NotificationBar.vue";
-import TableSampleClients from "@/components/TableSampleClients.vue";
+import TableClients from "@/components/TableClients.vue";
 import CardBox from "@/components/CardBox.vue";
 import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
@@ -100,7 +100,7 @@ const submit = async () => {
         <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#exampleModalLg"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableSampleClients checkable />
+        <TableClients checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
