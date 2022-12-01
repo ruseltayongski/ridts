@@ -122,8 +122,8 @@
         <th v-if="checkable" />
         <th />
         <th>Name</th>
-        <th>Company</th>
-        <th>City</th>
+        <th>Municipality</th>
+        <th>Barangay</th>
         <th>Progress</th>
         <th>Created</th>
         <th />
@@ -145,10 +145,10 @@
           {{ client.name }}
         </td>
         <td data-label="Company">
-          {{ client.company }}
+          Cebu City
         </td>
         <td data-label="City">
-          {{ client.city }}
+          Sambag II
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress
