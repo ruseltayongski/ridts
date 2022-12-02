@@ -18,9 +18,11 @@
     "pinia": "^2.0.23",
     "postcss-import": "^15.0.0",
     "prettier": "^2.7.1",
+    "sass": "^1.56.1",
     "tw-elements": "^1.0.0-alpha12",
     "unplugin-vue-components": "^0.22.9",
     "vue": "^3.2.41",
+    "vue-plugin-load-script": "^2.1.1",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

@@ -137,3 +137,7 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>

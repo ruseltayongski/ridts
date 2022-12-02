@@ -23,3 +23,4 @@ const menuClick = (event, item) => {
     @menu-click="menuClick"
   />
 </template>
+

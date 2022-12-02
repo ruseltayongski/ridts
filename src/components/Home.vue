@@ -12,5 +12,5 @@ import { ref } from 'vue'
 </template>
 
 <style scoped>
-
+  @import '@/css/main.css';
 </style>

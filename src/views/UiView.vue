@@ -550,3 +550,7 @@ const styleStore = useStyleStore();
     </SectionMain>
   </LayoutAuthenticated>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>

@@ -53,3 +53,4 @@ const fullname = computed(() => props.firstname + " " + props.lastname );
     <slot />
   </div>
 </template>
+

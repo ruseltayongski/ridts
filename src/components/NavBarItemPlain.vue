@@ -25,3 +25,4 @@ const styleStore = useStyleStore();
     <slot />
   </div>
 </template>
+

@@ -80,3 +80,7 @@
     </div>
   </NotificationGroup>
 </template>
+
+<style scoped>
+  @import "@/css/main.css";
+</style>

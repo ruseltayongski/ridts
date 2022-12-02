@@ -61,3 +61,4 @@ onMounted(() => {
 <template>
   <div>{{ prefix }}{{ newValueFormatted }}{{ suffix }}</div>
 </template>
+

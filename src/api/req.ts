@@ -71,9 +71,9 @@ Axios.interceptors.response.use(
       }
     } else if (code) {
       if (code === 401) {
-        router.push({
-          path: "/login",
-        });
+        // router.push({
+        //   path: "/login",
+        // });
       } else if (code === 403) {
       } else {
         console.log(error.response.data.message);

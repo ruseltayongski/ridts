@@ -57,3 +57,7 @@ import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
     </SectionMain>
   </LayoutAuthenticated>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>

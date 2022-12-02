@@ -51,3 +51,4 @@ const trendStyle = computed(() => {
     :small="small"
   />
 </template>
+

@@ -40,6 +40,7 @@ onMounted(() => {
   fillChartData();
 });
 
+
 const mainStore = useMainStore();
 
 const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
@@ -148,3 +149,8 @@ const transactionBarItems = computed(() => mainStore.history);
     </SectionMain>
   </LayoutAuthenticated>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>
+

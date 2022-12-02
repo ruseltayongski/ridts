@@ -122,3 +122,4 @@ const componentClass = computed(() => {
     <span v-if="label" :class="labelClass">{{ label }}</span>
   </component>
 </template>
+

@@ -146,3 +146,7 @@ const submitPass = () => {
     </SectionMain>
   </LayoutAuthenticated>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>

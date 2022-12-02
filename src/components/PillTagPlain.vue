@@ -30,3 +30,4 @@ defineProps({
     <span>{{ label }}</span>
   </div>
 </template>
+

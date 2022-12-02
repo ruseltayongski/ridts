@@ -50,3 +50,4 @@ const styleStore = useStyleStore();
     </transition>
   </div>
 </template>
+

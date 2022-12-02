@@ -8,9 +8,8 @@ import { useMainStore } from "@/stores/main";
 import { useStyleStore } from "@/stores/style";
 import { darkModeKey, styleKey } from "@/config";
 
-import "./css/main.css";
-
-import 'tw-elements';
+import './css/main.css'
+import 'tw-elements'
 
 import Notifications from 'notiwind'
 

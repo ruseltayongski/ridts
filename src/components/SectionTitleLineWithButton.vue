@@ -42,3 +42,4 @@ const hasSlot = computed(() => useSlots().default);
     <!-- <BaseButton v-else :icon="mdiCog" color="whiteDark" /> -->
   </section>
 </template>
+

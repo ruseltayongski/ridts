@@ -202,3 +202,7 @@ const transactionBarItems = computed(() => mainStore.history);
     </div>
   </div>
 </template>
+
+<style scoped>
+  @import '@/css/main.css';
+</style>
