@@ -126,7 +126,6 @@
         <th>Barangay</th>
         <th>Progress</th>
         <th>Created</th>
-        <th />
       </tr>
     </thead>
     <tbody>
@@ -165,22 +164,6 @@
             :title="client.created"
             >{{ client.created }}</small
           >
-        </td>
-        <td class="before:hidden lg:w-1 whitespace-nowrap">
-          <BaseButtons type="justify-start lg:justify-end" no-wrap>
-            <BaseButton
-              color="info"
-              label="Accept"
-              small
-              @click="isModalActive = true"
-            />
-            <BaseButton
-              color="danger"
-              label="Recommend to redirect"
-              small
-              @click="isModalDangerActive = true"
-            />
-          </BaseButtons>
         </td>
       </tr>
     </tbody>

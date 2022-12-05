@@ -60,6 +60,7 @@ declare module '@vue/runtime-core' {
     TableClients: typeof import('./src/components/TableClients.vue')['default']
     TableSampleClients: typeof import('./src/components/TableClients.vue')['default']
     TableSampleReferral: typeof import('./src/components/TableSampleReferral.vue')['default']
+    TableSearchBaby: typeof import('./src/components/TableSearchBaby.vue')['default']
     UserAvatar: typeof import('./src/components/UserAvatar.vue')['default']
     UserAvatarCurrentUser: typeof import('./src/components/UserAvatarCurrentUser.vue')['default']
     UserCard: typeof import('./src/components/UserCard.vue')['default']

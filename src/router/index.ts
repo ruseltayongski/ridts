@@ -3,15 +3,24 @@ import Home from "@/views/HomeView.vue";
 import Login from '@/views/LoginView.vue'
 import Style from '@/views/StyleView.vue'
 import Referral from '@/views/ReferralView.vue'
+import Landing from '@/views/LandingPage.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
           meta: {
-            title: "Login",
+            title: "Landing Page",
           },
           path: "/",
+          name: "Landing",
+          component: Landing,
+        },
+        {
+          meta: {
+            title: "Login",
+          },
+          path: "/login",
           name: "Login",
           component: Login,
         },

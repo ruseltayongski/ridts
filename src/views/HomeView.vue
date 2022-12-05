@@ -91,7 +91,7 @@ const transactionBarItems = computed(() => mainStore.history);
           color="text-red-500"
           :icon="mdiCalendarRemoveOutline"
           :number="256"
-          suffix="%"
+          suffix=""
           label="Date Due"
         />
       </div>
@@ -123,7 +123,7 @@ const transactionBarItems = computed(() => mainStore.history);
 
       <!-- <SectionBannerStarOnGitHub class="mt-6 mb-6" /> -->
 
-      <SectionTitleLineWithButton :icon="mdiChartPie" title="Trends overview">
+      <SectionTitleLineWithButton :icon="mdiChartPie" title="Trends overview last 9 days">
         <BaseButton
           :icon="mdiReload"
           color="whiteDark"
