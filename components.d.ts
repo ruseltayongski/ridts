@@ -24,6 +24,7 @@ declare module '@vue/runtime-core' {
     CardBoxComponentTitle: typeof import('./src/components/CardBoxComponentTitle.vue')['default']
     CardBoxModal: typeof import('./src/components/CardBoxModal.vue')['default']
     CardBoxTransaction: typeof import('./src/components/CardBoxTransaction.vue')['default']
+    CardBoxTransactions: typeof import('./src/components/CardBoxTransactions.vue')['default']
     CardBoxWidget: typeof import('./src/components/CardBoxWidget.vue')['default']
     FooterBar: typeof import('./src/components/FooterBar.vue')['default']
     FormCheckRadio: typeof import('./src/components/FormCheckRadio.vue')['default']

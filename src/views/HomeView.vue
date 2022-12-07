@@ -11,7 +11,8 @@ import {
   mdiGithub,
   mdiChartPie,
   mdiNeedle,
-  mdiCalendarRemoveOutline 
+  mdiCalendarRemoveOutline,
+  mdiTableArrowDown
 } from "@mdi/js";
 import * as chartConfig from "@/components/Charts/chart.config.ts";
 import LineChart from "@/components/Charts/LineChart.vue";
@@ -67,7 +68,7 @@ const transactionBarItems = computed(() => mainStore.history);
         /> -->
       </SectionTitleLineWithButton>
 
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 mb-6">
         <CardBoxWidget
           trend="12%"
           trend-type="up"
@@ -78,7 +79,7 @@ const transactionBarItems = computed(() => mainStore.history);
         />
         <CardBoxWidget
           trend="12%"
-          trend-type="down"
+          trend-type="up"
           color="text-blue-500"
           :icon="mdiNeedle"
           :number="512"
@@ -88,11 +89,20 @@ const transactionBarItems = computed(() => mainStore.history);
         <CardBoxWidget
           trend="Overflow"
           trend-type="alert"
-          color="text-red-500"
+          color="text-yellow-500"
           :icon="mdiCalendarRemoveOutline"
           :number="256"
           suffix=""
           label="Date Due"
+        />
+        <CardBoxWidget
+          trend="12%"
+          trend-type="up"
+          color="text-red-500"
+          :icon="mdiTableArrowDown"
+          :number="256"
+          suffix=""
+          label="Missed"
         />
       </div>
 

@@ -15,7 +15,9 @@ import {
   mdiHomeCityOutline,
   mdiCardAccountPhoneOutline,
   mdiCalendarEditOutline,
-  mdiCardBulletedSettings
+  mdiCardBulletedSettings,
+  mdiOpenInNew,
+  mdiNeedle
 } from "@mdi/js";
 import SectionMain from "@/components/SectionMain.vue";
 import NotificationBar from "@/components/NotificationBar.vue";
@@ -34,6 +36,7 @@ const get_municipality = ref({})
 
 const mainStore = useMainStore();
 const transactionBarItems = computed(() => mainStore.history);
+const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
 
 onMounted(() => {
   _getUserBarangay()
@@ -91,6 +94,31 @@ const customElementsForm = reactive({
 const submit = async () => {
   console.log(form)
 };
+
+const buttonSettingsModel = ref([]);
+const buttonsOutline = computed(
+  () => buttonSettingsModel.value.indexOf("outline") > -1
+);
+
+const buttonsSmall = computed(
+  () => buttonSettingsModel.value.indexOf("small") > -1
+);
+
+const buttonsDisabled = computed(
+  () => buttonSettingsModel.value.indexOf("disabled") > -1
+);
+
+const buttonsRounded = computed(
+  () => buttonSettingsModel.value.indexOf("rounded") > -1
+);
+
+const isModalActive = ref(false);
+
+const el_modal = ref<HTMLInputElement | null>(null)
+const handleOpenModal = async () => {
+  //el_modal.value?.click()
+  new Modal(el_modal.value).show()
+}
 </script>
 
 <template>
@@ -104,7 +132,8 @@ const submit = async () => {
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-body relative p-4">
@@ -191,6 +220,56 @@ const submit = async () => {
                 <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
               </FormField>
             </FormField>
+
+            <BaseDivider />
+
+            <FormField label="Vaccine Type">
+              <BaseButtons>
+                <BaseButton
+                  color="info"
+                  label="BCG"
+                  :icon="mdiNeedle"
+                  :small="buttonsSmall"
+                  :outline="buttonsOutline"
+                  :disabled="buttonsDisabled"
+                  :rounded-full="buttonsRounded"
+                  @click="handleOpenModal"
+                />
+                <BaseButton
+                  color="success"
+                  label="HEP B"
+                  :icon="mdiNeedle"
+                  :small="buttonsSmall"
+                  :outline="buttonsOutline"
+                  :disabled="buttonsDisabled"
+                  :rounded-full="buttonsRounded"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#vaccineeModal"
+                />
+                <BaseButton
+                  color="warning"
+                  label="PENTA"
+                  :icon="mdiNeedle"
+                  :small="buttonsSmall"
+                  :outline="buttonsOutline"
+                  :disabled="buttonsDisabled"
+                  :rounded-full="buttonsRounded"
+                  @click="isModalActive = true"
+                />
+                <BaseButton
+                  color="danger"
+                  label="OPV"
+                  :icon="mdiNeedle"
+                  :small="buttonsSmall"
+                  :outline="buttonsOutline"
+                  :disabled="buttonsDisabled"
+                  :rounded-full="buttonsRounded"
+                  @click="isModalActive = true"
+                />
+              </BaseButtons>
+            </FormField>
+
+            <BaseDivider />
             
             <template #footer>
               <BaseButtons>
@@ -204,8 +283,37 @@ const submit = async () => {
     </div>
   </div>
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-md relative w-auto pointer-events-none">
+  <CardBoxModal v-model="isModalActive" title="Vaccinee Info" has-cancel>
+    <FormField label="1st Dose">
+      <FormField label="Date Scheduled">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+      </FormField>
+      <FormField label="Date Given">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+      </FormField>
+    </FormField>
+
+    <FormField label="2nd Dose">
+      <FormField label="Date Scheduled">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+      </FormField>
+      <FormField label="Date Given">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+      </FormField>
+    </FormField>
+
+    <FormField label="3rd Dose">
+      <FormField label="Date Scheduled">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+      </FormField>
+      <FormField label="Date Given">
+        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+      </FormField>
+    </FormField>
+  </CardBoxModal>
+
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
       <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
           <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
@@ -216,26 +324,49 @@ const submit = async () => {
             data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body relative p-4">
-          <div class="grid grid-cols-1">
-            <div class="flex flex-col justify-between">
-              <CardBoxTransaction
-                v-for="(transaction, index) in transactionBarItems"
-                :key="index"
-                :amount="transaction.amount"
-                :date="transaction.date"
-                :business="transaction.business"
-                :type="transaction.type"
-                :name="transaction.name"
-                :account="transaction.account"
-              />
-            </div>
-          </div>
+          <CardBox is-form @submit.prevent="submit">
+            <FormField label="1st Dose">
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              </FormField>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              </FormField>
+            </FormField>
+
+            <FormField label="2nd Dose">
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              </FormField>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              </FormField>
+            </FormField>
+
+            <FormField label="3rd Dose">
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              </FormField>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              </FormField>
+            </FormField>
+
+            <template #footer>
+              <BaseButtons>
+                <BaseButton type="submit" color="info" label="Submit" />
+                <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+              </BaseButtons>
+            </template>
+
+          </CardBox>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>
-  @import '@/css/main.css';
+  /* @import '@/css/main.css'; */
 </style>
