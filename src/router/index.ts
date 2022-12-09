@@ -2,8 +2,10 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Home from "@/views/HomeView.vue";
 import Login from '@/views/LoginView.vue'
 import Style from '@/views/StyleView.vue'
-import Referral from '@/views/ReferralView.vue'
 import Landing from '@/views/LandingPage.vue'
+import Archived from '@/views/ArchivedView.vue'
+import Referred from '@/views/ReferredView.vue'
+import Incoming from '@/views/IncomingView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -34,11 +36,27 @@ const router = createRouter({
         },
         {
           meta: {
-            title: "BHS Referral",
+            title: "Archived",
           },
-          path: "/referral",
-          name: "referral",
-          component: Referral,
+          path: "/archived",
+          name: "archived",
+          component: Archived,
+        },
+        {
+          meta: {
+            title: "Referred",
+          },
+          path: "/referred",
+          name: "referred",
+          component: Referred,
+        },
+        {
+          meta: {
+            title: "Incoming",
+          },
+          path: "/incoming",
+          name: "incoming",
+          component: Incoming,
         },
         {
           // Document title tag

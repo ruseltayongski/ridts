@@ -114,6 +114,7 @@
             ctrl-k-focus
             transparent
             borderless
+            class="border-2 border-indigo-500/100 w-96"
           />
         </NavBarItemPlain>
       </NavBar>

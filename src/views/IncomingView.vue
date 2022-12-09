@@ -67,7 +67,7 @@ const transactionBarItems = computed(() => mainStore.history);
 <template>
   <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiAmbulance" title="Referral" main>
+      <SectionTitleLineWithButton :icon="mdiAmbulance" title="Incoming" main>
         
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>

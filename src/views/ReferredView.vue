@@ -21,7 +21,7 @@ import {
 } from "@mdi/js";
 import SectionMain from "@/components/SectionMain.vue";
 import NotificationBar from "@/components/NotificationBar.vue";
-import TableClients from "@/components/TableClients.vue";
+import TableArchived from "@/components/TableArchived.vue";
 import CardBox from "@/components/CardBox.vue";
 import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
@@ -59,7 +59,7 @@ const _getUserMunicipality = async () => {
     id : response.id,
     label : response.description
   }
-  form.vaccine_id = "VCN # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+  form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
 }
 
 const form = reactive({
@@ -83,16 +83,6 @@ const form = reactive({
 	health_provider_address: 0,
 	created_by: 0
 });
-
-const schedule = reactive({
-  dose_schedule1 : "",
-	date_given1: "",
-	dose_schedule2: "",
-	date_given2: "",
-	dose_schedule3: "",
-	date_given3: ""
-});
-
 
 const customElementsForm = reactive({
   checkbox: ["lorem"],
@@ -134,11 +124,10 @@ const handleOpenModal = async () => {
 <template>
   <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#exampleModalLg"/>
+      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Referred" main>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableClients checkable />
+        <TableArchived checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -247,23 +236,24 @@ const handleOpenModal = async () => {
                 />
                 <BaseButton
                   color="success"
-                  label="HepB"
+                  label="HEP B"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#vaccineeModal"
                 />
                 <BaseButton
                   color="warning"
-                  label="Pentavalent"
+                  label="PENTA"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="isModalActive = true"
                 />
                 <BaseButton
                   color="danger"
@@ -273,37 +263,7 @@ const handleOpenModal = async () => {
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
-                />
-                <BaseButton
-                  color="info"
-                  label="IPV"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
-                />
-                <BaseButton
-                  color="success"
-                  label="PCV"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
-                />
-                <BaseButton
-                  color="warning"
-                  label="MCV"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="isModalActive = true"
                 />
               </BaseButtons>
             </FormField>
@@ -356,7 +316,7 @@ const handleOpenModal = async () => {
       <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
           <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
-            Dose Schedule
+            Vaccinee Type
           </h5>
           <button type="button"
             class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
@@ -365,29 +325,29 @@ const handleOpenModal = async () => {
         <div class="modal-body relative p-4">
           <CardBox is-form @submit.prevent="submit">
             <FormField label="1st Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule1 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given1 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
-                      
+
             <FormField label="2nd Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule2 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given2 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 
             <FormField label="3rd Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule3 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given3 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given">
+                <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 

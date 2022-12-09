@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, reactive, onMounted } from "vue";
   import { useMainStore } from "@/stores/main";
-  import { mdiTrashCan,mdiNeedle,mdiAmbulance } from "@mdi/js";
+  import { mdiBadgeAccount } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
   import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
   import BaseLevel from "@/components/BaseLevel.vue";
@@ -190,28 +190,10 @@
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
             <BaseButton
               color="info"
-              :icon="mdiNeedle"
+              :icon="mdiBadgeAccount"
               small
               data-bs-toggle="modal" 
               data-bs-target="#exampleModalLg"
-            />
-            <BaseButton
-              color="success"
-              :icon="mdiAmbulance"
-              small
-              @click="isModalActive = true"
-            />
-            <!-- <BaseButton
-              color="info"
-              :icon="mdiNeedle"
-              small
-              @click="isModalActive = true"
-            /> -->
-            <BaseButton
-              color="danger"
-              :icon="mdiTrashCan"
-              small
-              @click="isModalDangerActive = true"
             />
           </BaseButtons>
         </td>

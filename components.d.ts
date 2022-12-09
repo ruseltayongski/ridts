@@ -57,6 +57,7 @@ declare module '@vue/runtime-core' {
     SectionMain: typeof import('./src/components/SectionMain.vue')['default']
     SectionTitle: typeof import('./src/components/SectionTitle.vue')['default']
     SectionTitleLineWithButton: typeof import('./src/components/SectionTitleLineWithButton.vue')['default']
+    TableArchived: typeof import('./src/components/TableArchived.vue')['default']
     TableCheckboxCell: typeof import('./src/components/TableCheckboxCell.vue')['default']
     TableClients: typeof import('./src/components/TableClients.vue')['default']
     TableSampleClients: typeof import('./src/components/TableClients.vue')['default']

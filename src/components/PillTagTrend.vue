@@ -23,6 +23,13 @@ const trendStyle = computed(() => {
     };
   }
 
+  if (props.trendType === "enrolled") {
+    return {
+      icon: mdiChevronUp,
+      style: "info",
+    };
+  }
+
   if (props.trendType === "down") {
     return {
       icon: mdiChevronDown,

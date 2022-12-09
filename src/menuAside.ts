@@ -12,7 +12,9 @@ import {
     mdiPalette,
     mdiReact,
     mdiViewDashboard,
-    mdiAmbulance
+    mdiAmbulance,
+    mdiFolderArrowUp,
+    mdiFolderArrowDown
   } from "@mdi/js";
   
   export default [
@@ -27,9 +29,19 @@ import {
       icon: mdiAccountCircle,
     },
     {
-      to: "/referral",
-      label: "BHS Referral",
+      to: "/archived",
+      label: "Archived",
       icon: mdiAmbulance,
+    },
+    {
+      to: "/referred",
+      label: "Referred",
+      icon: mdiFolderArrowUp,
+    },
+    {
+      to: "/incoming",
+      label: "Incoming",
+      icon: mdiFolderArrowDown,
     }
     // {
     //   to: "/forms",

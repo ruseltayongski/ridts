@@ -71,8 +71,8 @@ const transactionBarItems = computed(() => mainStore.history);
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 mb-6">
         <CardBoxWidget
           trend="12%"
-          trend-type="up"
-          color="text-emerald-500"
+          trend-type="enrolled"
+          color="text-blue-500"
           :icon="mdiAccountMultiple"
           :number="7770"
           label="Clients"
@@ -80,7 +80,7 @@ const transactionBarItems = computed(() => mainStore.history);
         <CardBoxWidget
           trend="12%"
           trend-type="up"
-          color="text-blue-500"
+          color="text-emerald-500"
           :icon="mdiNeedle"
           :number="512"
           prefix=""
@@ -97,7 +97,7 @@ const transactionBarItems = computed(() => mainStore.history);
         />
         <CardBoxWidget
           trend="12%"
-          trend-type="up"
+          trend-type="down"
           color="text-red-500"
           :icon="mdiTableArrowDown"
           :number="256"
