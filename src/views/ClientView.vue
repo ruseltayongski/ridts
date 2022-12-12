@@ -1,141 +1,186 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from "vue";
-import { useMainStore } from "@/stores/main";
-import {
-  mdiMonitorCellphone,
-  mdiTableBorder,
-  mdiTableOff,
-  mdiGithub,
-  mdiAccountCircle,
-  mdiBabyFaceOutline,
-  mdiAccountPlus,
-  mdiBallotOutline,
-  mdiAccount,
-  mdiMail,
-  mdiHomeCityOutline,
-  mdiCardAccountPhoneOutline,
-  mdiCalendarEditOutline,
-  mdiCardBulletedSettings,
-  mdiOpenInNew,
-  mdiNeedle
-} from "@mdi/js";
-import SectionMain from "@/components/SectionMain.vue";
-import NotificationBar from "@/components/NotificationBar.vue";
-import TableClients from "@/components/TableClients.vue";
-import CardBox from "@/components/CardBox.vue";
-import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
-import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
-import { getUserBarangay, getUserMunicipality } from '@/api/auth'
+  import { reactive, ref, computed, onMounted } from "vue";
+  import { useMainStore } from "@/stores/main";
+  import {
+    mdiMonitorCellphone,
+    mdiTableBorder,
+    mdiTableOff,
+    mdiGithub,
+    mdiAccountCircle,
+    mdiBabyFaceOutline,
+    mdiAccountPlus,
+    mdiBallotOutline,
+    mdiAccount,
+    mdiMail,
+    mdiHomeCityOutline,
+    mdiCardAccountPhoneOutline,
+    mdiCalendarEditOutline,
+    mdiCardBulletedSettings,
+    mdiOpenInNew,
+    mdiNeedle
+  } from "@mdi/js";
+  import SectionMain from "@/components/SectionMain.vue";
+  import NotificationBar from "@/components/NotificationBar.vue";
+  import TableClients from "@/components/TableClients.vue";
+  import CardBox from "@/components/CardBox.vue";
+  import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+  import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import BaseButton from "@/components/BaseButton.vue";
+  import NotificationMessage from "@/components/NotificationMessage.vue";
+  import { getUserBarangay, getUserMunicipality } from '@/api/auth'
 
-import moment from "moment"
+  import moment from "moment"
+  import { notify } from "notiwind"
+  import { createClient,getAllClient } from "@/api/python"
 
-const get_barangay = ref([])
-const get_municipality = ref({})
+  const get_barangay = ref([])
+  const get_municipality = ref({})
 
-const mainStore = useMainStore();
-const transactionBarItems = computed(() => mainStore.history);
-const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
+  const mainStore = useMainStore();
+  const transactionBarItems = computed(() => mainStore.history);
+  const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
 
-onMounted(() => {
-  _getUserBarangay()
-  _getUserMunicipality()
-})
+  const client_modal = ref<HTMLInputElement | null>(null)
+  const el_client_modal = ref<HTMLInputElement | null>(null)
 
-const _getUserBarangay = async () => {
-  const response = await getUserBarangay()
-  get_barangay.value = await Promise.all(response.map(async (item: any) => {
-      return {
-        id : item.id,
-        label: item.description
-      }
-  }))
-}
+  onMounted(() => {
+    _getUserBarangay()
+    _getUserMunicipality()
+    _getAllClient()
+    client_modal.value = new Modal(el_client_modal.value); //initialize modal instance
+  })
 
-const _getUserMunicipality = async () => {
-  const response = await getUserMunicipality()
-  get_municipality.value = {
-    id : response.id,
-    label : response.description
+  const _getAllClient = async () => {
+    const response = await getAllClient() 
+    console.log(response.num_pages)
   }
-  form.vaccine_id = "VCN # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
-}
 
-const form = reactive({
-  vaccine_id : "",
-	firstname: "",
-	middlename: "",
-	lastname: "",
-	birthdate: "",
-	birthplace: "",
-	sex: "",
-	client_address: 0,
-	guardian_name: "",
-	guardian_contact_number: "",
-	guardian_alternate_number: "",
-	guardian_address: 0,
-	bhw_name: "",
-	bhw_contact_number: "",
-	bhw_address: 0,
-	health_provider_name: "",
-	health_provider_contact: "",
-	health_provider_address: 0,
-	created_by: 0
-});
+  const _getUserBarangay = async () => {
+    const response = await getUserBarangay()
+    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
+  }
 
-const schedule = reactive({
-  dose_schedule1 : "",
-	date_given1: "",
-	dose_schedule2: "",
-	date_given2: "",
-	dose_schedule3: "",
-	date_given3: ""
-});
+  const _getUserMunicipality = async () => {
+    const response = await getUserMunicipality()
+    get_municipality.value = {
+      id : response.id,
+      label : response.description
+    }
+    form.vaccine_id = "VCN # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+  }
 
+  const form = reactive({
+    vaccine_id : "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
+    birthdate: "",
+    birthplace: "",
+    sex: "",
+    client_address: 0,
+    guardian_name: "",
+    guardian_contact_number: "",
+    guardian_alternate_number: "",
+    guardian_address: 0,
+    bhw_name: "",
+    bhw_contact_number: "",
+    bhw_address: 0,
+    health_provider_name: "",
+    health_provider_contact: "",
+    health_provider_address: 0,
+    created_by: 0
+  });
 
-const customElementsForm = reactive({
-  checkbox: ["lorem"],
-  radio: "one",
-  switch: ["one"],
-  file: null,
-});
+  const schedule = reactive({
+    dose_schedule1 : "",
+    date_given1: "",
+    dose_schedule2: "",
+    date_given2: "",
+    dose_schedule3: "",
+    date_given3: ""
+  });
 
-const submit = async () => {
-  console.log(form)
-};
+  const buttonSettingsModel = ref([]);
+  const buttonsOutline = computed(
+    () => buttonSettingsModel.value.indexOf("outline") > -1
+  );
 
-const buttonSettingsModel = ref([]);
-const buttonsOutline = computed(
-  () => buttonSettingsModel.value.indexOf("outline") > -1
-);
+  const buttonsSmall = computed(
+    () => buttonSettingsModel.value.indexOf("small") > -1
+  );
 
-const buttonsSmall = computed(
-  () => buttonSettingsModel.value.indexOf("small") > -1
-);
+  const buttonsDisabled = computed(
+    () => buttonSettingsModel.value.indexOf("disabled") > -1
+  );
 
-const buttonsDisabled = computed(
-  () => buttonSettingsModel.value.indexOf("disabled") > -1
-);
+  const buttonsRounded = computed(
+    () => buttonSettingsModel.value.indexOf("rounded") > -1
+  );
 
-const buttonsRounded = computed(
-  () => buttonSettingsModel.value.indexOf("rounded") > -1
-);
+  const dose_modal = ref<HTMLInputElement | null>(null)
+  const el_dose_modal = ref<HTMLInputElement | null>(null)
+  const handleOpenModal = async () => {
+    dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
+    dose_modal.value.show()
+  }
 
-const isModalActive = ref(false);
+  const clientSubmit = async () => {
+    notify({
+      group: "success",
+      title: "Success",
+      text: "Client was successfully added!"
+    }, 2000)
 
-const el_modal = ref<HTMLInputElement | null>(null)
-const handleOpenModal = async () => {
-  //el_modal.value?.click()
-  new Modal(el_modal.value).show()
-}
+    const params = {
+        "vaccine_id": "BCC-99999",
+        "firstname": "prince",
+        "middlename": "agawn",
+        "lastname": "agawn",
+        "birthdate": "2022-10-01",
+        "birthplace": "Apas, Cebu City",
+        "sex": "Male",
+        "client_address": 6,
+        "guardian_name": "Junard Resaga",
+        "guardian_contact_number": "0999741231",
+        "guardian_alternate_number": "0999741231",
+        "guardian_address": 4,
+        "bhw_name": "Rever Pataray",
+        "bhw_contact_number": "09991234567",
+        "bhw_address": 7,
+        "health_provider_name": "Barili RHU",
+        "health_provider_contact": "0999832323",
+        "health_provider_address": 7,
+        "is_active": true,
+        "created_on": "2022-12-05T07:50:50.254000Z",
+        "updated_on": null,
+        "created_by" : 1
+    }
+
+    await createClient(params) // insert into mongo db
+
+    client_modal.value?.hide();
+  };
+
+  const doseSubmit = async () => {
+      dose_modal.value?.hide();
+      notify({
+        group: "success_dose",
+        title: "Success",
+        text: "Vaccine info was successfully updated!"
+      }, 2000)
+  };
 </script>
 
 <template>
   <LayoutAuthenticated>
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#exampleModalLg"/>
+        <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
         <TableClients checkable />
@@ -143,7 +188,7 @@ const handleOpenModal = async () => {
     </SectionMain>
   </LayoutAuthenticated>
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" ref="el_client_modal" id="clientModal" data-bs-backdrop="static" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-body relative p-4">
@@ -153,7 +198,10 @@ const handleOpenModal = async () => {
             main
           >
           </SectionTitleLineWithButton>
-          <CardBox is-form @submit.prevent="submit">
+
+          <NotificationMessage></NotificationMessage>
+
+          <CardBox is-form @submit.prevent="clientSubmit">
             <FormField label="Personal Information" class="text-xl">
               <FormField label="Vaccine Card Number ID" class="text-sm">
                 <FormControl v-model="form.vaccine_id" :icon="mdiCardBulletedSettings" :readonly="true"/>
@@ -322,36 +370,7 @@ const handleOpenModal = async () => {
     </div>
   </div>
 
-  <CardBoxModal v-model="isModalActive" title="Vaccinee Info" has-cancel>
-    <FormField label="1st Dose">
-      <FormField label="Date Scheduled">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-      </FormField>
-      <FormField label="Date Given">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-      </FormField>
-    </FormField>
-
-    <FormField label="2nd Dose">
-      <FormField label="Date Scheduled">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-      </FormField>
-      <FormField label="Date Given">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-      </FormField>
-    </FormField>
-
-    <FormField label="3rd Dose">
-      <FormField label="Date Scheduled">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-      </FormField>
-      <FormField label="Date Given">
-        <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-      </FormField>
-    </FormField>
-  </CardBoxModal>
-
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_dose_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
       <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
@@ -363,7 +382,7 @@ const handleOpenModal = async () => {
             data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body relative p-4">
-          <CardBox is-form @submit.prevent="submit">
+          <CardBox is-form @submit.prevent="doseSubmit">
             <FormField label="1st Dose">
               <FormField label="Date Scheduled" :help="schedule.dose_schedule1 ? 'Gracel Flores' : ''">
                 <FormControl v-model="schedule.dose_schedule1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>

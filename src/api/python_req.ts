@@ -1,24 +1,18 @@
 import Axios from "axios";
 
-import router from "@/router";
-
-// const { t } = useI18n();
-import { S } from "@/utils";
-
 declare module "axios" {
   export interface AxiosResponse<T = any> extends Promise<T> {}
 }
 
 Axios.defaults.timeout = 120000;
-
 //设置请求基地址
-//Axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-const laravelAxios = import.meta.env.VITE_API_BASE_URL
+//Axios.defaults.baseURL = import.meta.env.LABRESULT_API_URL;
+const PythonAxios = import.meta.env.VITE_API_BASE_URL_PYTHON;
 
 // 添加请求拦截器
 Axios.interceptors.request.use((request: any) => {
 
-  request.headers["Authorization"] = request.headers["Authorization"] ? '' : 'Bearer '+S.getAuthToken();
+  //request.headers["Authorization"] = request.headers["Authorization"] ? '' : 'Bearer '+S.getAuthToken();
   request.headers["Accept"] = "application/json";
   request.headers["Content-Type"] = "application/json;charset=UTF-8";
 
@@ -28,32 +22,12 @@ Axios.interceptors.request.use((request: any) => {
 // 添加响应拦截器
 Axios.interceptors.response.use(
   (response) => {
-    const code = response.status;
-
-    if (code == undefined) {
-      let error = {
-        message: "网络异常",
-      };
-      return Promise.reject(error);
-    } else if (code < 200 || code > 300) {
-      return Promise.reject("error");
-    } else {
-      // 如果为undefined 说明为下载接口，无code
-      if (response.data.code === undefined) {
-        return response.data;
-      } else if (response.data.code !== 0 && !response.data.data) {
-        console.log(response.data.message);
-      }
-    }
-
-    return response.data.data;
+    return response;
   },
   (error) => {
     let code = 0;
     let customCode = 0;
     try {
-      // code = error.response.data.status;
-      // customCode = error.response.data.code;
       code = error.response.status;
       customCode = error.response.code;
     } catch (e) {
@@ -87,14 +61,14 @@ Axios.interceptors.response.use(
  * get方法封装
  */
 function get(url: string, params: any, headers: {} = {}) {
-  return Axios.get(laravelAxios + url, { params, headers });
+  return Axios.get(PythonAxios + url, { params, headers });
 }
 
 /**
  * delect方法封装
  */
 function deletes(url: string, params: any, headers: {} = {}) {
-  return Axios.delete(laravelAxios + url, {
+  return Axios.delete(PythonAxios + url, {
     params,
     headers,
   });
@@ -103,20 +77,20 @@ function deletes(url: string, params: any, headers: {} = {}) {
 /**
  * post方法封装
  */
-function post(url: string, params: any, headers: {} = {}) {
-  return Axios.post(laravelAxios + url, params, headers);
+function post(url: string, params: any) {
+  return Axios.post(PythonAxios + url, params);
 }
 
 /**
  * put方法封装
  */
 function put(url: string, params: any, headers: {} = {}) {
-  return Axios.put(laravelAxios + url, params, headers);
+  return Axios.put(PythonAxios + url, params, headers);
 }
 
 export default {
   get,
   deletes,
   post,
-  put,
-};
+  put
+}

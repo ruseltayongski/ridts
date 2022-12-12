@@ -119,7 +119,7 @@
       group: "error",
       title: "Error",
       text: message
-    }, 1000)
+    }, 2000)
   }
 </script>
 
