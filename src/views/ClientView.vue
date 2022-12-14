@@ -31,11 +31,12 @@
 
   import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient,getAllClient } from "@/api/python"
+  import { createClient, getInfoClient, updateClient } from "@/api/python"
 
+  const search_keyword = ref("")
   const get_barangay = ref([])
   const get_municipality = ref({})
-
+  
   const mainStore = useMainStore();
   const transactionBarItems = computed(() => mainStore.history);
   const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
@@ -43,17 +44,39 @@
   const client_modal = ref<HTMLInputElement | null>(null)
   const el_client_modal = ref<HTMLInputElement | null>(null)
 
+  const props_form = ref({})
+
+  const form = reactive({
+    id: 0, 
+    vaccine_id : "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
+    birthdate: "",
+    birthplace: "",
+    sex: "",
+    client_address: 0,
+    guardian_name: "",
+    guardian_contact_number: "",
+    guardian_alternate_number: "",
+    guardian_address: 0,
+    bhw_name: "",
+    bhw_contact_number: "",
+    bhw_address: 0,
+    health_provider_name: "",
+    health_provider_contact: "",
+    health_provider_address: 0,
+    is_active: true,
+    created_by: 0,
+    created_on: "",
+    updated_on: ""
+  });
+
   onMounted(() => {
     _getUserBarangay()
     _getUserMunicipality()
-    _getAllClient()
     client_modal.value = new Modal(el_client_modal.value); //initialize modal instance
   })
-
-  const _getAllClient = async () => {
-    const response = await getAllClient() 
-    console.log(response.num_pages)
-  }
 
   const _getUserBarangay = async () => {
     const response = await getUserBarangay()
@@ -73,28 +96,6 @@
     }
     form.vaccine_id = "VCN # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
-
-  const form = reactive({
-    vaccine_id : "",
-    firstname: "",
-    middlename: "",
-    lastname: "",
-    birthdate: "",
-    birthplace: "",
-    sex: "",
-    client_address: 0,
-    guardian_name: "",
-    guardian_contact_number: "",
-    guardian_alternate_number: "",
-    guardian_address: 0,
-    bhw_name: "",
-    bhw_contact_number: "",
-    bhw_address: 0,
-    health_provider_name: "",
-    health_provider_contact: "",
-    health_provider_address: 0,
-    created_by: 0
-  });
 
   const schedule = reactive({
     dose_schedule1 : "",
@@ -126,44 +127,28 @@
   const el_dose_modal = ref<HTMLInputElement | null>(null)
   const handleOpenModal = async () => {
     dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
-    dose_modal.value.show()
+    dose_modal.value?.show()
   }
 
   const clientSubmit = async () => {
+    client_modal.value?.hide();
+    let message = ""
+    if(form.id) {
+      message = "Client was successfully updated!"
+      form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
+      await updateClient(form) // update into mongo db
+    } else {
+      message = "Client was successfully added!"
+      form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
+      await createClient(form) // insert into mongo db
+    }
+    props_form.value = form //send to props
+
     notify({
       group: "success",
       title: "Success",
-      text: "Client was successfully added!"
+      text: message
     }, 2000)
-
-    const params = {
-        "vaccine_id": "BCC-99999",
-        "firstname": "prince",
-        "middlename": "agawn",
-        "lastname": "agawn",
-        "birthdate": "2022-10-01",
-        "birthplace": "Apas, Cebu City",
-        "sex": "Male",
-        "client_address": 6,
-        "guardian_name": "Junard Resaga",
-        "guardian_contact_number": "0999741231",
-        "guardian_alternate_number": "0999741231",
-        "guardian_address": 4,
-        "bhw_name": "Rever Pataray",
-        "bhw_contact_number": "09991234567",
-        "bhw_address": 7,
-        "health_provider_name": "Barili RHU",
-        "health_provider_contact": "0999832323",
-        "health_provider_address": 7,
-        "is_active": true,
-        "created_on": "2022-12-05T07:50:50.254000Z",
-        "updated_on": null,
-        "created_by" : 1
-    }
-
-    await createClient(params) // insert into mongo db
-
-    client_modal.value?.hide();
   };
 
   const doseSubmit = async () => {
@@ -174,16 +159,50 @@
         text: "Vaccine info was successfully updated!"
       }, 2000)
   };
+
+  const handleClientInfo = async (id:Number) => {
+      _getInfoClient(id)
+  };
+
+  const _getInfoClient = async (id:Number) => {
+    const response = await getInfoClient({ id : id })
+    form.id = response.id
+    form.bhw_address = response.bhw_address
+    form.bhw_contact_number = response.bhw_contact_number
+    form.bhw_name = response.bhw_name
+    form.birthdate = response.birthdate
+    form.birthplace = response.birthplace
+    form.client_address = response.client_address
+    form.created_by = response.created_by
+    form.firstname = response.firstname
+    form.guardian_address = response.guardian_address
+    form.guardian_alternate_number = response.guardian_alternate_number
+    form.guardian_contact_number = response.guardian_contact_number
+    form.guardian_name = response.guardian_name
+    form.health_provider_address = response.health_provider_address
+    form.health_provider_contact = response.health_provider_contact
+    form.health_provider_name = response.health_provider_name
+    form.is_active = response.is_active
+    form.lastname = response.lastname
+    form.middlename = response.middlename
+    form.sex = response.sex
+    form.vaccine_id = response.vaccine_id
+    form.created_on = response.created_on
+  }
+
+  const handleSearchClient = async (payload:"") => {
+      search_keyword.value = payload
+  };
 </script>
 
 <template>
-  <LayoutAuthenticated>
+  <LayoutAuthenticated @search-client="handleSearchClient">
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
         <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableClients checkable />
+        <TableClients @client-info="handleClientInfo" :search_keyword="search_keyword" :form="props_form" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -275,7 +294,7 @@
                 <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
               </FormField>
               <FormField label="Health Provider Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                <FormControl v-model="form.health_provider_address" :options="get_barangay" required/>
               </FormField>
             </FormField>
 
@@ -294,7 +313,7 @@
                   @click="handleOpenModal"
                 />
                 <BaseButton
-                  color="success"
+                  color="info"
                   label="HepB"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -304,7 +323,7 @@
                   @click="handleOpenModal"
                 />
                 <BaseButton
-                  color="warning"
+                  color="info"
                   label="Pentavalent"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -314,7 +333,7 @@
                   @click="handleOpenModal"
                 />
                 <BaseButton
-                  color="danger"
+                  color="info"
                   label="OPV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -334,7 +353,7 @@
                   @click="handleOpenModal"
                 />
                 <BaseButton
-                  color="success"
+                  color="info"
                   label="PCV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -344,7 +363,7 @@
                   @click="handleOpenModal"
                 />
                 <BaseButton
-                  color="warning"
+                  color="info"
                   label="MCV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -416,7 +435,6 @@
                 <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
               </BaseButtons>
             </template>
-
           </CardBox>
         </div>
       </div>

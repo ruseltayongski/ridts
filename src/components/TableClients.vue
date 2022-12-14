@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, reactive, onMounted } from "vue";
+  import { computed, ref, reactive, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import { mdiTrashCan,mdiNeedle,mdiAmbulance } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
@@ -9,14 +9,26 @@
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
   import { getUserBarangay } from '@/api/auth'
+  import { getAllClient  } from "@/api/python"
 
-  defineProps({
+  import moment from "moment"
+
+  const props = defineProps({
     checkable: Boolean,
+    search_keyword: {
+      type: String,
+      default: null,
+    },
+    form: {
+      type: Object,
+      default: null,
+    }
   });
 
-  const mainStore = useMainStore();
-
-  const items = computed(() => mainStore.clients);
+  //const mainStore = useMainStore();
+  //const items = computed(() => mainStore.clients);
+  const data = ref([])
+  const items = computed(() => data.value);
 
   const isModalActive = ref(false);
 
@@ -91,7 +103,21 @@
 
   onMounted(() => {
     _getUserBarangay()
+    _getAllClient()
+    _getBarangayInfo(1492)
   })
+
+  const _getAllClient = async (params: {} = {}) => {
+    const response = await getAllClient(params)
+    data.value = await Promise.all(response.map(async (item: any) => {
+        const barangay_info = await getUserBarangay({ barangay_id:item.client_address })
+        return {
+          ...item,
+          barangay : barangay_info.description ? barangay_info.description : "No Barangay"
+        }
+    }))
+    console.log(data.value)
+  }
 
   const _getUserBarangay = async () => {
     const response = await getUserBarangay()
@@ -102,6 +128,37 @@
         }
     }))
   }
+
+  const _getBarangayInfo = async (barangay_id:Number) => {
+    const response = await getUserBarangay({ barangay_id:barangay_id })
+  }
+
+  const emit = defineEmits(["client-info"])
+  const handleClientInfo = (id:Number) => {
+    emit("client-info", id);
+  };
+
+  const search_keyword = computed(() => props.search_keyword);
+  watch(search_keyword, (value) => {
+    console.log("search keyword")
+    _getAllClient({ search : value })
+  })
+
+  const forms = computed(() => props.form);
+  watch(forms, (value) => {
+    if(value.id) {
+      console.log(value)
+      data.value.filter((client) => {
+        if(client.id == value.id) {
+          client.firstname = value.firstname
+          client.middlename = value.middlename
+          client.lastname = value.lastname
+        }
+      })
+    } else {
+      data.value.unshift(value)
+    }
+  })
 </script>
 
 <template>
@@ -157,34 +214,35 @@
         />
         <td class="border-b-0 lg:w-6 before:hidden">
           <UserAvatar
-            :firstname="client.name"
+            :firstname="client.firstname+client.middlename+client.lastname"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
         </td>
         <td data-label="Name">
-          {{ client.name }}
+          {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
         <td data-label="Company">
           Cebu City
         </td>
         <td data-label="City">
-          Sambag II
+          {{ client.barangay }}
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress
             class="flex w-2/5 self-center lg:w-full"
             max="100"
-            :value="client.progress"
+            :value="80"
           >
-            {{ client.progress }}
+            80
           </progress>
         </td>
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
-            :title="client.created"
-            >{{ client.created }}</small
-          >
+            :title="client.created_on"
+            >{{ moment(client.created_on).format('ll') }}</small
+          ><br>
+          <small class="text-gray-400 dark:text-slate-400">{{ moment(client.created_on).format('h:mm:ss a') }}</small>
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
@@ -193,7 +251,8 @@
               :icon="mdiNeedle"
               small
               data-bs-toggle="modal" 
-              data-bs-target="#exampleModalLg"
+              data-bs-target="#clientModal"
+              @click="handleClientInfo(client.id)"
             />
             <BaseButton
               color="success"

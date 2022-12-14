@@ -47,10 +47,13 @@
   const styleStore = useStyleStore();
 
   const router = useRouter()
+  const router_path = ref(router.currentRoute.value.path)
   const tokenStore = useTokenStore()
 
   const isAsideMobileExpanded = ref(false);
   const isAsideLgActive = ref(false);
+
+  const search_keyword = ref("")
 
   router.beforeEach(() => {
     isAsideMobileExpanded.value = false;
@@ -71,6 +74,11 @@
           path: "/",
       });
     }
+  };
+
+  const emit = defineEmits(["search-client"])
+  const handleSearchClient = () => {
+    emit("search-client", search_keyword.value);
   };
 </script>
 
@@ -110,11 +118,14 @@
         </NavBarItemPlain>
         <NavBarItemPlain use-margin>
           <FormControl
+            v-if="router_path == '/clients'"
             placeholder="Search (ctrl+k)"
             ctrl-k-focus
             transparent
             borderless
             class="border-2 border-indigo-500/100 w-96"
+            v-model="search_keyword"
+            @keyup="handleSearchClient"
           />
         </NavBarItemPlain>
       </NavBar>
