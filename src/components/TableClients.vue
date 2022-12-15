@@ -9,9 +9,10 @@
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
   import { getUserBarangay } from '@/api/auth'
-  import { getAllClient  } from "@/api/python"
+  import { getAllClient,deleteClient } from "@/api/python"
 
   import moment from "moment"
+  import { notify } from "notiwind"
 
   const props = defineProps({
     checkable: Boolean,
@@ -40,6 +41,11 @@
 
   const checkedRows = ref([]);
 
+  const client_delete = reactive({
+    client_id : 0,
+    client_name : ""
+  })
+  
   const itemsPaginated = computed(() =>
     items.value.slice(
       perPage.value * currentPage.value,
@@ -110,10 +116,8 @@
   const _getAllClient = async (params: {} = {}) => {
     const response = await getAllClient(params)
     data.value = await Promise.all(response.map(async (item: any) => {
-        const barangay_info = await getUserBarangay({ barangay_id:item.client_address })
         return {
-          ...item,
-          barangay : barangay_info.description ? barangay_info.description : "No Barangay"
+          ...item
         }
     }))
     console.log(data.value)
@@ -131,6 +135,22 @@
 
   const _getBarangayInfo = async (barangay_id:Number) => {
     const response = await getUserBarangay({ barangay_id:barangay_id })
+  }
+
+  const handleDeleteClient = async (client_id:any,client_name:any) => {
+    client_delete.client_id = client_id
+    client_delete.client_name = client_name
+    isModalDangerActive.value = true
+  }
+
+  const handleConfirmDelete = async () => {
+    data.value = data.value.filter((client) => client.id !== client_delete.client_id)
+    await deleteClient({ id : client_delete.client_id })
+    notify({
+      group: "error",
+      title: "Warning",
+      text: client_delete.client_name+" was successfully deleted"
+    }, 2000)
   }
 
   const emit = defineEmits(["client-info"])
@@ -153,6 +173,7 @@
           client.firstname = value.firstname
           client.middlename = value.middlename
           client.lastname = value.lastname
+          client.client_barangay = value.client_barangay
         }
       })
     } else {
@@ -179,8 +200,9 @@
     button="danger"
     has-cancel
     has-confirm
+    @confirm-delete="handleConfirmDelete"
   >
-    <p>Are you sure you want to delete this client?</p>
+    <p>Are you sure you want to delete {{ client_delete.client_name }}?</p>
   </CardBoxModal>
 
   <div v-if="checkedRows.length" class="p-3 bg-gray-100/50 dark:bg-slate-800">
@@ -225,7 +247,7 @@
           Cebu City
         </td>
         <td data-label="City">
-          {{ client.barangay }}
+          {{ client.client_barangay }}
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress
@@ -270,7 +292,7 @@
               color="danger"
               :icon="mdiTrashCan"
               small
-              @click="isModalDangerActive = true"
+              @click="handleDeleteClient(client.id,client.firstname + ' ' + client.middlename + ' ' + client.lastname)"
             />
           </BaseButtons>
         </td>

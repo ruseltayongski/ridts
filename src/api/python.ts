@@ -20,3 +20,15 @@ export function getInfoClient(params: {} = {}) {
 export function updateClient(params: {} = {}) {
   return req.put("/client?id="+params.id,params);
 }
+
+export function deleteClient(params: {} = {}) {
+  return req.deletes("/client?id="+params.id,params);
+}
+
+export function createVaccineInfo(params: {} = {}) {
+  return req.post("/vaxinfo",params);
+}
+
+export function getVaccineInfo(params: {} = {}) {
+  return req.get("/vaxinfo/all",params);
+}

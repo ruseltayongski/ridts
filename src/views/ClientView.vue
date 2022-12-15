@@ -31,7 +31,8 @@
 
   import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient, getInfoClient, updateClient } from "@/api/python"
+  import { createClient, getInfoClient, updateClient, getVaccineInfo } from "@/api/python"
+  import { findProp } from "@vue/compiler-core";
 
   const search_keyword = ref("")
   const get_barangay = ref([])
@@ -45,6 +46,7 @@
   const el_client_modal = ref<HTMLInputElement | null>(null)
 
   const props_form = ref({})
+  const button_label = ref("")
 
   const form = reactive({
     id: 0, 
@@ -56,16 +58,19 @@
     birthplace: "",
     sex: "",
     client_address: 0,
+    client_barangay: "",
     guardian_name: "",
     guardian_contact_number: "",
     guardian_alternate_number: "",
     guardian_address: 0,
+    guardian_barangay: "",
     bhw_name: "",
     bhw_contact_number: "",
     bhw_address: 0,
     health_provider_name: "",
     health_provider_contact: "",
     health_provider_address: 0,
+    health_provider_barangay: "",
     is_active: true,
     created_by: 0,
     created_on: "",
@@ -125,14 +130,27 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
-  const handleOpenModal = async () => {
+  const handleOpenModal = async (vaccine_type:String) => {
+    const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type })
+    console.log(response)
+    schedule.dose_schedule1 = response[0].scheduled_1
+    console.log(schedule.dose_schedule1)
     dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
     dose_modal.value?.show()
   }
 
   const clientSubmit = async () => {
     client_modal.value?.hide();
+
+    const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
+    form.client_barangay = client_barangay.description
+    const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
+    form.guardian_barangay = guardian_barangay.description
+    const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
+    form.health_provider_barangay = health_provider_barangay.description
+    
     let message = ""
+    
     if(form.id) {
       message = "Client was successfully updated!"
       form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -140,8 +158,10 @@
     } else {
       message = "Client was successfully added!"
       form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
+      console.log(form)
       await createClient(form) // insert into mongo db
     }
+
     props_form.value = form //send to props
 
     notify({
@@ -165,6 +185,7 @@
   };
 
   const _getInfoClient = async (id:Number) => {
+    button_label.value = "Update"
     const response = await getInfoClient({ id : id })
     form.id = response.id
     form.bhw_address = response.bhw_address
@@ -173,13 +194,16 @@
     form.birthdate = response.birthdate
     form.birthplace = response.birthplace
     form.client_address = response.client_address
+    form.client_barangay = response.client_barangay
     form.created_by = response.created_by
     form.firstname = response.firstname
     form.guardian_address = response.guardian_address
+    form.guardian_barangay = response.guardian_barangay
     form.guardian_alternate_number = response.guardian_alternate_number
     form.guardian_contact_number = response.guardian_contact_number
     form.guardian_name = response.guardian_name
     form.health_provider_address = response.health_provider_address
+    form.health_provider_barangay = response.health_provider_barangay
     form.health_provider_contact = response.health_provider_contact
     form.health_provider_name = response.health_provider_name
     form.is_active = response.is_active
@@ -188,10 +212,15 @@
     form.sex = response.sex
     form.vaccine_id = response.vaccine_id
     form.created_on = response.created_on
+    console.log(response)
   }
 
   const handleSearchClient = async (payload:"") => {
       search_keyword.value = payload
+  };
+
+  const handleCreateClient = () => {
+      button_label.value = "Submit"
   };
 </script>
 
@@ -199,7 +228,7 @@
   <LayoutAuthenticated @search-client="handleSearchClient">
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+        <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
         <TableClients @client-info="handleClientInfo" :search_keyword="search_keyword" :form="props_form" checkable />
@@ -310,7 +339,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('bcg')"
                 />
                 <BaseButton
                   color="info"
@@ -320,7 +349,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('hepb')"
                 />
                 <BaseButton
                   color="info"
@@ -330,7 +359,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('pentavalent')"
                 />
                 <BaseButton
                   color="info"
@@ -340,7 +369,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('opv')"
                 />
                 <BaseButton
                   color="info"
@@ -350,7 +379,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('ipv')"
                 />
                 <BaseButton
                   color="info"
@@ -360,7 +389,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('pcv')"
                 />
                 <BaseButton
                   color="info"
@@ -370,7 +399,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
+                  @click="handleOpenModal('mcv')"
                 />
               </BaseButtons>
             </FormField>
@@ -379,7 +408,7 @@
             
             <template #footer>
               <BaseButtons>
-                <BaseButton type="submit" color="info" label="Submit" />
+                <BaseButton type="submit" color="info" :label="button_label" />
                 <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
               </BaseButtons>
             </template>

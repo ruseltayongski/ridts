@@ -37,7 +37,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue", "cancel", "confirm"]);
+const emit = defineEmits(["update:modelValue", "cancel", "confirm","confirm-delete"]);
 
 const value = computed({
   get: () => props.modelValue,
@@ -49,7 +49,14 @@ const confirmCancel = (mode) => {
   emit(mode);
 };
 
-const confirm = () => confirmCancel("confirm");
+//const confirm = () => confirmCancel("confirm");
+
+const confirm = () => {
+  if(props.hasConfirm) {
+    emit("confirm-delete")
+  } 
+  confirmCancel("confirm")
+};
 
 const cancel = () => confirmCancel("cancel");
 
