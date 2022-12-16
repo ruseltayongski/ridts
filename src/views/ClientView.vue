@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { reactive, ref, computed, onMounted } from "vue";
+  import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import {
     mdiMonitorCellphone,
@@ -27,11 +27,11 @@
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import NotificationMessage from "@/components/NotificationMessage.vue";
-  import { getUserBarangay, getUserMunicipality } from '@/api/auth'
+  import { getUserBarangay, getUserMunicipality, getUserInfo } from '@/api/auth'
 
   import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient, getInfoClient, updateClient, getVaccineInfo } from "@/api/python"
+  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo } from "@/api/python"
   import { findProp } from "@vue/compiler-core";
 
   const search_keyword = ref("")
@@ -39,6 +39,8 @@
   const get_municipality = ref({})
   
   const mainStore = useMainStore();
+  const fullname = computed(() => mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname );
+
   const transactionBarItems = computed(() => mainStore.history);
   const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
 
@@ -80,8 +82,14 @@
   onMounted(() => {
     _getUserBarangay()
     _getUserMunicipality()
+    _getUserInfo()
     client_modal.value = new Modal(el_client_modal.value); //initialize modal instance
   })
+
+  const _getUserInfo = async () => {
+    const response = await getUserInfo({ id : 1 })
+    console.log(response)
+  }
 
   const _getUserBarangay = async () => {
     const response = await getUserBarangay()
@@ -103,12 +111,21 @@
   }
 
   const schedule = reactive({
-    dose_schedule1 : "",
-    date_given1: "",
-    dose_schedule2: "",
-    date_given2: "",
-    dose_schedule3: "",
-    date_given3: ""
+    client_id: 0,
+    vaccine_type: "ipv",
+    given_1: "",
+    given_2: "",
+    given_3: "",
+    given_administerred_1: "",
+    given_administerred_2: "",
+    given_administerred_3: "",
+    scheduled_1: "",
+    scheduled_2: "",
+    scheduled_3: "",
+    scheduled_administerred_1: "",
+    scheduled_administerred_2: "",
+    scheduled_administerred_3: "",
+    updated_on: "",
   });
 
   const buttonSettingsModel = ref([]);
@@ -130,11 +147,35 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
-  const handleOpenModal = async (vaccine_type:String) => {
+  const handleOpenModal = async (vaccine_type:"") => {
+    clearDose()
     const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type })
-    console.log(response)
-    schedule.dose_schedule1 = response[0].scheduled_1
-    console.log(schedule.dose_schedule1)
+
+    schedule.client_id = form.id
+    schedule.vaccine_type = vaccine_type
+    if(response.length > 0) {
+      schedule.scheduled_1 = response[0].scheduled_1
+      schedule.scheduled_2 = response[0].scheduled_2
+      schedule.scheduled_3 = response[0].scheduled_3
+      const scheduled_administerred_1 = await getUserInfo({ id : response[0].scheduled_administerred_1 })
+      schedule.scheduled_administerred_1 = scheduled_administerred_1.fname+" "+scheduled_administerred_1.mname+" "+scheduled_administerred_1.lname
+      const scheduled_administerred_2 = await getUserInfo({ id : response[0].scheduled_administerred_2 })
+      schedule.scheduled_administerred_2 = scheduled_administerred_2.fname+" "+scheduled_administerred_2.mname+" "+scheduled_administerred_2.lname
+      const scheduled_administerred_3 = await getUserInfo({ id : response[0].scheduled_administerred_3 })
+      schedule.scheduled_administerred_3 = scheduled_administerred_3.fname+" "+scheduled_administerred_3.mname+" "+scheduled_administerred_3.lname
+      schedule.given_1 = response[0].given_1
+      schedule.given_2 = response[0].given_2
+      schedule.given_3 = response[0].given_3
+      const given_administerred_1 = await getUserInfo({ id : response[0].given_administerred_1 })
+      schedule.given_administerred_1 = given_administerred_1.fname+" "+given_administerred_1.mname+" "+given_administerred_1.lname
+      const given_administerred_2 = await getUserInfo({ id : response[0].given_administerred_2 })
+      schedule.given_administerred_2 = given_administerred_2.fname+" "+given_administerred_2.mname+" "+given_administerred_2.lname
+      const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
+      schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
+      console.log(schedule)
+    }
+    schedule.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
+    
     dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
     dose_modal.value?.show()
   }
@@ -171,6 +212,21 @@
     }, 2000)
   };
 
+  const clearDose = async () => {
+    schedule.given_1 = "",
+    schedule.given_2 = "",
+    schedule.given_3 = "",
+    schedule.given_administerred_1 = "",
+    schedule.given_administerred_2 = "",
+    schedule.given_administerred_3 = "",
+    schedule.scheduled_1 = "",
+    schedule.scheduled_2 = "",
+    schedule.scheduled_3 = "",
+    schedule.scheduled_administerred_1 = "",
+    schedule.scheduled_administerred_2 = "",
+    schedule.scheduled_administerred_3 = ""
+  }
+
   const doseSubmit = async () => {
       dose_modal.value?.hide();
       notify({
@@ -178,6 +234,25 @@
         title: "Success",
         text: "Vaccine info was successfully updated!"
       }, 2000)
+      const vaccine_info_save = {
+          client_id: schedule.client_id,
+          vaccine_type: schedule.vaccine_type,
+          given_1: schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : "0000-00-00",
+          given_2: schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : "0000-00-00",
+          given_3: schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : "0000-00-00",
+          given_administerred_1: schedule.given_administerred_1 ? mainStore.userId : 0,
+          given_administerred_2: schedule.given_administerred_2 ? mainStore.userId : 0,
+          given_administerred_3: schedule.given_administerred_3 ? mainStore.userId : 0,
+          scheduled_1: schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : "0000-00-00",
+          scheduled_2: schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : "0000-00-00",
+          scheduled_3: schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : "0000-00-00",
+          scheduled_administerred_1: schedule.scheduled_administerred_1 ? mainStore.userId : 0,
+          scheduled_administerred_2: schedule.scheduled_administerred_2 ? mainStore.userId : 0,
+          scheduled_administerred_3: schedule.scheduled_administerred_3 ? mainStore.userId : 0,
+          updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
+      }
+      console.log(vaccine_info_save)
+      await createVaccineInfo(vaccine_info_save)
   };
 
   const handleClientInfo = async (id:Number) => {
@@ -212,7 +287,6 @@
     form.sex = response.sex
     form.vaccine_id = response.vaccine_id
     form.created_on = response.created_on
-    console.log(response)
   }
 
   const handleSearchClient = async (payload:"") => {
@@ -222,6 +296,42 @@
   const handleCreateClient = () => {
       button_label.value = "Submit"
   };
+
+  const given_1 = computed(() => schedule.given_1);
+  watch(given_1, (value) => {
+    console.log(value)
+    schedule.given_administerred_1 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
+
+  const given_2 = computed(() => schedule.given_2);
+  watch(given_2, (value) => {
+    console.log(value)
+    schedule.given_administerred_2 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
+
+  const given_3 = computed(() => schedule.given_3);
+  watch(given_3, (value) => {
+    console.log(value)
+    schedule.given_administerred_3 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
+
+  const schedule_1 = computed(() => schedule.scheduled_1);
+  watch(schedule_1, (value) => {
+    console.log(value)
+    schedule.scheduled_administerred_1 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
+
+  const schedule_2 = computed(() => schedule.scheduled_2);
+  watch(schedule_2, (value) => {
+    console.log(value)
+    schedule.scheduled_administerred_2 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
+
+  const schedule_3 = computed(() => schedule.scheduled_3);
+  watch(schedule_3, (value) => {
+    console.log(value)
+    schedule.scheduled_administerred_3 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
+  })
 </script>
 
 <template>
@@ -432,29 +542,29 @@
         <div class="modal-body relative p-4">
           <CardBox is-form @submit.prevent="doseSubmit">
             <FormField label="1st Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule1 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled" :help="schedule.scheduled_1 ? schedule.scheduled_administerred_1 : ''">
+                <FormControl v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given1 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given" :help="schedule.given_1 ? schedule.given_administerred_1 : ''">
+                <FormControl v-model="schedule.given_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
                       
             <FormField label="2nd Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule2 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled" :help="schedule.scheduled_2 ? schedule.scheduled_administerred_2 : ''">
+                <FormControl v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given2 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given" :help="schedule.given_2 ? schedule.given_administerred_2 : ''">
+                <FormControl v-model="schedule.given_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 
             <FormField label="3rd Dose">
-              <FormField label="Date Scheduled" :help="schedule.dose_schedule3 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.dose_schedule3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+              <FormField label="Date Scheduled" :help="schedule.scheduled_3 ? schedule.scheduled_administerred_3 : ''">
+                <FormControl v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
-              <FormField label="Date Given" :help="schedule.date_given3 ? 'Gracel Flores' : ''">
-                <FormControl v-model="schedule.date_given3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+              <FormField label="Date Given" :help="schedule.given_3 ? schedule.given_administerred_3 : ''">
+                <FormControl v-model="schedule.given_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 

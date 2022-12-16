@@ -6,6 +6,7 @@ export const useMainStore = defineStore("main", {
     /* User */
     userId: "",
     userFirstname: "",
+    userMiddlename: "",
     userLastname: "",
     userAvatar: null,
 
@@ -24,6 +25,9 @@ export const useMainStore = defineStore("main", {
       if (payload.firstname) {
         this.userFirstname = payload.firstname;
       }
+      if (payload.middlename) {
+        this.userMiddlename = payload.middlename;
+      }
       if (payload.lastname) {
         this.userLastname = payload.lastname;
       }
@@ -31,7 +35,6 @@ export const useMainStore = defineStore("main", {
         this.userAvatar = payload.avatar;
       }
     },
-
     fetch(sampleDataKey) {
       axios
         .get(`data-sources/${sampleDataKey}.json`)

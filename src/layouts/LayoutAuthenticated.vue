@@ -33,9 +33,11 @@
 
   const _getUserProfile = async () => {
       const response = await getUserProfile()
+      console.log(response)
       useMainStore().setUser({
         id: response.id,
         firstname: response.fname,
+        middlename: response.mname,
         lastname: response.lname,
         avatar:
           "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
