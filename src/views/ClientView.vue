@@ -31,7 +31,7 @@
 
   import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo } from "@/api/python"
+  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
   import { findProp } from "@vue/compiler-core";
 
   const search_keyword = ref("")
@@ -80,6 +80,13 @@
   });
 
   onMounted(() => {
+    const min_date =  moment().format('Y-M-D')
+    document.getElementById('dt1').setAttribute('min', min_date);
+    document.getElementById('dt2').setAttribute('min', min_date);
+    document.getElementById('dt3').setAttribute('min', min_date);
+    document.getElementById('dt4').setAttribute('min', min_date);
+    document.getElementById('dt5').setAttribute('min', min_date);
+    document.getElementById('dt6').setAttribute('min', min_date);
     _getUserBarangay()
     _getUserMunicipality()
     _getUserInfo()
@@ -147,13 +154,14 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
-  const handleOpenModal = async (vaccine_type:"") => {
+  const handleVaccineInfo = async (vaccine_type:"") => {
     clearDose()
     const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type })
 
     schedule.client_id = form.id
     schedule.vaccine_type = vaccine_type
     if(response.length > 0) {
+      button_label.value = "Update"
       schedule.scheduled_1 = response[0].scheduled_1
       schedule.scheduled_2 = response[0].scheduled_2
       schedule.scheduled_3 = response[0].scheduled_3
@@ -173,6 +181,8 @@
       const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
       schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
       console.log(schedule)
+    } else {
+      button_label.value = "Submit"
     }
     schedule.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
     
@@ -237,22 +247,28 @@
       const vaccine_info_save = {
           client_id: schedule.client_id,
           vaccine_type: schedule.vaccine_type,
-          given_1: schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : "0000-00-00",
-          given_2: schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : "0000-00-00",
-          given_3: schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : "0000-00-00",
-          given_administerred_1: schedule.given_administerred_1 ? mainStore.userId : 0,
-          given_administerred_2: schedule.given_administerred_2 ? mainStore.userId : 0,
-          given_administerred_3: schedule.given_administerred_3 ? mainStore.userId : 0,
-          scheduled_1: schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : "0000-00-00",
-          scheduled_2: schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : "0000-00-00",
-          scheduled_3: schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : "0000-00-00",
           scheduled_administerred_1: schedule.scheduled_administerred_1 ? mainStore.userId : 0,
           scheduled_administerred_2: schedule.scheduled_administerred_2 ? mainStore.userId : 0,
           scheduled_administerred_3: schedule.scheduled_administerred_3 ? mainStore.userId : 0,
+          given_administerred_1: schedule.given_administerred_1 ? mainStore.userId : 0,
+          given_administerred_2: schedule.given_administerred_2 ? mainStore.userId : 0,
+          given_administerred_3: schedule.given_administerred_3 ? mainStore.userId : 0,
           updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
       }
+
+      vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null
+      vaccine_info_save.scheduled_2 = schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : null
+      vaccine_info_save.scheduled_3 = schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
+      
       console.log(vaccine_info_save)
-      await createVaccineInfo(vaccine_info_save)
+
+      if(button_label.value == "Update")
+        await updateVaccineInfo(vaccine_info_save)
+      else
+        await createVaccineInfo(vaccine_info_save)
   };
 
   const handleClientInfo = async (id:Number) => {
@@ -449,7 +465,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('bcg')"
+                  @click="handleVaccineInfo('bcg')"
                 />
                 <BaseButton
                   color="info"
@@ -459,7 +475,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('hepb')"
+                  @click="handleVaccineInfo('hepb')"
                 />
                 <BaseButton
                   color="info"
@@ -469,7 +485,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('pentavalent')"
+                  @click="handleVaccineInfo('pentavalent')"
                 />
                 <BaseButton
                   color="info"
@@ -479,7 +495,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('opv')"
+                  @click="handleVaccineInfo('opv')"
                 />
                 <BaseButton
                   color="info"
@@ -489,7 +505,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('ipv')"
+                  @click="handleVaccineInfo('ipv')"
                 />
                 <BaseButton
                   color="info"
@@ -499,7 +515,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('pcv')"
+                  @click="handleVaccineInfo('pcv')"
                 />
                 <BaseButton
                   color="info"
@@ -509,7 +525,7 @@
                   :outline="buttonsOutline"
                   :disabled="buttonsDisabled"
                   :rounded-full="buttonsRounded"
-                  @click="handleOpenModal('mcv')"
+                  @click="handleVaccineInfo('mcv')"
                 />
               </BaseButtons>
             </FormField>
@@ -543,34 +559,34 @@
           <CardBox is-form @submit.prevent="doseSubmit">
             <FormField label="1st Dose">
               <FormField label="Date Scheduled" :help="schedule.scheduled_1 ? schedule.scheduled_administerred_1 : ''">
-                <FormControl v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+                <FormControl id="dt1" v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
               <FormField label="Date Given" :help="schedule.given_1 ? schedule.given_administerred_1 : ''">
-                <FormControl v-model="schedule.given_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+                <FormControl id="dt2" v-model="schedule.given_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
                       
             <FormField label="2nd Dose">
               <FormField label="Date Scheduled" :help="schedule.scheduled_2 ? schedule.scheduled_administerred_2 : ''">
-                <FormControl v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+                <FormControl id="dt3" v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
               <FormField label="Date Given" :help="schedule.given_2 ? schedule.given_administerred_2 : ''">
-                <FormControl v-model="schedule.given_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+                <FormControl id="dt4" v-model="schedule.given_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 
             <FormField label="3rd Dose">
               <FormField label="Date Scheduled" :help="schedule.scheduled_3 ? schedule.scheduled_administerred_3 : ''">
-                <FormControl v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
+                <FormControl id="dt5" v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
               <FormField label="Date Given" :help="schedule.given_3 ? schedule.given_administerred_3 : ''">
-                <FormControl v-model="schedule.given_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
+                <FormControl id="dt6" v-model="schedule.given_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
               </FormField>
             </FormField>
 
             <template #footer>
               <BaseButtons>
-                <BaseButton type="submit" color="info" label="Submit" />
+                <BaseButton type="submit" color="info" :label="button_label" />
                 <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
               </BaseButtons>
             </template>

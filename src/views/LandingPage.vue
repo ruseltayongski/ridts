@@ -16,6 +16,7 @@
   import BaseButton from "@/components/BaseButton.vue";
   import BaseButtons from "@/components/BaseButtons.vue";
   import LayoutGuest from "@/layouts/LayoutGuest.vue";
+  import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 
   import { notify } from "notiwind"
 
@@ -32,13 +33,6 @@
 
   onMounted(() => {
     (async () => {
-    //   await loadScript('/src/assets/login/assets/js/tiny-slider.js')
-    //       .then(() => {
-    //           console.log("loaded: tiny-slider")
-    //       })
-    //       .catch(() => {
-    //           console.log("not loaded (tiny-slider)");
-    //       });
       await loadScript('/src/assets/login/assets/js/wow.min.js')
           .then(() => {
               console.log("loaded: wow")

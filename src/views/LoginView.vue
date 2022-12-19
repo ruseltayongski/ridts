@@ -30,31 +30,24 @@
   import footer_shape_left from "@/assets/login/assets/images/footer-shape-left.png"
   import footer_shape_right from "@/assets/login/assets/images/footer-shape-right.png"
 
-  onMounted(() => {
-    (async () => {
-    //   await loadScript('/src/assets/login/assets/js/tiny-slider.js')
-    //       .then(() => {
-    //           console.log("loaded: tiny-slider")
-    //       })
-    //       .catch(() => {
-    //           console.log("not loaded (tiny-slider)");
-    //       });
-      await loadScript('/src/assets/login/assets/js/wow.min.js')
-          .then(() => {
-              console.log("loaded: wow")
-          })
-          .catch(() => {
-              console.log("not loaded (wow)");
-          });
-      await loadScript('/src/assets/login/assets/js/main.js')
-          .then(() => {
-              console.log("loaded: main")
-          })
-          .catch(() => {
-              console.log("not loaded (main)");
-          });
-    })();
-  })
+  // onMounted(() => {
+  //   (async () => {
+  //     await loadScript('/src/assets/login/assets/js/wow.min.js')
+  //         .then(() => {
+  //             console.log("loaded: wow")
+  //         })
+  //         .catch(() => {
+  //             console.log("not loaded (wow)");
+  //         });
+  //     await loadScript('/src/assets/login/assets/js/main.js')
+  //         .then(() => {
+  //             console.log("loaded: main")
+  //         })
+  //         .catch(() => {
+  //             console.log("not loaded (main)");
+  //         });
+  //   })();
+  // })
 
   const tokenStore = useTokenStore()
   const router = useRouter();
