@@ -34,6 +34,8 @@
   import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
   import { findProp } from "@vue/compiler-core";
 
+  import loadingModal from "@/assets/spin.gif"
+
   const search_keyword = ref("")
   const get_barangay = ref([])
   const get_municipality = ref({})
@@ -154,6 +156,8 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
+  const loading_modal = ref<HTMLInputElement | null>(null)
+  const el_loading_modal = ref<HTMLInputElement | null>(null)
   const handleVaccineInfo = async (vaccine_type:"") => {
     clearDose()
     const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type })
@@ -161,6 +165,8 @@
     schedule.client_id = form.id
     schedule.vaccine_type = vaccine_type
     if(response.length > 0) {
+      loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
+      loading_modal.value?.show()
       button_label.value = "Update"
       schedule.scheduled_1 = response[0].scheduled_1
       schedule.scheduled_2 = response[0].scheduled_2
@@ -180,7 +186,7 @@
       schedule.given_administerred_2 = given_administerred_2.fname+" "+given_administerred_2.mname+" "+given_administerred_2.lname
       const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
       schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
-      console.log(schedule)
+      loading_modal.value?.hide()
     } else {
       button_label.value = "Submit"
     }
@@ -596,8 +602,24 @@
     </div>
   </div>
 
+
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref='el_loading_modal' aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+      <div class="modal-content border-none relative flex flex-col w-full pointer-events-auto bg-clip-padding rounded-md outline-none text-current">
+        <div class="modal-body">
+          <img :src="loadingModal" alt="" class="center">
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
   /* @import '@/css/main.css'; */
 </style>
