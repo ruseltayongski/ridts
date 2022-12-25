@@ -164,8 +164,8 @@
                                     </a>
                                     <button class="block navbar-toggler focus:outline-none lg:hidden" 
                                         type="button" 
-                                        data-toggle="collapse" 
-                                        data-target="#navbarOne" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#navbarOne" 
                                         aria-controls="navbarOne" 
                                         aria-expanded="false" 
                                         aria-label="Toggle navigation">
@@ -173,23 +173,23 @@
                                         <span class="toggler-icon"></span>
                                         <span class="toggler-icon"></span>
                                     </button>
+                                    <!-- <div id="navbarOne" class="absolute left-0 z-20 hidden w-full px-5 py-3 duration-300 bg-white lg:w-auto collapse navbar-collapse lg:block top-full mt-full lg:static lg:bg-transparent shadow lg:shadow-none"> -->
                                     <div id="navbarOne" class="absolute left-0 z-20 hidden w-full px-5 py-3 duration-300 bg-white lg:w-auto collapse navbar-collapse lg:block top-full mt-full lg:static lg:bg-transparent shadow lg:shadow-none">
-                                    <!-- <div id="navbarOne">     -->
-                                        <ul id="nav" class="items-center content-start mr-auto lg:justify-end navbar-nav lg:flex">
+                                        <ul id="nav" class="visible max-lg:bg-slate-200 items-center content-start mr-auto lg:justify-end navbar-nav lg:flex">
                                             <li class="nav-item ml-5 lg:ml-11">
-                                                <a class="page-scroll active visible" href="#home">Home</a>
+                                                <a class="page-scroll active" href="#home">Home</a>
                                             </li>
                                             <li class="nav-item ml-5 lg:ml-11">
-                                                <a class="page-scroll visible" href="#about">About</a>
+                                                <a class="page-scroll" href="#about">About</a>
                                             </li>
                                             <!-- <li class="nav-item ml-5 lg:ml-11">
                                                 <a class="page-scroll" href="#work">Track</a>
                                             </li> -->
                                             <li class="nav-item ml-5 lg:ml-11">
-                                                <a class="page-scroll visible" href="#services">Services</a>
+                                                <a class="page-scroll" href="#services">Services</a>
                                             </li>
                                             <li class="nav-item ml-5 lg:ml-11">
-                                                <a class="page-scroll visible" href="#contact">Contact</a>
+                                                <a class="page-scroll" href="#contact">Contact</a>
                                             </li>
                                         </ul>
                                     </div> 
