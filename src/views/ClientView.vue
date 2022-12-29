@@ -563,7 +563,7 @@
         </div>
         <div class="modal-body relative p-4">
           <CardBox is-form @submit.prevent="doseSubmit">
-            <FormField label="1st Dose">
+            <FormField label="1st Dose" isPillTag>
               <FormField label="Date Scheduled" :help="schedule.scheduled_1 ? schedule.scheduled_administerred_1 : ''">
                 <FormControl id="dt1" v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>

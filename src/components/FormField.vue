@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, useSlots } from "vue";
+import { computed, useSlots, ref } from "vue";
+import PillTag from "@/components/PillTag.vue";
+import {mdiTrendingUp} from "@mdi/js";
 
 defineProps({
   label: {
@@ -14,6 +16,7 @@ defineProps({
     type: String,
     default: null,
   },
+  isPillTag: Boolean,
 });
 
 const slots = useSlots();
@@ -32,13 +35,34 @@ const wrapperClass = computed(() => {
 
   return base;
 });
+
+const pillsSettingsModel = ref(["icon"]);
+
+const pillsOutline = computed(
+  () => pillsSettingsModel.value.indexOf("outline") > -1
+);
+
+const pillsSmall = computed(
+  () => pillsSettingsModel.value.indexOf("small") > -1
+);
+
 </script>
 
 <template>
   <div class="mb-6 last:mb-0">
-    <label v-if="label" :for="labelFor" class="block font-bold mb-2">{{
-      label
-    }}</label>
+    <div class="flex flex-row">
+      <label v-if="label" :for="labelFor" class="block font-bold mb-2">{{
+        label
+      }}</label>
+      <div class="px-2" v-if="isPillTag">
+          <PillTag
+          color="success"
+          label="Vaccinated"
+          :small="pillsSmall"
+          :outline="pillsOutline"
+        />
+      </div>
+    </div>
     <div :class="wrapperClass">
       <slot />
     </div>
