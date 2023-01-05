@@ -82,13 +82,14 @@
   });
 
   onMounted(() => {
-    const min_date =  moment().format('Y-M-D')
+    const min_date =  moment().format('Y-MM-DD')
     document.getElementById('dt1').setAttribute('min', min_date);
     document.getElementById('dt2').setAttribute('min', min_date);
     document.getElementById('dt3').setAttribute('min', min_date);
     document.getElementById('dt4').setAttribute('min', min_date);
     document.getElementById('dt5').setAttribute('min', min_date);
     document.getElementById('dt6').setAttribute('min', min_date);
+    console.log(min_date)
     _getUserBarangay()
     _getUserMunicipality()
     _getUserInfo()
@@ -160,7 +161,8 @@
   const el_loading_modal = ref<HTMLInputElement | null>(null)
   const handleVaccineInfo = async (vaccine_type:"") => {
     clearDose()
-    const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type })
+    const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type, status: 1 })
+    console.log(response)
 
     schedule.client_id = form.id
     schedule.vaccine_type = vaccine_type
@@ -197,8 +199,9 @@
   }
 
   const clientSubmit = async () => {
-    client_modal.value?.hide();
-
+    loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
+    loading_modal.value?.show()
+    
     const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
     form.client_barangay = client_barangay.description
     const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
@@ -218,6 +221,9 @@
       console.log(form)
       await createClient(form) // insert into mongo db
     }
+
+    client_modal.value?.hide();
+    loading_modal.value?.hide()
 
     props_form.value = form //send to props
 
@@ -244,37 +250,39 @@
   }
 
   const doseSubmit = async () => {
-      dose_modal.value?.hide();
-      notify({
-        group: "success_dose",
-        title: "Success",
-        text: "Vaccine info was successfully updated!"
-      }, 2000)
-      const vaccine_info_save = {
-          client_id: schedule.client_id,
-          vaccine_type: schedule.vaccine_type,
-          scheduled_administerred_1: schedule.scheduled_administerred_1 ? mainStore.userId : 0,
-          scheduled_administerred_2: schedule.scheduled_administerred_2 ? mainStore.userId : 0,
-          scheduled_administerred_3: schedule.scheduled_administerred_3 ? mainStore.userId : 0,
-          given_administerred_1: schedule.given_administerred_1 ? mainStore.userId : 0,
-          given_administerred_2: schedule.given_administerred_2 ? mainStore.userId : 0,
-          given_administerred_3: schedule.given_administerred_3 ? mainStore.userId : 0,
-          updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
-      }
+    dose_modal.value?.hide();
+    const vaccine_info_save = {
+        client_id: schedule.client_id,
+        vaccine_type: schedule.vaccine_type,
+        scheduled_administerred_1: schedule.scheduled_1 ? mainStore.userId : 0,
+        scheduled_administerred_2: schedule.scheduled_2 ? mainStore.userId : 0,
+        scheduled_administerred_3: schedule.scheduled_3 != "" ? mainStore.userId : 0,
+        given_administerred_1: schedule.given_1 || schedule.given_administerred_1 != "" ? mainStore.userId : 0,
+        given_administerred_2: schedule.given_2 || schedule.given_administerred_2 != "" ? mainStore.userId : 0,
+        given_administerred_3: schedule.given_3 || schedule.given_administerred_3 != "" ? mainStore.userId : 0,
+        updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
+    }
 
-      vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null
-      vaccine_info_save.scheduled_2 = schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : null
-      vaccine_info_save.scheduled_3 = schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : null
-      vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
-      vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
-      vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
-      
-      console.log(vaccine_info_save)
+    vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null
+    vaccine_info_save.scheduled_2 = schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : null
+    vaccine_info_save.scheduled_3 = schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : null
+    vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
+    vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
+    vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
+  
+    console.log(vaccine_info_save)
 
-      if(button_label.value == "Update")
-        await updateVaccineInfo(vaccine_info_save)
-      else
-        await createVaccineInfo(vaccine_info_save)
+    if(button_label.value == "Update")
+      await updateVaccineInfo(vaccine_info_save)
+    else
+      await createVaccineInfo(vaccine_info_save)    
+
+    notify({
+      group: "success_dose",
+      title: "Success",
+      text: "Vaccine info was successfully updated!"
+    }, 2000)
+
   };
 
   const handleClientInfo = async (id:Number) => {
