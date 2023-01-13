@@ -35,7 +35,7 @@
   import { findProp } from "@vue/compiler-core";
 
   import loadingModal from "@/assets/spin.gif"
-
+  
   const search_keyword = ref("")
   const get_barangay = ref([])
   const get_municipality = ref({})
@@ -135,6 +135,12 @@
     scheduled_administerred_1: "",
     scheduled_administerred_2: "",
     scheduled_administerred_3: "",
+    status1: "",
+    status2: "",
+    status3: "",
+    button_type1: "",
+    button_type2: "",
+    button_type3: "",
     updated_on: "",
   });
 
@@ -188,6 +194,12 @@
       schedule.given_administerred_2 = given_administerred_2.fname+" "+given_administerred_2.mname+" "+given_administerred_2.lname
       const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
       schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
+      schedule.status1 = response[0].status1
+      schedule.status2 = response[0].status2
+      schedule.status3 = response[0].status3
+      schedule.button_type1 = response[0].button_type1
+      schedule.button_type2 = response[0].button_type2
+      schedule.button_type3 = response[0].button_type3
       loading_modal.value?.hide()
     } else {
       button_label.value = "Submit"
@@ -235,18 +247,24 @@
   };
 
   const clearDose = async () => {
-    schedule.given_1 = "",
-    schedule.given_2 = "",
-    schedule.given_3 = "",
-    schedule.given_administerred_1 = "",
-    schedule.given_administerred_2 = "",
-    schedule.given_administerred_3 = "",
-    schedule.scheduled_1 = "",
-    schedule.scheduled_2 = "",
-    schedule.scheduled_3 = "",
-    schedule.scheduled_administerred_1 = "",
-    schedule.scheduled_administerred_2 = "",
+    schedule.given_1 = ""
+    schedule.given_2 = ""
+    schedule.given_3 = ""
+    schedule.given_administerred_1 = ""
+    schedule.given_administerred_2 = ""
+    schedule.given_administerred_3 = ""
+    schedule.scheduled_1 = ""
+    schedule.scheduled_2 = ""
+    schedule.scheduled_3 = ""
+    schedule.scheduled_administerred_1 = ""
+    schedule.scheduled_administerred_2 = ""
     schedule.scheduled_administerred_3 = ""
+    schedule.status1 = ""
+    schedule.status2 = ""
+    schedule.status3 = ""
+    schedule.button_type1 = ""
+    schedule.button_type2 = ""
+    schedule.button_type3 = ""
   }
 
   const doseSubmit = async () => {
@@ -571,7 +589,7 @@
         </div>
         <div class="modal-body relative p-4">
           <CardBox is-form @submit.prevent="doseSubmit">
-            <FormField label="1st Dose" isPillTag>
+            <FormField label="1st Dose" :status="schedule.status1" :button_type="schedule.button_type1">
               <FormField label="Date Scheduled" :help="schedule.scheduled_1 ? schedule.scheduled_administerred_1 : ''">
                 <FormControl id="dt1" v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
@@ -580,7 +598,7 @@
               </FormField>
             </FormField>
                       
-            <FormField label="2nd Dose">
+            <FormField label="2nd Dose" :status="schedule.status2" :button_type="schedule.button_type2">
               <FormField label="Date Scheduled" :help="schedule.scheduled_2 ? schedule.scheduled_administerred_2 : ''">
                 <FormControl id="dt3" v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
@@ -589,7 +607,7 @@
               </FormField>
             </FormField>
 
-            <FormField label="3rd Dose">
+            <FormField label="3rd Dose" :status=schedule.status3>
               <FormField label="Date Scheduled" :help="schedule.scheduled_3 ? schedule.scheduled_administerred_3 : ''">
                 <FormControl id="dt5" v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>

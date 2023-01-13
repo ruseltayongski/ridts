@@ -12,6 +12,7 @@
     "@mdi/js": "^7.0.96",
     "axios": "^1.1.3",
     "chart.js": "^4.0.1",
+    "firebase": "^9.15.0",
     "moment": "^2.29.4",
     "notiwind": "^1.2.6",
     "numeral": "^2.0.6",

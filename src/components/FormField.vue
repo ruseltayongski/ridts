@@ -16,7 +16,14 @@ defineProps({
     type: String,
     default: null,
   },
-  isPillTag: Boolean,
+  status: {
+    type: String,
+    default: null,
+  },
+  button_type: {
+    type: String,
+    default: null,
+  },
 });
 
 const slots = useSlots();
@@ -54,10 +61,10 @@ const pillsSmall = computed(
       <label v-if="label" :for="labelFor" class="block font-bold mb-2">{{
         label
       }}</label>
-      <div class="px-2" v-if="isPillTag">
+      <div class="px-2" v-if="status">
           <PillTag
-          color="success"
-          label="Vaccinated"
+          :color="button_type"
+          :label="status"
           :small="pillsSmall"
           :outline="pillsOutline"
         />

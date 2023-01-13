@@ -14,6 +14,8 @@
   import moment from "moment"
   import { notify } from "notiwind"
 
+  import { insertFirebase, readFirebase } from "@/utils/firebase.ts"
+
   const props = defineProps({
     checkable: Boolean,
     search_keyword: {
@@ -180,10 +182,16 @@
       data.value.unshift(value)
     }
   })
+
+  const referClient = () => {
+    insertFirebase()
+  }
+
+  readFirebase()
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer>
+  <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer @refer="referClient">
     <FormField label="Barangay" class="mt-6">
       <FormControl v-model="form.department" :options="get_barangay" />
     </FormField>
@@ -282,12 +290,6 @@
               small
               @click="isModalActive = true"
             />
-            <!-- <BaseButton
-              color="info"
-              :icon="mdiNeedle"
-              small
-              @click="isModalActive = true"
-            /> -->
             <BaseButton
               color="danger"
               :icon="mdiTrashCan"
