@@ -30,6 +30,8 @@
   import footer_shape_left from "@/assets/login/assets/images/footer-shape-left.png"
   import footer_shape_right from "@/assets/login/assets/images/footer-shape-right.png"
 
+  const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
+
   // onMounted(() => {
   //   (async () => {
   //     await loadScript('/src/assets/login/assets/js/wow.min.js')
@@ -70,6 +72,7 @@
       return;
     }
     try {
+      emit("loading-modal-open")
       const response = await userLogin({
           username: form.username,
           password: form.password
@@ -80,6 +83,7 @@
       if(response.message) {
         console.log(response.message)
         toastError(response.message)
+        emit("loading-modal-close")
         return;
       }
 
@@ -98,7 +102,7 @@
         avatar:
           "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
       });
-
+      emit("loading-modal-close")
       router.push({
         path: "/dashboard",
       });

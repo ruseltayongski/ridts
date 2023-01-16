@@ -71,6 +71,11 @@
       // S.delete('authToken')
       S.deleteAll(true);
       tokenStore.dispatch("");
+      useMainStore().setUser({
+        firstname: "",
+        lastname: "",
+        avatar: "",
+      });
 
       router.push({
           path: "/",

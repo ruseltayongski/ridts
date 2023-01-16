@@ -19,21 +19,26 @@ export const useMainStore = defineStore("main", {
   }),
   actions: {
     setUser(payload) {
-      if (payload.id) {
-        this.userId = payload.id;
-      }
-      if (payload.firstname) {
-        this.userFirstname = payload.firstname;
-      }
-      if (payload.middlename) {
-        this.userMiddlename = payload.middlename;
-      }
-      if (payload.lastname) {
-        this.userLastname = payload.lastname;
-      }
-      if (payload.avatar) {
-        this.userAvatar = payload.avatar;
-      }
+      this.userId = payload.id
+      this.userFirstname = payload.firstname
+      this.userMiddlename = payload.middlename
+      this.userLastname = payload.lastname
+      this.userAvatar = payload.avatar
+      // if (payload.id) {
+      //   this.userId = payload.id;
+      // }
+      // if (payload.firstname) {
+      //   this.userFirstname = payload.firstname;
+      // }
+      // if (payload.middlename) {
+      //   this.userMiddlename = payload.middlename;
+      // }
+      // if (payload.lastname) {
+      //   this.userLastname = payload.lastname;
+      // }
+      // if (payload.avatar) {
+      //   this.userAvatar = payload.avatar;
+      // }
     },
     fetch(sampleDataKey) {
       axios

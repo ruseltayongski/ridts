@@ -1,7 +1,20 @@
 <script setup lang="ts">
+import { ref } from "vue";
+  import loadingModal from "@/assets/spin.gif"
+
+  const el_loading_modal = ref<HTMLInputElement | null>(null)
+  const loading_modal = ref<HTMLInputElement | null>(null)
+  const handleOpenLoading = () => {
+    loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
+    loading_modal.value?.show()
+  }
+
+  const handleCloseModal = () => {
+    loading_modal.value?.hide()
+  }
 </script>
 <template>
-  <router-view></router-view>
+  <router-view @loading-modal-open="handleOpenLoading" @loading-modal-close="handleCloseModal"></router-view>
   <NotificationGroup group="success">
     <div
       class="fixed inset-0 flex items-start justify-end p-6 px-4 py-6 pointer-events-none mt-20 z-40"
@@ -79,8 +92,24 @@
       </div>
     </div>
   </NotificationGroup>
+
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref='el_loading_modal' aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+      <div class="modal-content border-none relative flex flex-col w-full pointer-events-auto bg-clip-padding rounded-md outline-none text-current">
+        <div class="modal-body">
+          <img :src="loadingModal" alt="" class="center">
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
   @import "@/css/main.css";
 </style>

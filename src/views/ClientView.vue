@@ -52,6 +52,8 @@
   const props_form = ref({})
   const button_label = ref("")
 
+  const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
+
   const form = reactive({
     id: 0, 
     vaccine_id : "",
@@ -163,8 +165,6 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
-  const loading_modal = ref<HTMLInputElement | null>(null)
-  const el_loading_modal = ref<HTMLInputElement | null>(null)
   const handleVaccineInfo = async (vaccine_type:"") => {
     clearDose()
     const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type, status: 1 })
@@ -173,8 +173,7 @@
     schedule.client_id = form.id
     schedule.vaccine_type = vaccine_type
     if(response.length > 0) {
-      loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
-      loading_modal.value?.show()
+      emit("loading-modal-open")
       button_label.value = "Update"
       schedule.scheduled_1 = response[0].scheduled_1
       schedule.scheduled_2 = response[0].scheduled_2
@@ -200,7 +199,7 @@
       schedule.button_type1 = response[0].button_type1
       schedule.button_type2 = response[0].button_type2
       schedule.button_type3 = response[0].button_type3
-      loading_modal.value?.hide()
+      emit("loading-modal-close")
     } else {
       button_label.value = "Submit"
     }
@@ -211,8 +210,7 @@
   }
 
   const clientSubmit = async () => {
-    loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
-    loading_modal.value?.show()
+    emit("loading-modal-open")
     
     const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
     form.client_barangay = client_barangay.description
@@ -235,7 +233,7 @@
     }
 
     client_modal.value?.hide();
-    loading_modal.value?.hide()
+    emit("loading-modal-close")
 
     props_form.value = form //send to props
 
@@ -628,24 +626,8 @@
     </div>
   </div>
 
-
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref='el_loading_modal' aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
-      <div class="modal-content border-none relative flex flex-col w-full pointer-events-auto bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-body">
-          <img :src="loadingModal" alt="" class="center">
-        </div>
-      </div>
-    </div>
-  </div>
-
 </template>
 
 <style scoped>
-  .center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
   /* @import '@/css/main.css'; */
 </style>
