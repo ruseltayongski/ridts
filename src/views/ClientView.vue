@@ -85,13 +85,19 @@
 
   onMounted(() => {
     const min_date =  moment().format('Y-MM-DD')
-    document.getElementById('dt1').setAttribute('min', min_date);
-    document.getElementById('dt2').setAttribute('min', min_date);
-    document.getElementById('dt3').setAttribute('min', min_date);
-    document.getElementById('dt4').setAttribute('min', min_date);
-    document.getElementById('dt5').setAttribute('min', min_date);
-    document.getElementById('dt6').setAttribute('min', min_date);
-    console.log(min_date)
+    if(document.getElementById('dt1'))
+      document.getElementById('dt1').setAttribute('min', min_date)
+    if(document.getElementById('dt2'))
+      document.getElementById('dt2').setAttribute('min', min_date)
+    if(document.getElementById('dt3'))  
+      document.getElementById('dt3').setAttribute('min', min_date)
+    if(document.getElementById('dt4'))  
+      document.getElementById('dt4').setAttribute('min', min_date)
+    if(document.getElementById('dt5'))
+      document.getElementById('dt5').setAttribute('min', min_date)
+    if(document.getElementById('dt6'))
+      document.getElementById('dt6').setAttribute('min', min_date)
+
     _getUserBarangay()
     _getUserMunicipality()
     _getUserInfo()
@@ -119,12 +125,12 @@
       id : response.id,
       label : response.description
     }
-    form.vaccine_id = "VCN # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+    form.vaccine_id = "LLC # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
 
   const schedule = reactive({
     client_id: 0,
-    vaccine_type: "ipv",
+    vaccine_type: "",
     given_1: "",
     given_2: "",
     given_3: "",
@@ -446,7 +452,7 @@
 
             <FormField >
               <FormControl v-model="form.guardian_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
-              <FormControl v-model="form.guardian_alternate_number" :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number" required/>
+              <FormControl v-model="form.guardian_alternate_number" :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number"/>
             </FormField>
 
             <FormField label="Parent/Guardian Address">
@@ -471,15 +477,15 @@
             <BaseDivider />
 
             <FormField label="Name of Health Provider">
-              <FormControl v-model="form.health_provider_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              <FormControl v-model="form.health_provider_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
             </FormField>
 
             <FormField >
               <FormField label="Health Provider Contact Number">
-                <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
               </FormField>
               <FormField label="Health Provider Address">
-                <FormControl v-model="form.health_provider_address" :options="get_barangay" required/>
+                <FormControl v-model="form.health_provider_address" :options="get_barangay"/>
               </FormField>
             </FormField>
 
@@ -596,7 +602,7 @@
               </FormField>
             </FormField>
                       
-            <FormField label="2nd Dose" :status="schedule.status2" :button_type="schedule.button_type2">
+            <FormField v-if="schedule.vaccine_type =='mcv' || schedule.vaccine_type =='pentavalent' || schedule.vaccine_type =='opv' || schedule.vaccine_type =='pcv'" label="2nd Dose" :status="schedule.status2" :button_type="schedule.button_type2">
               <FormField label="Date Scheduled" :help="schedule.scheduled_2 ? schedule.scheduled_administerred_2 : ''">
                 <FormControl id="dt3" v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>
@@ -605,7 +611,7 @@
               </FormField>
             </FormField>
 
-            <FormField label="3rd Dose" :status=schedule.status3>
+            <FormField v-if="schedule.vaccine_type =='pentavalent' || schedule.vaccine_type =='opv' || schedule.vaccine_type =='pcv'" label="3rd Dose" :status="schedule.status3" :button_type="schedule.button_type3">
               <FormField label="Date Scheduled" :help="schedule.scheduled_3 ? schedule.scheduled_administerred_3 : ''">
                 <FormControl id="dt5" v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
               </FormField>

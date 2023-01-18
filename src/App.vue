@@ -106,10 +106,11 @@ import { ref } from "vue";
 </template>
 
 <style scoped>
+  @import "@/css/main.css";
+
   .center {
     display: block;
     margin-left: auto;
     margin-right: auto;
   }
-  @import "@/css/main.css";
 </style>

@@ -17,6 +17,9 @@
 
   import { S } from "@/utils"
 
+  defineProps({
+    hasLandingPage: Boolean,
+  });
 
   // useMainStore().setUser({
   //   firstname: "",
@@ -32,16 +35,16 @@
   })
 
   const _getUserProfile = async () => {
-      const response = await getUserProfile()
-      console.log(response)
-      useMainStore().setUser({
-        id: response.id,
-        firstname: response.fname,
-        middlename: response.mname,
-        lastname: response.lname,
-        avatar:
-          "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
-      });
+    const response = await getUserProfile()
+    console.log(response)
+    useMainStore().setUser({
+      id: response.id,
+      firstname: response.fname,
+      middlename: response.mname,
+      lastname: response.lname,
+      avatar:
+        "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
+    });
   }
 
   const layoutAsidePadding = "xl:pl-60";
@@ -97,7 +100,8 @@
     }"
   >
     <div
-      :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
+      v-if="!hasLandingPage"
+      :class="[ layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
       class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
     >
       <NavBar
@@ -130,7 +134,7 @@
             ctrl-k-focus
             transparent
             borderless
-            class="border-2 border-indigo-500/100 w-96"
+            class="border-2 border-indigo-500/100 lg:w-96"
             v-model="search_keyword"
             @keyup="handleSearchClient"
           />
@@ -154,6 +158,7 @@
         > -->
       </FooterBar>
     </div>
+    <slot v-else />
   </div>
 </template>
 

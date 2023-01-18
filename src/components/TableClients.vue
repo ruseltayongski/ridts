@@ -183,8 +183,9 @@
     }
   })
 
+  const remarks = ref("")
   const referClient = () => {
-    insertFirebase()
+    insertFirebase(remarks.value)
   }
 
   readFirebase()
@@ -197,6 +198,7 @@
     </FormField>
     <FormField label="Remarks">
       <FormControl
+        v-model="remarks"
         type="textarea"
       />
     </FormField>

@@ -291,7 +291,7 @@
                         </div>
                     </div> <!-- row -->
                 </div>
-                <LayoutAuthenticated v-if="open_track_baby">
+                <LayoutAuthenticated v-if="open_track_baby" hasLandingPage>
                     <SectionMain>
                         <CardBox class="mb-6" has-table>
                             <TableSearchBaby checkable />

@@ -1393,7 +1393,9 @@ a, button {
 /* =========== hero =========== */
 
 .header_hero {
-  height: 900px;
+  /* height: 900px; */
+  margin-top: 90px;
+  height: 500px;
 }
 
 @media (max-width: 1400px) {

@@ -29,9 +29,9 @@ const initFirebase = () => {
     return database;
 }
 
-const insertFirebase = () => {
+const insertFirebase = (remarks:"") => {
     const db = initFirebase();
-    push(ref(db, 'ridts'), { message : "wew" })
+    push(ref(db, 'ridts'), { message : remarks })
     .then((success) => {
         console.log("success")
     // Data saved successfully!
