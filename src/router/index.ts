@@ -6,6 +6,7 @@ import Landing from '@/views/LandingPage.vue'
 import Archived from '@/views/ArchivedView.vue'
 import Referred from '@/views/ReferredView.vue'
 import Incoming from '@/views/IncomingView.vue'
+import TextBlast from '@/views/TextBlast.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -57,6 +58,14 @@ const router = createRouter({
           path: "/incoming",
           name: "incoming",
           component: Incoming,
+        },
+        {
+          meta: {
+            title: "Text Blast",
+          },
+          path: "/text_blast",
+          name: "text_blast",
+          component: TextBlast,
         },
         {
           // Document title tag

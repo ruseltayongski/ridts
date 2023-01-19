@@ -14,7 +14,8 @@ import {
     mdiViewDashboard,
     mdiAmbulance,
     mdiFolderArrowUp,
-    mdiFolderArrowDown
+    mdiFolderArrowDown,
+    mdiMessageProcessing
   } from "@mdi/js";
   
   export default [
@@ -42,6 +43,11 @@ import {
       to: "/incoming",
       label: "Incoming",
       icon: mdiFolderArrowDown,
+    },
+    {
+      to: "/text_blast",
+      label: "Text Blast",
+      icon: mdiMessageProcessing,
     }
     // {
     //   to: "/forms",
