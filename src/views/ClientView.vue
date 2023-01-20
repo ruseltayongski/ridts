@@ -149,7 +149,7 @@
     button_type1: "",
     button_type2: "",
     button_type3: "",
-    updated_on: "",
+    updated_on: ""
   });
 
   const buttonSettingsModel = ref([]);
@@ -224,6 +224,7 @@
     form.guardian_barangay = guardian_barangay.description
     const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
     form.health_provider_barangay = health_provider_barangay.description
+    form.created_by = mainStore.userId
     
     let message = ""
     
@@ -283,6 +284,7 @@
         given_administerred_2: schedule.given_2 || schedule.given_administerred_2 != "" ? mainStore.userId : 0,
         given_administerred_3: schedule.given_3 || schedule.given_administerred_3 != "" ? mainStore.userId : 0,
         updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
+        Client: [schedule.client_id]
     }
 
     vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null

@@ -26,7 +26,7 @@ export function deleteClient(params: {} = {}) {
 }
 
 export function createVaccineInfo(params: {} = {}) {
-  return req.post("/vaxinfo",params);
+  return req.post("/vaxinfo/create",params);
 }
 
 export function getVaccineInfo(params: {} = {}) {
