@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
+  import { insertFirebase } from "@/utils/firebase.ts"
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -125,7 +126,6 @@
       id : response.id,
       label : response.description
     }
-    form.vaccine_id = "LLC # "+response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
 
   const schedule = reactive({
@@ -227,22 +227,37 @@
     form.created_by = mainStore.userId
     
     let message = ""
-    
+    let status = ""
     if(form.id) {
       message = "Client was successfully updated!"
       form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
       await updateClient(form) // update into mongo db
+      status = "updated"
     } else {
       message = "Client was successfully added!"
       form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
-      console.log(form)
-      await createClient(form) // insert into mongo db
+      const create_response = await createClient(form) // insert into mongo db
+      form.id = create_response.id
+      status = "created"
+      insertFirebase(form.guardian_contact_number+"@ Vaccine ID " + form.vaccine_id + " was successfully enrolled. Thank you!")
+      //insertFirebase(form.guardian_contact_number+"@"+form.firstname+" "+form.middlename+" "+form.lastname+" with the Vaccine ID of "+form.vaccine_id+" was successfully enrolled to our system. Thank you!")
     }
+
+    props_form.value = {
+      id : form.id,
+      firstname : form.firstname,
+      middlename : form.middlename,
+      lastname : form.lastname,
+      client_barangay : form.client_barangay,
+      status : status
+    } //send to props
+
+    console.log(props_form.value)
+
+    clearClientForm()
 
     client_modal.value?.hide();
     emit("loading-modal-close")
-
-    props_form.value = form //send to props
 
     notify({
       group: "success",
@@ -250,6 +265,39 @@
       text: message
     }, 2000)
   };
+
+  const clearClientForm = async (option:String = "") => {
+    form.vaccine_id = "LLC # "+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+    form.id = 0
+    
+    if(option != "create")
+      form.vaccine_id = ""
+    
+    form.firstname = ""
+    form.middlename = ""
+    form.lastname = ""
+    form.birthdate = ""
+    form.birthplace = ""
+    form.sex = ""
+    form.client_address = 0
+    form.client_barangay = ""
+    form.guardian_name = ""
+    form.guardian_contact_number = ""
+    form.guardian_alternate_number = ""
+    form.guardian_address = 0
+    form.guardian_barangay = ""
+    form.bhw_name = ""
+    form.bhw_contact_number = ""
+    form.bhw_address = 0
+    form.health_provider_name = ""
+    form.health_provider_contact = ""
+    form.health_provider_address = 0
+    form.health_provider_barangay = ""
+    form.is_active = true
+    form.created_by = 0
+    form.created_on = ""
+    form.updated_on = ""
+  }
 
   const clearDose = async () => {
     schedule.given_1 = ""
@@ -298,9 +346,10 @@
 
     if(button_label.value == "Update")
       await updateVaccineInfo(vaccine_info_save)
-    else
-      await createVaccineInfo(vaccine_info_save)    
-
+    else {
+        await createVaccineInfo(vaccine_info_save)    
+    }
+      
     notify({
       group: "success_dose",
       title: "Success",
@@ -316,6 +365,7 @@
   const _getInfoClient = async (id:Number) => {
     button_label.value = "Update"
     const response = await getInfoClient({ id : id })
+    console.log(response)
     form.id = response.id
     form.bhw_address = response.bhw_address
     form.bhw_contact_number = response.bhw_contact_number
@@ -341,6 +391,7 @@
     form.sex = response.sex
     form.vaccine_id = response.vaccine_id
     form.created_on = response.created_on
+    form.updated_on = response.updated_on
   }
 
   const handleSearchClient = async (payload:"") => {
@@ -349,6 +400,7 @@
 
   const handleCreateClient = () => {
       button_label.value = "Submit"
+      clearClientForm("create")
   };
 
   const given_1 = computed(() => schedule.given_1);

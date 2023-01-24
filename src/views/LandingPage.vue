@@ -17,6 +17,7 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import LayoutGuest from "@/layouts/LayoutGuest.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+  import TableSearchBaby from "@/components/TableSearchBaby.vue";
 
   import { notify } from "notiwind"
 
@@ -30,7 +31,7 @@
   import contact from "@/assets/login/assets/images/contact.svg"
   import footer_shape_left from "@/assets/login/assets/images/footer-shape-left.png"
   import footer_shape_right from "@/assets/login/assets/images/footer-shape-right.png"
-
+  
   onMounted(() => {
     (async () => {
       await loadScript('/src/assets/login/assets/js/wow.min.js')
@@ -49,6 +50,9 @@
           });
     })();
   })
+
+  const search_keyword = ref("")
+  const search_props = ref("")
 
   const tokenStore = useTokenStore()
   const router = useRouter();
@@ -122,9 +126,8 @@
     });
   }
 
-  const open_track_baby = ref(false)
   const handleTrackBaby = () => {
-    open_track_baby.value = open_track_baby.value ? false : true
+    search_props.value = search_keyword.value
   }
 </script>
 
@@ -270,8 +273,7 @@
                 </div> <!-- header hero -->
             </section>
             <!--====== HEADER PART ENDS ======-->
-
-            <section id="work" class="work_area bg-gray pt-20 pb-20">
+            <section id="work" class="work_area bg-gray pt-5 pb-5">
                 <div class="container">
                     <div class="row justify-center">
                         <div class="lg:w-3/4 w-full">
@@ -281,7 +283,7 @@
                             </div> <!-- section title -->
                             <div class="w-full">
                                 <div class="single_form mt-8">
-                                    <FormControl :icon="mdiMagnifyExpand" placeholder="Track your baby here..." required/>
+                                    <FormControl :icon="mdiMagnifyExpand" v-model="search_keyword" placeholder="Track your baby here..." required/>
                                     <!-- <input name="name" id="name" type="text" placeholder="Search your baby here" class="w-full rounded-md py-4 px-6 border border-solid border-body-color"> -->
                                 </div>
                             </div>
@@ -291,10 +293,10 @@
                         </div>
                     </div> <!-- row -->
                 </div>
-                <LayoutAuthenticated v-if="open_track_baby" hasLandingPage>
+                <LayoutAuthenticated v-if="search_props != ''" hasLandingPage>
                     <SectionMain>
                         <CardBox class="mb-6" has-table>
-                            <TableSearchBaby checkable />
+                            <TableSearchBaby :search_keyword="search_props" checkable />
                         </CardBox>
                     </SectionMain>
                 </LayoutAuthenticated>

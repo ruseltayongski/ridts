@@ -17,7 +17,7 @@
 
   import { S } from "@/utils"
 
-  defineProps({
+  const props = defineProps({
     hasLandingPage: Boolean,
   });
 
@@ -29,14 +29,13 @@
   // });
 
   onMounted(() => {
-    if(!useMainStore().userFirstname) {
+    if(!useMainStore().userFirstname && !props.hasLandingPage) {
       _getUserProfile()
     }
   })
 
   const _getUserProfile = async () => {
     const response = await getUserProfile()
-    console.log(response)
     useMainStore().setUser({
       id: response.id,
       firstname: response.fname,

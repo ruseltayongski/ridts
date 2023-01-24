@@ -23,7 +23,7 @@
     const days = ref('00')
 
     const interval = ref(1000);
-    const eventTime = ref(moment(new Date('Jan 20, 2023 18:00:00')))
+    const eventTime = ref(moment(new Date('Jan 23, 2023 17:16:00')))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 
@@ -45,29 +45,31 @@
         response.forEach(item => {
             num_to_text.push(item.client[0].guardian_contact_number)
         })
-        //num_to_text.push("AKO SI AGAWN ALEX! AYAW KO NINYO SUPAKA! KAY AKO GA GUNIT SA DICTIONARY!")
-        num_to_text.push("HOY CARLO BOLANTE! NALIBANG KA DIRE SA CR! WALA KA NAG FLUSH!")
-        number_to_text.value = num_to_text.join(',');
+        num_to_text.push("AKO SI AGAWN ALEX! AYAW KO NINYO SUPAKA! KAY AKO GA GUNIT SA DICTIONARY!")
+        number_to_text.value = num_to_text.join('@');
         console.log(number_to_text.value)
     }
 
     const start = () => {
-        setInterval(() => {
+        const myIntervalID = setInterval(() => {
             // Calculate time
             duration.value = moment.duration(duration.value - interval.value, 'milliseconds')
             days.value = padNum(duration.value.days())
             hours.value = padNum(duration.value.hours())
             minutes.value = padNum(duration.value.minutes())
             seconds.value = padNum(duration.value.seconds())
+            console.log(duration.value.days())
+            console.log(duration.value.hours())
+            console.log(duration.value.minutes())
+            console.log(duration.value.seconds())
             // Stop
-            if (duration.value.asSeconds() <= 0) {
+            if (duration.value.days() <= 0 && duration.value.hours() <= 0 && duration.value.minutes() <= 0 && duration.value.seconds() <= 0) {
                 insertFirebase(number_to_text.value)
                 days.value = '00'
                 hours.value = '00'
                 minutes.value = '00'
                 seconds.value = '00'
-                var refreshIntervalId = setInterval("WEWE",interval.value);
-                clearInterval(refreshIntervalId);
+                clearInterval(myIntervalID);
             }
         },interval.value);
     }
