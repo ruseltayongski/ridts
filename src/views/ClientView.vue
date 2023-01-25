@@ -86,18 +86,18 @@
 
   onMounted(() => {
     const min_date =  moment().format('Y-MM-DD')
-    if(document.getElementById('dt1'))
-      document.getElementById('dt1').setAttribute('min', min_date)
-    if(document.getElementById('dt2'))
-      document.getElementById('dt2').setAttribute('min', min_date)
-    if(document.getElementById('dt3'))  
-      document.getElementById('dt3').setAttribute('min', min_date)
-    if(document.getElementById('dt4'))  
-      document.getElementById('dt4').setAttribute('min', min_date)
-    if(document.getElementById('dt5'))
-      document.getElementById('dt5').setAttribute('min', min_date)
-    if(document.getElementById('dt6'))
-      document.getElementById('dt6').setAttribute('min', min_date)
+    // if(document.getElementById('dt1'))
+    //   document.getElementById('dt1').setAttribute('min', min_date)
+    // if(document.getElementById('dt2'))
+    //   document.getElementById('dt2').setAttribute('min', min_date)
+    // if(document.getElementById('dt3'))  
+    //   document.getElementById('dt3').setAttribute('min', min_date)
+    // if(document.getElementById('dt4'))  
+    //   document.getElementById('dt4').setAttribute('min', min_date)
+    // if(document.getElementById('dt5'))
+    //   document.getElementById('dt5').setAttribute('min', min_date)
+    // if(document.getElementById('dt6'))
+    //   document.getElementById('dt6').setAttribute('min', min_date)
 
     _getUserBarangay()
     _getUserMunicipality()
@@ -239,8 +239,7 @@
       const create_response = await createClient(form) // insert into mongo db
       form.id = create_response.id
       status = "created"
-      insertFirebase(form.guardian_contact_number+"@ Vaccine ID " + form.vaccine_id + " was successfully enrolled. Thank you!")
-      //insertFirebase(form.guardian_contact_number+"@"+form.firstname+" "+form.middlename+" "+form.lastname+" with the Vaccine ID of "+form.vaccine_id+" was successfully enrolled to our system. Thank you!")
+      //insertFirebase(form.guardian_contact_number+"@ Vaccine ID " + form.vaccine_id + " was successfully enrolled. Thank you!")
     }
 
     props_form.value = {

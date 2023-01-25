@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
     AsideMenuItem: typeof import('./src/components/AsideMenuItem.vue')['default']
     AsideMenuLayer: typeof import('./src/components/AsideMenuLayer.vue')['default']
     AsideMenuList: typeof import('./src/components/AsideMenuList.vue')['default']
+    BarChart: typeof import('./src/components/Charts/BarChart.vue')['default']
     BaseButton: typeof import('./src/components/BaseButton.vue')['default']
     BaseButtons: typeof import('./src/components/BaseButtons.vue')['default']
     BaseDivider: typeof import('./src/components/BaseDivider.vue')['default']
