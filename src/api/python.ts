@@ -1,8 +1,11 @@
 import req from "./python_req";
 
 export function getAllClient(params: {} = {}) {
-  //console.log(params.search)
   return req.get("/client/all", params);
+}
+
+export function getAllClientArchived(params: {} = {}) {
+  return req.get("/client/archived", params);
 }
 
 export function getAllClientPagination(params: {} = {}) {

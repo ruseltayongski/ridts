@@ -9,6 +9,7 @@
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
   import { getUserBarangay } from '@/api/auth'
+  import { getAllClientArchived } from "@/api/python"
 
   defineProps({
     checkable: Boolean,
@@ -16,7 +17,7 @@
 
   const mainStore = useMainStore();
 
-  const items = computed(() => mainStore.clients);
+  const items = computed(() => data.value);
 
   const isModalActive = ref(false);
 
@@ -91,7 +92,18 @@
 
   onMounted(() => {
     _getUserBarangay()
+    _getAllClientArchived()
   })
+
+  const data = ref([])
+  const _getAllClientArchived = async (params: {} = {}) => {
+    const response = await getAllClientArchived(params)
+    data.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          ...item
+        }
+    }))
+  }
 
   const _getUserBarangay = async () => {
     const response = await getUserBarangay()
@@ -102,6 +114,11 @@
         }
     }))
   }
+
+  const emit = defineEmits(["client-info"])
+  const handleClientInfo = (id:Number) => {
+    emit("client-info", id);
+  };
 </script>
 
 <template>
@@ -132,7 +149,7 @@
       :key="checkedRow.id"
       class="inline-block px-2 py-1 rounded-sm mr-2 text-sm bg-gray-100 dark:bg-slate-700"
     >
-      {{ checkedRow.name }}
+    {{ checkedRow.firstname+" "+checkedRow.middlename+" "+checkedRow.lastname }}
     </span>
   </div>
 
@@ -157,34 +174,34 @@
         />
         <td class="border-b-0 lg:w-6 before:hidden">
           <UserAvatar
-            :firstname="client.name"
+          :firstname="client.firstname+client.middlename+client.lastname"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
         </td>
         <td data-label="Name">
-          {{ client.name }}
+          {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
         <td data-label="Company">
           Cebu City
         </td>
         <td data-label="City">
-          Sambag II
+          {{ client.client_barangay }}
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress
             class="flex w-2/5 self-center lg:w-full"
             max="100"
-            :value="client.progress"
+            :value="80"
           >
-            {{ client.progress }}
+            80
           </progress>
         </td>
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
-            :title="client.created"
-            >{{ client.created }}</small
-          >
+            :title="client.created_on"
+            >{{ client.created_on }}</small
+          > 
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
@@ -194,6 +211,7 @@
               small
               data-bs-toggle="modal" 
               data-bs-target="#exampleModalLg"
+              @click="handleClientInfo(client.id)"
             />
           </BaseButtons>
         </td>

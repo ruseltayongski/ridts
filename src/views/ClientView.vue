@@ -74,6 +74,7 @@
     bhw_name: "",
     bhw_contact_number: "",
     bhw_address: 0,
+    bhw_barangay: "",
     health_provider_name: "",
     health_provider_contact: "",
     health_provider_address: 0,
@@ -101,14 +102,14 @@
 
     _getUserBarangay()
     _getUserMunicipality()
-    _getUserInfo()
+    //_getUserInfo()
     client_modal.value = new Modal(el_client_modal.value); //initialize modal instance
   })
 
-  const _getUserInfo = async () => {
-    const response = await getUserInfo({ id : 1 })
-    console.log(response)
-  }
+  // const _getUserInfo = async () => {
+  //   const response = await getUserInfo({ id : 1 })
+  //   console.log(response)
+  // }
 
   const _getUserBarangay = async () => {
     const response = await getUserBarangay()
@@ -222,6 +223,8 @@
     form.client_barangay = client_barangay.description
     const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
     form.guardian_barangay = guardian_barangay.description
+    const bhw_barangay = await getUserBarangay({ barangay_id:form.bhw_address })
+    form.bhw_barangay = bhw_barangay.description
     const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
     form.health_provider_barangay = health_provider_barangay.description
     form.created_by = mainStore.userId
@@ -288,6 +291,7 @@
     form.bhw_name = ""
     form.bhw_contact_number = ""
     form.bhw_address = 0
+    form.bhw_barangay = ""
     form.health_provider_name = ""
     form.health_provider_contact = ""
     form.health_provider_address = 0
@@ -340,13 +344,15 @@
     vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
     vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
     vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
+    vaccine_info_save.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
   
     console.log(vaccine_info_save)
+    console.log(button_label.value)
 
     if(button_label.value == "Update")
       await updateVaccineInfo(vaccine_info_save)
     else {
-        await createVaccineInfo(vaccine_info_save)    
+      await createVaccineInfo(vaccine_info_save)    
     }
       
     notify({

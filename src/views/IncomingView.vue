@@ -62,6 +62,7 @@ const mainStore = useMainStore();
 const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
 
 const transactionBarItems = computed(() => mainStore.history);
+defineEmits(["loading-modal-open","loading-modal-close"]);
 </script>
 
 <template>
@@ -70,137 +71,66 @@ const transactionBarItems = computed(() => mainStore.history);
       <SectionTitleLineWithButton :icon="mdiAmbulance" title="Incoming" main>
         
       </SectionTitleLineWithButton>
-      <CardBox class="mb-6" has-table>
-        <TableSampleReferral checkable />
+      <CardBox class="mb-6">
+        <ol class="border-l-2 border-purple-600">
+          <li>
+            <div class="md:flex flex-start">
+              <div class="bg-purple-600 w-8 h-6 flex items-center justify-center rounded-full -ml-3">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" class="text-white w-3 h-3" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm64-192c0-8.8 7.2-16 16-16h288c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16v-64zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path>
+                </svg>
+              </div>
+              <div class="block p-6 rounded-lg shadow-lg bg-gray-100 max-w-full ml-6 mb-10">
+                <div class="flex justify-between mb-4">
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">New Web Design</a>
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">04 / 02 / 2022</a>
+                </div>
+                <p class="text-gray-700 mb-6">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque diam non nisi semper, et elementum lorem ornare. Maecenas placerat facilisis mollis. Duis sagittis ligula in sodales vehicula.</p>
+                <button type="button" class="inline-block px-4 py-1.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true">Preview</button>
+                <button type="button" class="inline-block px-3.5 py-1 border-2 border-purple-600 text-purple-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" data-mdb-ripple="true">See demo</button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="md:flex flex-start">
+              <div class="bg-purple-600 w-8 h-6 flex items-center justify-center rounded-full -ml-3">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" class="text-white w-3 h-3" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm64-192c0-8.8 7.2-16 16-16h288c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16v-64zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path>
+                </svg>
+              </div>
+              <div class="block p-6 rounded-lg shadow-lg bg-gray-100 max-w-full ml-6 mb-10">
+                <div class="flex justify-between mb-4">
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">21 000 Job Seekers</a>
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">12 / 01 / 2022</a>
+                </div>
+                <p class="text-gray-700 mb-6">Libero expedita explicabo eius fugiat quia aspernatur autem laudantium error architecto recusandae natus sapiente sit nam eaque, consectetur porro molestiae ipsam an deleniti.</p>
+                <button type="button" class="inline-block px-4 py-1.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true">Preview</button>
+                <button type="button" class="inline-block px-3.5 py-1 border-2 border-purple-600 text-purple-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" data-mdb-ripple="true">See demo</button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="md:flex flex-start">
+              <div class="bg-purple-600 w-8 h-6 flex items-center justify-center rounded-full -ml-3">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" class="text-white w-3 h-3" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm64-192c0-8.8 7.2-16 16-16h288c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16v-64zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path>
+                </svg>
+              </div>
+              <div class="block p-6 rounded-lg shadow-lg bg-gray-100 max-w-full ml-6 mb-10">
+                <div class="flex justify-between mb-4">
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">Awesome Employers</a>
+                  <a href="#!" class="font-medium text-purple-600 hover:text-purple-700 focus:text-purple-800 duration-300 transition ease-in-out text-sm">21 / 12 / 2021</a>
+                </div>
+                <p class="text-gray-700 mb-6">Voluptatibus temporibus esse illum eum aspernatur, fugiat suscipit natus! Eum corporis illum nihil officiis tempore. Excepturi illo natus libero sit doloremque, laborum molestias rerum pariatur quam ipsam necessitatibus incidunt, explicabo.</p>
+                <button type="button" class="inline-block px-4 py-1.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true">Preview</button>
+                <button type="button" class="inline-block px-3.5 py-1 border-2 border-purple-600 text-purple-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" data-mdb-ripple="true">See demo</button>
+              </div>
+            </div>
+          </li>
+        </ol>
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
-      <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-body relative p-4">
-          <SectionTitleLineWithButton
-            :icon="mdiBallotOutline"
-            title="Client Info"
-            main
-          >
-          </SectionTitleLineWithButton>
-          <CardBox form @submit.prevent="submit">
-            <FormField label="Personal Information">
-              <FormControl :icon="mdiAccount" placeholder="Vaccine Card Number ID"/>
-              <FormControl :icon="mdiAccount" placeholder="Firstname"/>
-            </FormField>
-            
-            <FormField>
-              <FormControl :icon="mdiAccount" placeholder="Middlename"/>
-              <FormControl :icon="mdiAccount" placeholder="Lastname"/>
-            </FormField>
-
-            <FormField>
-              <FormControl :icon="mdiAccount" placeholder="Birthdate"/>
-              <FormControl :icon="mdiHomeCityOutline" placeholder="Birthplace"/>
-            </FormField>
-
-            <FormField label="Sex">
-              <FormCheckRadioGroup
-                v-model="customElementsForm.radio"
-                name="sample-radio"
-                type="radio"
-                :options="{ one: 'Male', two: 'Female' }"
-              />
-            </FormField>
-
-            <FormField label="Client Address">
-              <FormControl v-model="form.department" :options="selectOptions" />
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of Parents / Guardian">
-              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
-            </FormField>
-
-            <FormField >
-              <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
-              <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number"/>
-            </FormField>
-
-            <FormField label="Parent/Guardian Address">
-              <FormControl v-model="form.department" :options="selectOptions" />
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of BHW">
-              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
-            </FormField>
-
-            <FormField >
-              <FormField label="BHW contact number">
-                <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
-              </FormField>
-              <FormField label="BHW Address">
-                <FormControl v-model="form.department" :options="selectOptions" />
-              </FormField>
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of Health Provider">
-              <FormControl :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
-            </FormField>
-
-            <FormField >
-              <FormField label="Health Provider Contact Number">
-                <FormControl :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
-              </FormField>
-              <FormField label="Health Provider Address">
-                <FormControl v-model="form.department" :options="selectOptions" />
-              </FormField>
-            </FormField>
-            
-            <template #footer>
-              <BaseButtons>
-                <BaseButton type="submit" color="info" label="Submit" />
-                <BaseButton type="reset" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-              </BaseButtons>
-            </template>
-          </CardBox>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-md relative w-auto pointer-events-none">
-      <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-          <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
-            Vaccinee Type
-          </h5>
-          <button type="button"
-            class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-            data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body relative p-4">
-          <div class="grid grid-cols-1">
-            <div class="flex flex-col justify-between">
-              <CardBoxTransaction
-                v-for="(transaction, index) in transactionBarItems"
-                :key="index"
-                :amount="transaction.amount"
-                :date="transaction.date"
-                :business="transaction.business"
-                :type="transaction.type"
-                :name="transaction.name"
-                :account="transaction.account"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <style scoped>

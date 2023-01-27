@@ -1,124 +1,161 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from "vue";
-import { useMainStore } from "@/stores/main";
-import {
-  mdiMonitorCellphone,
-  mdiTableBorder,
-  mdiTableOff,
-  mdiGithub,
-  mdiAccountCircle,
-  mdiBabyFaceOutline,
-  mdiAccountPlus,
-  mdiBallotOutline,
-  mdiAccount,
-  mdiMail,
-  mdiHomeCityOutline,
-  mdiCardAccountPhoneOutline,
-  mdiCalendarEditOutline,
-  mdiCardBulletedSettings,
-  mdiOpenInNew,
-  mdiNeedle
-} from "@mdi/js";
-import SectionMain from "@/components/SectionMain.vue";
-import NotificationBar from "@/components/NotificationBar.vue";
-import TableArchived from "@/components/TableArchived.vue";
-import CardBox from "@/components/CardBox.vue";
-import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
-import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
-import { getUserBarangay, getUserMunicipality } from '@/api/auth'
+  import { reactive, ref, computed, onMounted } from "vue";
+  import { useMainStore } from "@/stores/main";
+  import {
+    mdiMonitorCellphone,
+    mdiTableBorder,
+    mdiTableOff,
+    mdiGithub,
+    mdiAccountCircle,
+    mdiBabyFaceOutline,
+    mdiAccountPlus,
+    mdiBallotOutline,
+    mdiAccount,
+    mdiMail,
+    mdiHomeCityOutline,
+    mdiCardAccountPhoneOutline,
+    mdiCalendarEditOutline,
+    mdiCardBulletedSettings,
+    mdiOpenInNew,
+    mdiNeedle
+  } from "@mdi/js";
+  import SectionMain from "@/components/SectionMain.vue";
+  import NotificationBar from "@/components/NotificationBar.vue";
+  import TableArchived from "@/components/TableArchived.vue";
+  import CardBox from "@/components/CardBox.vue";
+  import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+  import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import BaseButton from "@/components/BaseButton.vue";
+  import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
+  import { getUserBarangay, getUserMunicipality } from '@/api/auth'
+  import { getInfoClient } from "@/api/python"
 
-import moment from "moment"
+  import moment from "moment"
 
-const get_barangay = ref([])
-const get_municipality = ref({})
+  const get_barangay = ref([])
+  const get_municipality = ref({})
 
-const mainStore = useMainStore();
-const transactionBarItems = computed(() => mainStore.history);
-const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
+  const mainStore = useMainStore();
+  const transactionBarItems = computed(() => mainStore.history);
+  const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
 
-onMounted(() => {
-  _getUserBarangay()
-  _getUserMunicipality()
-})
+  onMounted(() => {
+    _getUserBarangay()
+    _getUserMunicipality()
+  })
 
-const _getUserBarangay = async () => {
-  const response = await getUserBarangay()
-  get_barangay.value = await Promise.all(response.map(async (item: any) => {
-      return {
-        id : item.id,
-        label: item.description
-      }
-  }))
-}
-
-const _getUserMunicipality = async () => {
-  const response = await getUserMunicipality()
-  get_municipality.value = {
-    id : response.id,
-    label : response.description
+  const _getUserBarangay = async () => {
+    const response = await getUserBarangay()
+    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
   }
-  form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
-}
 
-const form = reactive({
-  vaccine_id : "",
-	firstname: "",
-	middlename: "",
-	lastname: "",
-	birthdate: "",
-	birthplace: "",
-	sex: "",
-	client_address: 0,
-	guardian_name: "",
-	guardian_contact_number: "",
-	guardian_alternate_number: "",
-	guardian_address: 0,
-	bhw_name: "",
-	bhw_contact_number: "",
-	bhw_address: 0,
-	health_provider_name: "",
-	health_provider_contact: "",
-	health_provider_address: 0,
-	created_by: 0
-});
+  const _getUserMunicipality = async () => {
+    const response = await getUserMunicipality()
+    get_municipality.value = {
+      id : response.id,
+      label : response.description
+    }
+    form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+  }
 
-const customElementsForm = reactive({
-  checkbox: ["lorem"],
-  radio: "one",
-  switch: ["one"],
-  file: null,
-});
+  const customElementsForm = reactive({
+    checkbox: ["lorem"],
+    radio: "one",
+    switch: ["one"],
+    file: null,
+  });
 
-const submit = async () => {
-  console.log(form)
-};
+  const buttonSettingsModel = ref([]);
+  const buttonsOutline = computed(
+    () => buttonSettingsModel.value.indexOf("outline") > -1
+  );
 
-const buttonSettingsModel = ref([]);
-const buttonsOutline = computed(
-  () => buttonSettingsModel.value.indexOf("outline") > -1
-);
+  const buttonsSmall = computed(
+    () => buttonSettingsModel.value.indexOf("small") > -1
+  );
 
-const buttonsSmall = computed(
-  () => buttonSettingsModel.value.indexOf("small") > -1
-);
+  const buttonsDisabled = computed(
+    () => buttonSettingsModel.value.indexOf("disabled") > -1
+  );
 
-const buttonsDisabled = computed(
-  () => buttonSettingsModel.value.indexOf("disabled") > -1
-);
+  const buttonsRounded = computed(
+    () => buttonSettingsModel.value.indexOf("rounded") > -1
+  );
 
-const buttonsRounded = computed(
-  () => buttonSettingsModel.value.indexOf("rounded") > -1
-);
+  const isModalActive = ref(false);
 
-const isModalActive = ref(false);
 
-const el_modal = ref<HTMLInputElement | null>(null)
-const handleOpenModal = async () => {
-  //el_modal.value?.click()
-  new Modal(el_modal.value).show()
-}
+  const handleClientInfo = async (id:Number) => {
+      _getInfoClient(id)
+  };
+
+  const form = reactive({
+    id: 0, 
+    vaccine_id : "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
+    birthdate: "",
+    birthplace: "",
+    sex: "",
+    client_address: 0,
+    client_barangay: "",
+    guardian_name: "",
+    guardian_contact_number: "",
+    guardian_alternate_number: "",
+    guardian_address: 0,
+    guardian_barangay: "",
+    bhw_name: "",
+    bhw_contact_number: "",
+    bhw_address: 0,
+    bhw_barangay: "",
+    health_provider_name: "",
+    health_provider_contact: "",
+    health_provider_address: 0,
+    health_provider_barangay: "",
+    is_active: true,
+    created_by: 0,
+    created_on: "",
+    updated_on: ""
+  });
+
+  const _getInfoClient = async (id:Number) => {
+    const response = await getInfoClient({ id : id })
+    console.log(response)
+    form.id = response.id
+    form.bhw_address = response.bhw_address
+    form.bhw_contact_number = response.bhw_contact_number
+    form.bhw_name = response.bhw_name
+    form.birthdate = response.birthdate
+    form.birthplace = response.birthplace
+    form.client_address = response.client_address
+    form.client_barangay = response.client_barangay
+    form.created_by = response.created_by
+    form.firstname = response.firstname
+    form.guardian_address = response.guardian_address
+    form.guardian_barangay = response.guardian_barangay
+    form.guardian_alternate_number = response.guardian_alternate_number
+    form.guardian_contact_number = response.guardian_contact_number
+    form.guardian_name = response.guardian_name
+    form.health_provider_address = response.health_provider_address
+    form.health_provider_barangay = response.health_provider_barangay
+    form.health_provider_contact = response.health_provider_contact
+    form.health_provider_name = response.health_provider_name
+    form.is_active = response.is_active
+    form.lastname = response.lastname
+    form.middlename = response.middlename
+    form.sex = response.sex
+    form.vaccine_id = response.vaccine_id
+    form.created_on = response.created_on
+    form.updated_on = response.updated_on
+  }
+
+  defineEmits(["loading-modal-open","loading-modal-close"]);
 </script>
 
 <template>
@@ -127,7 +164,7 @@ const handleOpenModal = async () => {
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Archived" main>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableArchived checkable />
+        <TableArchived @client-info="handleClientInfo" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -142,137 +179,94 @@ const handleOpenModal = async () => {
             main
           >
           </SectionTitleLineWithButton>
-          <CardBox is-form @submit.prevent="submit">
+          <CardBox is-form>
             <FormField label="Personal Information" class="text-xl">
               <FormField label="Vaccine Card Number ID" class="text-sm">
-                <FormControl v-model="form.vaccine_id" :icon="mdiCardBulletedSettings" :readonly="true"/>
+                {{ form.vaccine_id }}
               </FormField>
-              <FormControl v-model="form.firstname" :icon="mdiAccount" class="mt-7" placeholder="Firstname" required/>
+              <FormField label="Firstname" class="text-sm">
+                {{ form.firstname }}
+              </FormField>
             </FormField>
             
-            <FormField>
-              <FormControl v-model="form.middlename" :icon="mdiAccount" placeholder="Middlename" required/>
-              <FormControl v-model="form.lastname" :icon="mdiAccount" placeholder="Lastname" required/>
+            <FormField class="text-xl">
+              <FormField label="Middlename" class="text-sm">
+                {{ form.middlename }}
+              </FormField>
+              <FormField label="Lastname" class="text-sm">
+                {{ form.lastname }}
+              </FormField>
             </FormField>
 
-            <FormField>
-              <FormField label="Birthdate">
-                <FormControl v-model="form.birthdate" type="date" :icon="mdiCalendarEditOutline" required/>
+            <FormField class="text-xl">
+              <FormField label="Birthdate" class="text-sm">
+                {{ form.birthdate }}
               </FormField>
-              <FormControl v-model="form.birthplace" :icon="mdiHomeCityOutline" class="mt-8" placeholder="Birthplace" required/>
+              <FormField label="Birthplace" class="text-sm">
+                {{ form.birthplace }}
+              </FormField>
             </FormField>
 
             <FormField label="Sex">
-              <FormCheckRadioGroup
-                v-model="form.sex"
-                name="sex"
-                type="radio"
-                :options="{ male: 'Male', female: 'Female' }"
-              />
+              {{ form.sex.charAt(0).toUpperCase() + form.sex.slice(1) }}
             </FormField>
 
             <FormField label="Client Address">
-              <FormControl v-model="form.client_address" :options="get_barangay"/>
+              {{ form.client_barangay }}
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Parents / Guardian">
-              <FormControl v-model="form.guardian_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              {{ form.guardian_name }}
             </FormField>
 
-            <FormField >
-              <FormControl v-model="form.guardian_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
-              <FormControl v-model="form.guardian_alternate_number" :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number" required/>
+            <FormField class="text-xl">
+              <FormField label="Guardian Contact Number" class="text-sm">
+                {{ form.guardian_contact_number }}
+              </FormField>
+              <FormField label="Guardian Alternate Number" class="text-sm">
+                {{ form.guardian_alternate_number }}
+              </FormField>
             </FormField>
 
             <FormField label="Parent/Guardian Address">
-              <FormControl v-model="form.guardian_address" :options="get_barangay" required/>
+              {{ form.guardian_barangay }}
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of BHW">
-              <FormControl v-model="form.bhw_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              {{  form.bhw_name }}
             </FormField>
 
             <FormField >
               <FormField label="BHW contact number">
-                <FormControl v-model="form.bhw_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                {{ form.bhw_contact_number }}
               </FormField>
               <FormField label="BHW Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                {{ form.bhw_barangay }}
               </FormField>
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Health Provider">
-              <FormControl v-model="form.health_provider_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              {{ form.health_provider_name }}
             </FormField>
 
             <FormField >
               <FormField label="Health Provider Contact Number">
-                <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                {{ form.health_provider_contact }}
               </FormField>
               <FormField label="Health Provider Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                {{ form.bhw_barangay }}
               </FormField>
             </FormField>
 
-            <BaseDivider />
-
-            <FormField label="Vaccine Type">
-              <BaseButtons>
-                <BaseButton
-                  color="info"
-                  label="BCG"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="handleOpenModal"
-                />
-                <BaseButton
-                  color="success"
-                  label="HEP B"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  data-bs-toggle="modal" 
-                  data-bs-target="#vaccineeModal"
-                />
-                <BaseButton
-                  color="warning"
-                  label="PENTA"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="isModalActive = true"
-                />
-                <BaseButton
-                  color="danger"
-                  label="OPV"
-                  :icon="mdiNeedle"
-                  :small="buttonsSmall"
-                  :outline="buttonsOutline"
-                  :disabled="buttonsDisabled"
-                  :rounded-full="buttonsRounded"
-                  @click="isModalActive = true"
-                />
-              </BaseButtons>
-            </FormField>
-
-            <BaseDivider />
-            
             <template #footer>
               <BaseButtons>
-                <BaseButton type="submit" color="info" label="Submit" />
+                <BaseButton type="button" color="warning" label="Print PDF" />
                 <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
               </BaseButtons>
             </template>
@@ -323,7 +317,7 @@ const handleOpenModal = async () => {
             data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body relative p-4">
-          <CardBox is-form @submit.prevent="submit">
+          <CardBox is-form>
             <FormField label="1st Dose">
               <FormField label="Date Scheduled">
                 <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
