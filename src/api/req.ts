@@ -39,14 +39,15 @@ Axios.interceptors.response.use(
       return Promise.reject("error");
     } else {
       // 如果为undefined 说明为下载接口，无code
-      if (response.data.code === undefined) {
-        return response.data;
-      } else if (response.data.code !== 0 && !response.data.data) {
-        console.log(response.data.message);
-      }
+      // if (response.data.code === undefined) {
+      //   return response.data;
+      // } else if (response.data.code !== 0 && !response.data.data) {
+      //   console.log(response.data);
+      // }
+      return response.data
     }
 
-    return response.data.data;
+    //return response.data.data;
   },
   (error) => {
     let code = 0;

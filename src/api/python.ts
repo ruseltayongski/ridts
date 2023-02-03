@@ -39,3 +39,15 @@ export function getVaccineInfo(params: {} = {}) {
 export function updateVaccineInfo(params: {} = {}) {
   return req.put("/vaxinfo?client_id="+params.client_id+"&vaccine_type="+ params.vaccine_type,params);
 }
+
+export function createActivity(params: {} = {}) {
+  return req.post("/activity/create",params);
+}
+
+export function createTracking(params: {} = {}) {
+  return req.post("/tracking/create",params);
+}
+
+export function updateTracking(params: {} = {}) {
+  return req.put("/tracking/update",params);
+}

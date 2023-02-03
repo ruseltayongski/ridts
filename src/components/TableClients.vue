@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, reactive, onMounted, watch } from "vue";
+  import { computed, ref, reactive, onMounted, watch, normalizeStyle } from "vue";
   import { useMainStore } from "@/stores/main";
   import { mdiTrashCan,mdiNeedle,mdiAmbulance } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
@@ -8,13 +8,17 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
-  import { getUserBarangay } from '@/api/auth'
-  import { getAllClient,deleteClient } from "@/api/python"
+  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
+  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking } from "@/api/python"
+  import { useUseridStore } from "@/stores"
 
   import moment from "moment"
   import { notify } from "notiwind"
 
   import { insertFirebase, readFirebase } from "@/utils/firebase.ts"
+  import { trace } from "console";
+
+  import axios from 'axios'
 
   const props = defineProps({
     checkable: Boolean,
@@ -28,7 +32,7 @@
     }
   });
 
-  //const mainStore = useMainStore();
+  const mainStore = useMainStore()
   //const items = computed(() => mainStore.clients);
   const data = ref([])
   const items = computed(() => data.value);
@@ -102,17 +106,20 @@
     name: "John Doe",
     email: "john.doe@example.com",
     phone: "",
-    department: selectOptions[0],
+    barangay: selectOptions[0],
     subject: "",
     question: "",
   });
 
-  const get_barangay = ref([])
+  const referring_facility = ref(0)
+  const referred_facility = ref(0)
+  const referring_facility_list = ref([])
+  const referred_facility_list = ref([])
 
   onMounted(() => {
-    _getUserBarangay()
+    _referringFacility()
+    _referredFacility()
     _getAllClient()
-    _getBarangayInfo(1492)
   })
 
   const _getAllClient = async (params: {} = {}) => {
@@ -124,9 +131,9 @@
     }))
   }
 
-  const _getUserBarangay = async () => {
-    const response = await getUserBarangay()
-    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+  const _referringFacility = async () => {
+    const response = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    referring_facility_list.value = await Promise.all(response.map(async (item: any) => {
         return {
           id : item.id,
           label: item.description
@@ -134,10 +141,16 @@
     }))
   }
 
-  const _getBarangayInfo = async (barangay_id:Number) => {
-    const response = await getUserBarangay({ barangay_id:barangay_id })
+  const _referredFacility = async () => {
+    const response = await getUserBarangay()
+    referred_facility_list.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
   }
-
+  
   const handleDeleteClient = async (client_id:any,client_name:any) => {
     client_delete.client_id = client_id
     client_delete.client_name = client_name
@@ -182,8 +195,43 @@
   })
 
   const remarks = ref("")
-  const referClient = () => {
-    insertFirebase(remarks.value)
+  const referClient = async () => {
+    //insertFirebase(remarks.value)
+    //console.log(refer_client.value)
+    const referred_to_address = await getUserBarangay({ barangay_id:form.barangay })
+    const refer_json = {
+      Client: [refer_client.value.id],
+      client_id : refer_client.value.id,
+      code : moment().format('YYYY')+ "-" + mainStore.userId+moment().format('MMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join(""),
+      date_referred : moment().format('YYYY-MM-DD HH:mm:ss'),
+      referred_from : refer_client.value.client_address,
+      referred_from_address : refer_client.value.client_barangay,
+      referred_to : referred_facility.value,
+      referred_to_address : referred_to_address[0].description,
+      referring_id : mainStore.userId,
+      referring_name : mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname,
+      remarks : remarks.value,
+      status : "referred",
+      created_on : moment().format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    const activity = await createActivity(refer_json)
+    refer_json["Activity"] = [activity.id]
+    await createTracking(refer_json)
+    
+    notify({
+      group: "success",
+      title: "success",
+      text: "Client was successfully referred!"
+    }, 2000)
+
+    remarks.value = ""
+  }
+
+  const refer_client = ref({})
+  const handleReferClient = (client:{}) => {
+    console.log(client)
+    refer_client.value = client
   }
 
   readFirebase()
@@ -191,8 +239,11 @@
 
 <template>
   <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer @refer="referClient">
-    <FormField label="Barangay" class="mt-6">
-      <FormControl v-model="form.department" :options="get_barangay" />
+    <FormField label="Referring Facility" class="mt-6">
+      <FormControl v-model="referring_facility" :options="referring_facility_list" />
+    </FormField>
+    <FormField label="Referred Facility" class="mt-6">
+      <FormControl v-model="referred_facility" :options="referred_facility_list" />
     </FormField>
     <FormField label="Remarks">
       <FormControl
@@ -288,7 +339,7 @@
               color="success"
               :icon="mdiAmbulance"
               small
-              @click="isModalActive = true"
+              @click="isModalActive = true, handleReferClient(client)"
             />
             <BaseButton
               color="danger"

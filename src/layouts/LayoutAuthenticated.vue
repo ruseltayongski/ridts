@@ -2,7 +2,7 @@
   import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
   import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import { useTokenStore } from "@/stores"
+  import { useTokenStore,useUseridStore } from "@/stores"
   import { getUserProfile } from "@/api/auth"
   import menuAside from "@/menuAside.ts";
   import menuNavBar from "@/menuNavBar.ts";
@@ -44,6 +44,7 @@
       avatar:
         "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
     });
+    console.log(response)
   }
 
   const layoutAsidePadding = "xl:pl-60";
@@ -53,6 +54,7 @@
   const router = useRouter()
   const router_path = ref(router.currentRoute.value.path)
   const tokenStore = useTokenStore()
+  const useridStore = useUseridStore()
 
   const isAsideMobileExpanded = ref(false);
   const isAsideLgActive = ref(false);
@@ -73,6 +75,7 @@
       // S.delete('authToken')
       S.deleteAll(true);
       tokenStore.dispatch("");
+      useridStore.dispatch("");
       useMainStore().setUser({
         firstname: "",
         lastname: "",

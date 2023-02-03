@@ -34,7 +34,6 @@
   import { notify } from "notiwind"
   import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
   import { findProp } from "@vue/compiler-core";
-
   import loadingModal from "@/assets/spin.gif"
   
   const search_keyword = ref("")
@@ -251,7 +250,8 @@
       middlename : form.middlename,
       lastname : form.lastname,
       client_barangay : form.client_barangay,
-      status : status
+      status : status,
+      client_address : form.client_address
     } //send to props
 
     console.log(props_form.value)

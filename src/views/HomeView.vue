@@ -32,9 +32,6 @@ import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
 import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
 
-const tokenStore = useTokenStore()
-console.log(tokenStore.value)
-
 const chartData = ref(null);
 const fillChartData = () => {
   chartData.value = chartConfig.sampleChartData();
@@ -44,6 +41,9 @@ const barchartData = ref(null);
 const fillBarChartData = () => {
   barchartData.value = barChartConfig.sampleChartData();
 };
+
+const tokenStore = useTokenStore()
+console.log(tokenStore.value)
 
 onMounted(() => {
   fillChartData();

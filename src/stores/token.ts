@@ -13,8 +13,27 @@ const useTokenStore = defineStore({
     dispatch(value: string) {
       this.value = value;
       S.setAuthToken(value);
-    },
+    }
   },
 });
 
-export default useTokenStore;
+const useUseridStore = defineStore({
+  id: "userid",
+  state: () => ({
+    value: S.getAuthUserid(),
+  }),
+  getters: {
+    // doubleCount: (state) => state.value,
+  },
+  actions: {
+    dispatch(value: string) {
+      this.value = value;
+      S.setAuthUserid(value);
+    }
+  },
+});
+
+export { 
+  useTokenStore,
+  useUseridStore
+}

@@ -21,6 +21,10 @@ export function getUserBarangay(params: {} = {}) {
   return req.get("/user/barangay", params);
 }
 
+export function getUserBarangayAssignment(params: {} = {}) {
+  return req.get("/user/user_barangay", params);
+}
+
 export function getUserMunicipality(params: {} = {}) {
   return req.get("/user/muncity", params);
 }

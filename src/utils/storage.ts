@@ -4,101 +4,101 @@
  * @returns {function} storage
  */
 class Storage {
-memory: any;
-constructor(type: string) {
-    if (type === "localStorage") {
-    this.memory = window.localStorage;
-    } else {
-    this.memory = window.sessionStorage;
-    }
-}
-
-/**
- * 设置缓存
- * @param {object} params
- * key: 键、value: 值、expired: 过期时间
- */
-setItem(params: {}) {
-    const defaultOParams = {
-    key: "",
-    value: "",
-    expired: "",
-    startTime: new Date().getTime(), //记录何时将值存入缓存，毫秒级
-    };
-
-    //将obj和传进来的params合并
-    const options = {
-    ...defaultOParams,
-    ...params,
-    };
-
-    // 设置失效时间
-    if (options.expired) {
-    //如果options.expired 设置了的话
-    //以options.key为key，options为值放进去
-    this.memory.setItem(options.key, JSON.stringify(options));
-    } else {
-    //如果options.expired 没有设置，就判断一下value的类型
-    const type = Object.prototype.toString.call(options.value);
-    //如果value是对象或者数组对象的类型，就先用JSON.stringify转一下，再存进去
-    if (type === "[object Object]" || type === "[object Array]") {
-        options.value = JSON.stringify(options.value);
-    }
-    this.memory.setItem(options.key, options.value);
-    }
-}
-
-/**
- * 取值
- * @param {string} key 键
- */
-getItem(key: string) {
-    let item = this.memory.getItem(key);
-    if (!item || item == "null" || item == "undefined") {
-    return "";
+    memory: any;
+    constructor(type: string) {
+        if (type === "localStorage") {
+        this.memory = window.localStorage;
+        } else {
+        this.memory = window.sessionStorage;
+        }
     }
 
-    //先将拿到的试着进行json转为对象的形式
-    try {
-    item = JSON.parse(item);
-    } catch (error) {
-    //如果不行就不是json的字符串，就直接返回
-    item = item;
+    /**
+     * 设置缓存
+     * @param {object} params
+     * key: 键、value: 值、expired: 过期时间
+     */
+    setItem(params: {}) {
+        const defaultOParams = {
+        key: "",
+        value: "",
+        expired: "",
+        startTime: new Date().getTime(), //记录何时将值存入缓存，毫秒级
+        };
+
+        //将obj和传进来的params合并
+        const options = {
+        ...defaultOParams,
+        ...params,
+        };
+
+        // 设置失效时间
+        if (options.expired) {
+        //如果options.expired 设置了的话
+        //以options.key为key，options为值放进去
+        this.memory.setItem(options.key, JSON.stringify(options));
+        } else {
+        //如果options.expired 没有设置，就判断一下value的类型
+        const type = Object.prototype.toString.call(options.value);
+        //如果value是对象或者数组对象的类型，就先用JSON.stringify转一下，再存进去
+        if (type === "[object Object]" || type === "[object Array]") {
+            options.value = JSON.stringify(options.value);
+        }
+        this.memory.setItem(options.key, options.value);
+        }
     }
 
-    //如果有startTime的值，说明设置了失效时间
-    if (item.startTime) {
-    const now = new Date().getTime();
-    //何时将值取出减去刚存入的时间，与item.expires比较，如果大于就是过期了，如果小于或等于就还没过期
-    if (now - item.startTime > item.expired) {
-        //缓存过期，清除缓存，返回false
-        this.memory.removeItem(key);
+    /**
+     * 取值
+     * @param {string} key 键
+     */
+    getItem(key: string) {
+        let item = this.memory.getItem(key);
+        if (!item || item == "null" || item == "undefined") {
         return "";
-    } else {
-        //缓存未过期，返回值
-        return item.value;
-    }
-    } else {
-    //如果没有设置失效时间，直接返回值
-    return item;
-    }
-}
+        }
 
-/**
- * 移除缓存
- * @param {string} key 键
- */
-removeItem(key: string) {
-    this.memory.removeItem(key);
-}
+        //先将拿到的试着进行json转为对象的形式
+        try {
+        item = JSON.parse(item);
+        } catch (error) {
+        //如果不行就不是json的字符串，就直接返回
+        item = item;
+        }
 
-/**
- * 移除全部缓存
- * @param {string} key 键
- */
-clear() {
-    this.memory.clear();
-}
+        //如果有startTime的值，说明设置了失效时间
+        if (item.startTime) {
+        const now = new Date().getTime();
+        //何时将值取出减去刚存入的时间，与item.expires比较，如果大于就是过期了，如果小于或等于就还没过期
+        if (now - item.startTime > item.expired) {
+            //缓存过期，清除缓存，返回false
+            this.memory.removeItem(key);
+            return "";
+        } else {
+            //缓存未过期，返回值
+            return item.value;
+        }
+        } else {
+        //如果没有设置失效时间，直接返回值
+        return item;
+        }
+    }
+
+    /**
+     * 移除缓存
+     * @param {string} key 键
+     */
+    removeItem(key: string) {
+        this.memory.removeItem(key);
+    }
+
+    /**
+     * 移除全部缓存
+     * @param {string} key 键
+     */
+    clear() {
+        this.memory.clear();
+    }
 }
 
 /**
@@ -352,31 +352,31 @@ class Lexicon {
         let n: any[] = [];
 
         const nArr = arr.map((item: any) => {
-        if (item.children) {
-            n = [...n, ...item.children];
-        }
+            if (item.children) {
+                n = [...n, ...item.children];
+            }
 
-        return {
-            categoryId: item.categoryId,
-            id: item.id,
-            language: item.language,
-            name: item.name,
-            pid: item.pid,
-            skillDetails: item.skillDetails,
-        };
+            return {
+                categoryId: item.categoryId,
+                id: item.id,
+                language: item.language,
+                name: item.name,
+                pid: item.pid,
+                skillDetails: item.skillDetails,
+            };
         });
 
         return [...nArr, ...n];
     }
-    }
+}
 
-    /**
-     * 存储和读取缓存
-     *
-     * @class Sx
-     * @extends {Lexicon}
-     */
-    class Sx extends Lexicon {
+/**
+ * 存储和读取缓存
+ *
+ * @class Sx
+ * @extends {Lexicon}
+ */
+class Sx extends Lexicon {
     sessionMemory: Storage;
     localMemory: Storage;
     constructor() {
@@ -405,6 +405,18 @@ class Lexicon {
     setAuthToken(token: string) {
         this.localMemory.setItem({
         key: "authToken",
+        value: token,
+        expired: 24 * 60 * 60 * 1000, // 过期时间 24 小时
+        });
+    }
+
+    getAuthUserid(): string {
+        return this.localMemory.getItem("authUserid");
+    }
+
+    setAuthUserid(token: string) {
+        this.localMemory.setItem({
+        key: "authUserid",
         value: token,
         expired: 24 * 60 * 60 * 1000, // 过期时间 24 小时
         });

@@ -2,7 +2,7 @@
   import { reactive, onMounted } from "vue";
   import { userLogin,getUserProfile } from '@/api/auth'
   import { useMainStore } from "@/stores/main.ts";
-  import { useTokenStore } from "@/stores"
+  import { useTokenStore,useUseridStore } from "@/stores"
   import { useRouter } from "vue-router"
 
   import { loadScript } from "vue-plugin-load-script";
@@ -52,6 +52,7 @@
   // })
 
   const tokenStore = useTokenStore()
+  const useridStore = useUseridStore()
   const router = useRouter();
 
   const form = reactive({
@@ -94,7 +95,9 @@
       }, 4000)
 
       let token = response.access_token
+      let userid = response.userid
       tokenStore.dispatch(token)
+      useridStore.dispatch(userid)
 
       useMainStore().setUser({
         firstname: "",

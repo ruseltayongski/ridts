@@ -1,1 +1,6 @@
-export { default as useTokenStore } from "./token";
+import { useTokenStore,useUseridStore } from "./token"
+
+export {
+    useTokenStore,
+    useUseridStore
+}
