@@ -23,7 +23,7 @@
     const days = ref('00')
 
     const interval = ref(1000);
-    const eventTime = ref(moment(new Date('Jan 23, 2023 17:16:00')))
+    const eventTime = ref(moment(new Date('Feb 03, 2024 22:00:00')))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 

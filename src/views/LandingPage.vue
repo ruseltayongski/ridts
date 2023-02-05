@@ -240,7 +240,8 @@
                     <div class="container">
                         <div class="row">
                             <div class="w-full lg:w-1/2">
-                                <div class="header_hero_content pt-150 lg:pt-0">
+                                <!-- <div class="header_hero_content pt-150 lg:pt-0"> -->
+                                <div class="header_hero_content pt-5 lg:pt-0">
                                     <h2 class="hero_title text-2xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-extrabold">Routine Immunization Tracking System <span class="text-theme-color">RITS</span></h2>
                                     <p class="mt-8 lg:mr-8">This system is envisioned to act as an online registry for all children undergoing immnunization for routine vaccine. At the sametime, it will serve as the tracking for defaulter on specific antigen wherein the health workers and parents will be notified as of their schedule of immunization.</p>
                                     <p class="mt-8 lg:mr-8">The system development is requested as part of the completion requirements for DAP-MMC 29 Program. However, if found effective it will be utilized as one of the programs/system the DOH is implementing in partnership with LGU's.</p>
@@ -303,7 +304,7 @@
             </section>
             
             <!--====== SERVICES PART START ======-->
-            <section class="services_area pt-120" id="about">
+            <section class="services_area pt-10" id="about">
                 <div class="container">
                     <div class="row justify-center">
                         <div class="w-full lg:w-1/2">
