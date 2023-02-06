@@ -1,126 +1,78 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from "vue";
-import { useMainStore } from "@/stores/main";
-import {
-  mdiMonitorCellphone,
-  mdiTableBorder,
-  mdiTableOff,
-  mdiGithub,
-  mdiAccountCircle,
-  mdiBabyFaceOutline,
-  mdiAccountPlus,
-  mdiBallotOutline,
-  mdiAccount,
-  mdiMail,
-  mdiHomeCityOutline,
-  mdiCardAccountPhoneOutline,
-  mdiCalendarEditOutline,
-  mdiCardBulletedSettings,
-  mdiOpenInNew,
-  mdiNeedle,
-  mdiAmbulance
-} from "@mdi/js";
-import SectionMain from "@/components/SectionMain.vue";
-import NotificationBar from "@/components/NotificationBar.vue";
-import TableArchived from "@/components/TableArchived.vue";
-import CardBox from "@/components/CardBox.vue";
-import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
-import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
-import { getUserBarangay, getUserMunicipality } from '@/api/auth'
+  import { reactive, ref, computed, onMounted } from "vue";
+  import { useMainStore } from "@/stores/main";
+  import {
+    mdiAmbulance
+  } from "@mdi/js";
+  import SectionMain from "@/components/SectionMain.vue";
+  import CardBox from "@/components/CardBox.vue";
+  import CardBoxFooter from "@/components/CardboxComponentFooter.vue";
+  import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+  import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
+  import { getTracking } from "@/api/python"
+  import { useUseridStore } from "@/stores"
 
-import moment from "moment"
+  import moment from "moment"
 
-const get_barangay = ref([])
-const get_municipality = ref({})
+  const get_barangay = ref([])
+  const get_municipality = ref({})
 
-const mainStore = useMainStore();
-const transactionBarItems = computed(() => mainStore.history);
-const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
+  const mainStore = useMainStore();
 
-onMounted(() => {
-  _getUserBarangay()
-  _getUserMunicipality()
-})
+  onMounted(() => {
+    _getUserBarangay()
+    _getTracking()
+  })
 
-const _getUserBarangay = async () => {
-  const response = await getUserBarangay()
-  get_barangay.value = await Promise.all(response.map(async (item: any) => {
-      return {
-        id : item.id,
-        label: item.description
-      }
-  }))
-}
-
-const _getUserMunicipality = async () => {
-  const response = await getUserMunicipality()
-  get_municipality.value = {
-    id : response.id,
-    label : response.description
+  const _getUserBarangay = async () => {
+    const response = await getUserBarangay()
+    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
   }
-  form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
-}
 
-const form = reactive({
-  vaccine_id : "",
-	firstname: "",
-	middlename: "",
-	lastname: "",
-	birthdate: "",
-	birthplace: "",
-	sex: "",
-	client_address: 0,
-	guardian_name: "",
-	guardian_contact_number: "",
-	guardian_alternate_number: "",
-	guardian_address: 0,
-	bhw_name: "",
-	bhw_contact_number: "",
-	bhw_address: 0,
-	health_provider_name: "",
-	health_provider_contact: "",
-	health_provider_address: 0,
-	created_by: 0
-});
+  const trackings = ref([])
+  const _getTracking = async () => {
+    const response = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(response.map(async (item: any) => item.id))
+    trackings.value = await getTracking({ referred_from : barangay_assignment })
+    console.log(trackings.value)
+  }
 
-const customElementsForm = reactive({
-  checkbox: ["lorem"],
-  radio: "one",
-  switch: ["one"],
-  file: null,
-});
+  const buttonSettingsModel = ref([]);
+  const buttonsOutline = computed(
+    () => buttonSettingsModel.value.indexOf("outline") > -1
+  );
 
-const submit = async () => {
-  console.log(form)
-};
+  const buttonsSmall = computed(
+    () => buttonSettingsModel.value.indexOf("small") > -1
+  );
 
-const buttonSettingsModel = ref([]);
-const buttonsOutline = computed(
-  () => buttonSettingsModel.value.indexOf("outline") > -1
-);
+  const buttonsDisabled = computed(
+    () => buttonSettingsModel.value.indexOf("disabled") > -1
+  );
 
-const buttonsSmall = computed(
-  () => buttonSettingsModel.value.indexOf("small") > -1
-);
+  const buttonsRounded = computed(
+    () => buttonSettingsModel.value.indexOf("rounded") > -1
+  );
 
-const buttonsDisabled = computed(
-  () => buttonSettingsModel.value.indexOf("disabled") > -1
-);
+  const isModalActive = ref(false);
 
-const buttonsRounded = computed(
-  () => buttonSettingsModel.value.indexOf("rounded") > -1
-);
+  const el_modal = ref<HTMLInputElement | null>(null)
+  const handleOpenModal = async () => {
+    //el_modal.value?.click()
+    new Modal(el_modal.value).show()
+  }
 
-const isModalActive = ref(false);
+  const fullname = (client:{}) => {
+    return client.firstname+" "+client.lastname
+  }
 
-const el_modal = ref<HTMLInputElement | null>(null)
-const handleOpenModal = async () => {
-  //el_modal.value?.click()
-  new Modal(el_modal.value).show()
-}
-defineEmits(["loading-modal-open","loading-modal-close"]);
+  defineEmits(["loading-modal-open","loading-modal-close"]);
 </script>
 
 <template>
@@ -128,8 +80,7 @@ defineEmits(["loading-modal-open","loading-modal-close"]);
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiAmbulance" title="Referred" main>
       </SectionTitleLineWithButton>
-      <CardBox class="mb-6">
-
+      <CardBox hasBoxTitle hasBoxFooter class="mb-6" v-for="tracking in trackings.results" :client="tracking.Client[0]" :name="fullname(tracking.Client[0])" :key="tracking.id">
         <div class="max-w-xl mx-auto my-4 border-b-2 pb-4">  
           <div class="flex pb-3">
             <div class="flex-1">
@@ -198,8 +149,8 @@ defineEmits(["loading-modal-open","loading-modal-close"]);
             </div>      
           </div>
         </div>
-
       </CardBox>
+
     </SectionMain>
   </LayoutAuthenticated>
 </template>

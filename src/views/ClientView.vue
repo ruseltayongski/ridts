@@ -627,12 +627,10 @@
 
             <BaseDivider />
             
-            <template #footer>
-              <BaseButtons>
-                <BaseButton type="submit" color="info" :label="button_label" />
-                <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-              </BaseButtons>
-            </template>
+            <BaseButtons>
+              <BaseButton type="submit" color="info" :label="button_label" />
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+            </BaseButtons>
           </CardBox>
         </div>
       </div>
@@ -679,12 +677,11 @@
               </FormField>
             </FormField>
 
-            <template #footer>
-              <BaseButtons>
-                <BaseButton type="submit" color="info" :label="button_label" />
-                <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-              </BaseButtons>
-            </template>
+            <BaseButtons>
+              <BaseButton type="submit" color="info" :label="button_label" />
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+            </BaseButtons>
+
           </CardBox>
         </div>
       </div>

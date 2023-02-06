@@ -264,12 +264,11 @@
               </FormField>
             </FormField>
 
-            <template #footer>
-              <BaseButtons>
-                <BaseButton type="button" color="warning" label="Print PDF" />
-                <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-              </BaseButtons>
-            </template>
+            <BaseButtons>
+              <BaseButton type="button" color="warning" label="Print PDF" />
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+            </BaseButtons>
+            
           </CardBox>
         </div>
       </div>

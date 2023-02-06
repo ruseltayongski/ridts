@@ -139,6 +139,7 @@
           label: item.description
         }
     }))
+    console.log(referring_facility_list.value)
   }
 
   const _referredFacility = async () => {
@@ -198,16 +199,17 @@
   const referClient = async () => {
     //insertFirebase(remarks.value)
     //console.log(refer_client.value)
-    const referred_to_address = await getUserBarangay({ barangay_id:form.barangay })
+    const referring_facility_address = referring_facility_list.value.filter((barangay) => barangay.id === referring_facility.value )
+    const referred_facility_address = referred_facility_list.value.filter((barangay) => barangay.id === referred_facility.value )
     const refer_json = {
       Client: [refer_client.value.id],
       client_id : refer_client.value.id,
       code : moment().format('YYYY')+ "-" + mainStore.userId+moment().format('MMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join(""),
       date_referred : moment().format('YYYY-MM-DD HH:mm:ss'),
-      referred_from : refer_client.value.client_address,
-      referred_from_address : refer_client.value.client_barangay,
+      referred_from : referring_facility.value,
+      referred_from_address : referring_facility_address[0].label,
       referred_to : referred_facility.value,
-      referred_to_address : referred_to_address[0].description,
+      referred_to_address : referred_facility_address[0].label,
       referring_id : mainStore.userId,
       referring_name : mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname,
       remarks : remarks.value,
@@ -229,6 +231,7 @@
   }
 
   const refer_client = ref({})
+
   const handleReferClient = (client:{}) => {
     console.log(client)
     refer_client.value = client
