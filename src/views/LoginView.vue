@@ -126,7 +126,7 @@
 <template>
     <LayoutGuest>
         <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
-        <CardBox hasBoxFooter :class="cardClass" is-form @submit.prevent="submit">
+        <CardBox :class="cardClass" is-form @submit.prevent="submit">
             <FormField label="Login" help="Please enter your login">
             <FormControl
                 v-model="form.username"
@@ -153,12 +153,10 @@
             :input-value="true"
             />
 
-            <template #footer>
-            <BaseButtons>
+            <BaseButtons class="pt-10">
                 <BaseButton type="submit" color="info" label="Login" />
                 <BaseButton to="/" color="info" outline label="Back" />
             </BaseButtons>
-            </template>
         </CardBox>
         </SectionFullScreen>
   </LayoutGuest>

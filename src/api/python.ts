@@ -55,3 +55,7 @@ export function updateTracking(params: {} = {}) {
 export function getTracking(params: {} = {}) {
   return req.get("/tracking/all",params);
 }
+
+export function getIncoming(params: {} = {}) {
+  return req.get("/incoming/all",params);
+}

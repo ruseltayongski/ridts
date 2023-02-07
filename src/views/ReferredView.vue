@@ -81,7 +81,23 @@
       <SectionTitleLineWithButton :icon="mdiAmbulance" title="Referred" main>
       </SectionTitleLineWithButton>
       <CardBox hasBoxTitle hasBoxFooter class="mb-6" v-for="tracking in trackings.results" :client="tracking.Client[0]" :name="fullname(tracking.Client[0])" :key="tracking.id">
-        <div class="max-w-xl mx-auto my-4 border-b-2 pb-4">  
+        <div class="wrapper option-1 option-1-1">
+  <ol class="c-stepper">
+    <li class="c-stepper__item">
+      <h3 class="c-stepper__title">Step 1</h3>
+      <p class="c-stepper__desc">Some desc text</p>
+    </li>
+    <li class="c-stepper__item">
+      <h3 class="c-stepper__title">Step 2</h3>
+      <p class="c-stepper__desc">Some desc text</p>
+    </li>
+    <li class="c-stepper__item">
+      <h3 class="c-stepper__title">Step 3</h3>
+      <p class="c-stepper__desc">Some desc text</p>
+    </li>
+  </ol>
+</div>
+        <!-- <div class="max-w-xl mx-auto my-4 border-b-2 pb-4">
           <div class="flex pb-3">
             <div class="flex-1">
             </div>
@@ -148,7 +164,7 @@
               Vaccinated
             </div>      
           </div>
-        </div>
+        </div> -->
       </CardBox>
 
     </SectionMain>

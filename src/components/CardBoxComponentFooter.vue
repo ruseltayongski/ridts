@@ -5,7 +5,7 @@
     mdiBallotOutline
   } from "@mdi/js";
 
-  const props = defineProps({
+  defineProps({
     client: {
       type: Object,
       default: {},

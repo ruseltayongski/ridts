@@ -27,7 +27,7 @@
 </script>
 
 <template>
-  <div class="flex pl-5 pt-5 items-center justify-between mb-3">
+  <div class="flex pl-5 pt-5 items-center justify-between mb-3 text-white">
     <h1 class="text-1xl">
       {{ title }}
     </h1>
