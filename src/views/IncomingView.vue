@@ -22,6 +22,7 @@
   import CardBox from "@/components/CardBox.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import NotificationMessage from "@/components/NotificationMessage.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
   import BaseIcon from "@/components/BaseIcon.vue";
@@ -29,6 +30,8 @@
   import { getIncoming } from "@/api/python"
   import { useUseridStore } from "@/stores"
   import moment from "moment"
+  import { notify } from "notiwind"
+  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking } from "@/api/python"
 
   const mainStore = useMainStore();
 
@@ -83,34 +86,59 @@
     updated_on: ""
   });
   
-  const getInfoClient = async (client:{}) => {
-    console.log(client)
-    form.id = client.id
-    form.bhw_address = client.bhw_address
-    form.bhw_contact_number = client.bhw_contact_number
-    form.bhw_name = client.bhw_name
-    form.birthdate = client.birthdate
-    form.birthplace = client.birthplace
-    form.client_address = client.client_address
-    form.client_barangay = client.client_barangay
-    form.created_by = client.created_by
-    form.firstname = client.firstname
-    form.guardian_address = client.guardian_address
-    form.guardian_barangay = client.guardian_barangay
-    form.guardian_alternate_number = client.guardian_alternate_number
-    form.guardian_contact_number = client.guardian_contact_number
-    form.guardian_name = client.guardian_name
-    form.health_provider_address = client.health_provider_address
-    form.health_provider_barangay = client.health_provider_barangay
-    form.health_provider_contact = client.health_provider_contact
-    form.health_provider_name = client.health_provider_name
-    form.is_active = client.is_active
-    form.lastname = client.lastname
-    form.middlename = client.middlename
-    form.sex = client.sex
-    form.vaccine_id = client.vaccine_id
-    form.created_on = client.created_on
-    form.updated_on = client.updated_on
+  const tracking_handler = ref({})
+  const getInfoClient = async (incoming:{}) => {
+    tracking_handler.value = incoming
+    form.id = incoming.Client[0].id
+    form.bhw_address = incoming.Client[0].bhw_address
+    form.bhw_contact_number = incoming.Client[0].bhw_contact_number
+    form.bhw_name = incoming.Client[0].bhw_name
+    form.birthdate = incoming.Client[0].birthdate
+    form.birthplace = incoming.Client[0].birthplace
+    form.client_address = incoming.Client[0].client_address
+    form.client_barangay = incoming.Client[0].client_barangay
+    form.created_by = incoming.Client[0].created_by
+    form.firstname = incoming.Client[0].firstname
+    form.guardian_address = incoming.Client[0].guardian_address
+    form.guardian_barangay = incoming.Client[0].guardian_barangay
+    form.guardian_alternate_number = incoming.Client[0].guardian_alternate_number
+    form.guardian_contact_number = incoming.Client[0].guardian_contact_number
+    form.guardian_name = incoming.Client[0].guardian_name
+    form.health_provider_address = incoming.Client[0].health_provider_address
+    form.health_provider_barangay = incoming.Client[0].health_provider_barangay
+    form.health_provider_contact = incoming.Client[0].health_provider_contact
+    form.health_provider_name = incoming.Client[0].health_provider_name
+    form.is_active = incoming.Client[0].is_active
+    form.lastname = incoming.Client[0].lastname
+    form.middlename = incoming.Client[0].middlename
+    form.sex = incoming.Client[0].sex
+    form.vaccine_id = incoming.Client[0].vaccine_id
+    form.created_on = incoming.Client[0].created_on
+    form.updated_on = incoming.Client[0].updated_on
+  }
+
+  const accept_modal = ref<HTMLInputElement | null>(null)
+  const el_accept_modal = ref<HTMLInputElement | null>(null)
+  const handleAccept = async () => {
+    accept_modal.value = new Modal(el_accept_modal.value); //initialize modal instance
+    accept_modal.value?.show()
+  }
+
+  const accept_remarks = ref("")
+  const submitAccept = async () => {
+    const tracking_update = JSON.parse(JSON.stringify(tracking_handler.value))
+    tracking_update["Client"] = await Promise.all(tracking_update.Client.map(async (item: any) => item.id))
+    tracking_update["Activity"] = await Promise.all(tracking_update["Activity"].map(async (item: any) => item.id))
+    tracking_update["date_accepted"] = moment().format('YYYY-MM-DD HH:mm:ss')
+    tracking_update["remarks"] = accept_remarks.value
+    const tracking = await updateTracking(tracking_update)
+    console.log(tracking)
+    accept_modal.value?.hide();
+    notify({
+      group: "success_dose",
+      title: "Success",
+      text: "Patient was successfully accepted!"
+    }, 2000)
   }
 
   defineEmits(["loading-modal-open","loading-modal-close"]);
@@ -135,7 +163,7 @@
                   <a href="#!" class="font-medium text-blue-600 hover:text-blue-700 focus:text-blue-800 duration-300 transition ease-in-out text-sm">{{ moment(incoming.created_on).format('lll') }}</a>
                 </div>
                 <p class="text-gray-700 mb-6">{{ incomingContent(incoming) }}</p>
-                <button @click="getInfoClient(incoming.Client[0])" type="button" class="inline-block px-4 py-1.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true" data-bs-toggle="modal" data-bs-target="#exampleModalLg">Preview</button>
+                <button @click="getInfoClient(incoming)" type="button" class="inline-block px-4 py-1.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true" data-bs-toggle="modal" data-bs-target="#exampleModalLg">Preview</button>
                 <!-- <button type="button" class="inline-block px-3.5 py-1 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" data-mdb-ripple="true">See demo</button> -->
               </div>
             </div>
@@ -155,6 +183,7 @@
             main
           >
           </SectionTitleLineWithButton>
+          <NotificationMessage></NotificationMessage>
           <CardBox is-form>
             <FormField label="Personal Information" class="text-xl">
               <FormField label="Vaccine Card Number ID" class="text-sm">
@@ -242,7 +271,7 @@
 
             <BaseButtons>
               <BaseButton type="button" color="warning" label="Print PDF" />
-              <BaseButton type="button" color="success" label="Accept" />
+              <BaseButton type="button" color="success" label="Accept" @click="handleAccept"/>
               <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
             </BaseButtons>
             
@@ -251,6 +280,37 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref='el_accept_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
+      <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+        <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+          <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
+            Accept Remarks
+          </h5>
+          <button type="button"
+            class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+            data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body relative p-4">
+          <CardBox is-form @submit.prevent="submitAccept">
+            <FormField label="Remarks">
+              <FormControl
+                v-model="accept_remarks"
+                type="textarea"
+              />
+            </FormField>
+            <BaseButtons>
+              <BaseButton type="submit" color="success" label="Accept" />
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+            </BaseButtons>
+
+          </CardBox>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </template>
 
 <style scoped>

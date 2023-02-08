@@ -59,3 +59,7 @@ export function getTracking(params: {} = {}) {
 export function getIncoming(params: {} = {}) {
   return req.get("/incoming/all",params);
 }
+
+export function getAccepted(params: {} = {}) {
+  return req.get("/accepted/all",params);
+}

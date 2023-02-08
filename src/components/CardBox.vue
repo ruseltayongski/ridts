@@ -29,7 +29,7 @@
     hasBoxTitle: Boolean,
     hasBoxFooter: Boolean
   });
-  
+
   const emit = defineEmits(["submit"]);
 
   const slots = useSlots();
@@ -53,6 +53,7 @@
   const submit = (event) => {
     emit("submit", event);
   };
+  
 </script>
 
 <template>

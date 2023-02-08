@@ -18,16 +18,17 @@
     () => notificationSettingsModel.value.indexOf("outline") > -1
   );
 
-  defineProps({
+  const props = defineProps({
     title: {
       type: String,
       required: true,
     },
   });
+
 </script>
 
 <template>
-  <div class="flex pl-5 pt-5 items-center justify-between mb-3 text-white">
+  <div class="flex pl-5 pt-5 items-center justify-between mb-3">
     <h1 class="text-1xl">
       {{ title }}
     </h1>

@@ -5,6 +5,7 @@ import Style from '@/views/StyleView.vue'
 import Landing from '@/views/LandingPage.vue'
 import Archived from '@/views/ArchivedView.vue'
 import Referred from '@/views/ReferredView.vue'
+import Accepted from '@/views/AcceptedView.vue'
 import Incoming from '@/views/IncomingView.vue'
 import TextBlast from '@/views/TextBlast.vue'
 
@@ -50,6 +51,14 @@ const router = createRouter({
           path: "/referred",
           name: "referred",
           component: Referred,
+        },
+        {
+          meta: {
+            title: "Accepted",
+          },
+          path: "/accepted",
+          name: "accepted",
+          component: Accepted,
         },
         {
           meta: {

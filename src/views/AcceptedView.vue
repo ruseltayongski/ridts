@@ -1,59 +1,79 @@
 <script setup lang="ts">
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
-  import { insertFirebase } from "@/utils/firebase.ts"
   import {
-    mdiMonitorCellphone,
-    mdiTableBorder,
-    mdiTableOff,
-    mdiGithub,
-    mdiAccountCircle,
-    mdiBabyFaceOutline,
-    mdiAccountPlus,
+    mdiHandHeartOutline,
     mdiBallotOutline,
-    mdiAccount,
-    mdiMail,
-    mdiHomeCityOutline,
-    mdiCardAccountPhoneOutline,
-    mdiCalendarEditOutline,
-    mdiCardBulletedSettings,
-    mdiOpenInNew,
-    mdiNeedle
+    mdiNeedle,
+    mdiCalendarEditOutline
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
-  import NotificationBar from "@/components/NotificationBar.vue";
-  import TableClients from "@/components/TableClients.vue";
   import CardBox from "@/components/CardBox.vue";
+  import CardBoxFooter from "@/components/CardboxComponentFooter.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-  import BaseButton from "@/components/BaseButton.vue";
+  import TableAccepted from "@/components/TableAccepted.vue";
   import NotificationMessage from "@/components/NotificationMessage.vue";
-  import { getUserBarangay, getUserMunicipality, getUserInfo } from '@/api/auth'
+  import { getUserBarangay,getUserBarangayAssignment, getUserInfo } from '@/api/auth'
+  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo, getTracking } from "@/api/python"
+  import { useUseridStore } from "@/stores"
 
-  import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
-  import { findProp } from "@vue/compiler-core";
-  import loadingModal from "@/assets/spin.gif"
-  
-  const search_keyword = ref("")
+  import moment from "moment"
+
   const get_barangay = ref([])
   const get_municipality = ref({})
-  
+
   const mainStore = useMainStore();
-  const fullname = computed(() => mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname );
-
-  const transactionBarItems = computed(() => mainStore.history);
-  const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
-
-  const client_modal = ref<HTMLInputElement | null>(null)
-  const el_client_modal = ref<HTMLInputElement | null>(null)
-
-  const props_form = ref({})
-  const button_label = ref("")
 
   const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
 
+  const button_label = ref("")
+
+  onMounted(() => {
+    _getUserBarangay()
+    _getTracking()
+  })
+
+  const _getUserBarangay = async () => {
+    const response = await getUserBarangay()
+    get_barangay.value = await Promise.all(response.map(async (item: any) => {
+        return {
+          id : item.id,
+          label: item.description
+        }
+    }))
+  }
+
+  const trackings = ref([])
+  const _getTracking = async () => {
+    const response = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(response.map(async (item: any) => item.id))
+    trackings.value = await getTracking({ referred_from : barangay_assignment })
+  }
+
+  const buttonSettingsModel = ref([]);
+  const buttonsOutline = computed(
+    () => buttonSettingsModel.value.indexOf("outline") > -1
+  );
+
+  const buttonsSmall = computed(
+    () => buttonSettingsModel.value.indexOf("small") > -1
+  );
+
+  const buttonsDisabled = computed(
+    () => buttonSettingsModel.value.indexOf("disabled") > -1
+  );
+
+  const buttonsRounded = computed(
+    () => buttonSettingsModel.value.indexOf("rounded") > -1
+  );
+
+  const handleClientInfo = async (id:Number) => {
+    button_label.value = "Update"
+    _getInfoClient(id)
+  };
+  
   const form = reactive({
     id: 0, 
     vaccine_id : "",
@@ -84,48 +104,56 @@
     updated_on: ""
   });
 
-  onMounted(() => {
-    const min_date =  moment().format('Y-MM-DD')
-    // if(document.getElementById('dt1'))
-    //   document.getElementById('dt1').setAttribute('min', min_date)
-    // if(document.getElementById('dt2'))
-    //   document.getElementById('dt2').setAttribute('min', min_date)
-    // if(document.getElementById('dt3'))  
-    //   document.getElementById('dt3').setAttribute('min', min_date)
-    // if(document.getElementById('dt4'))  
-    //   document.getElementById('dt4').setAttribute('min', min_date)
-    // if(document.getElementById('dt5'))
-    //   document.getElementById('dt5').setAttribute('min', min_date)
-    // if(document.getElementById('dt6'))
-    //   document.getElementById('dt6').setAttribute('min', min_date)
-
-    _getUserBarangay()
-    _getUserMunicipality()
-    //_getUserInfo()
-    client_modal.value = new Modal(el_client_modal.value); //initialize modal instance
-  })
-
-  // const _getUserInfo = async () => {
-  //   const response = await getUserInfo({ id : 1 })
-  //   console.log(response)
-  // }
-
-  const _getUserBarangay = async () => {
-    const response = await getUserBarangay()
-    get_barangay.value = await Promise.all(response.map(async (item: any) => {
-        return {
-          id : item.id,
-          label: item.description
-        }
-    }))
+  const _getInfoClient = async (id:Number) => {
+    const response = await getInfoClient({ id : id })
+    console.log(response)
+    form.id = response.id
+    form.bhw_address = response.bhw_address
+    form.bhw_contact_number = response.bhw_contact_number
+    form.bhw_name = response.bhw_name
+    form.birthdate = response.birthdate
+    form.birthplace = response.birthplace
+    form.client_address = response.client_address
+    form.client_barangay = response.client_barangay
+    form.created_by = response.created_by
+    form.firstname = response.firstname
+    form.guardian_address = response.guardian_address
+    form.guardian_barangay = response.guardian_barangay
+    form.guardian_alternate_number = response.guardian_alternate_number
+    form.guardian_contact_number = response.guardian_contact_number
+    form.guardian_name = response.guardian_name
+    form.health_provider_address = response.health_provider_address
+    form.health_provider_barangay = response.health_provider_barangay
+    form.health_provider_contact = response.health_provider_contact
+    form.health_provider_name = response.health_provider_name
+    form.is_active = response.is_active
+    form.lastname = response.lastname
+    form.middlename = response.middlename
+    form.sex = response.sex
+    form.vaccine_id = response.vaccine_id
+    form.created_on = response.created_on
+    form.updated_on = response.updated_on
   }
 
-  const _getUserMunicipality = async () => {
-    const response = await getUserMunicipality()
-    get_municipality.value = {
-      id : response.id,
-      label : response.description
-    }
+  const clearDose = async () => {
+    schedule.given_1 = ""
+    schedule.given_2 = ""
+    schedule.given_3 = ""
+    schedule.given_administerred_1 = ""
+    schedule.given_administerred_2 = ""
+    schedule.given_administerred_3 = ""
+    schedule.scheduled_1 = ""
+    schedule.scheduled_2 = ""
+    schedule.scheduled_3 = ""
+    schedule.scheduled_administerred_1 = ""
+    schedule.scheduled_administerred_2 = ""
+    schedule.scheduled_administerred_3 = ""
+    schedule.status1 = ""
+    schedule.status2 = ""
+    schedule.status3 = ""
+    schedule.button_type1 = ""
+    schedule.button_type2 = ""
+    schedule.button_type3 = ""
   }
 
   const schedule = reactive({
@@ -152,23 +180,6 @@
     updated_on: ""
   });
 
-  const buttonSettingsModel = ref([]);
-  const buttonsOutline = computed(
-    () => buttonSettingsModel.value.indexOf("outline") > -1
-  );
-
-  const buttonsSmall = computed(
-    () => buttonSettingsModel.value.indexOf("small") > -1
-  );
-
-  const buttonsDisabled = computed(
-    () => buttonSettingsModel.value.indexOf("disabled") > -1
-  );
-
-  const buttonsRounded = computed(
-    () => buttonSettingsModel.value.indexOf("rounded") > -1
-  );
-
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
   const handleVaccineInfo = async (vaccine_type:"") => {
@@ -180,7 +191,6 @@
     schedule.vaccine_type = vaccine_type
     if(response.length > 0) {
       emit("loading-modal-open")
-      button_label.value = "Update"
       schedule.scheduled_1 = response[0].scheduled_1
       schedule.scheduled_2 = response[0].scheduled_2
       schedule.scheduled_3 = response[0].scheduled_3
@@ -209,118 +219,11 @@
     } else {
       button_label.value = "Submit"
     }
+
     schedule.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
     
     dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
     dose_modal.value?.show()
-  }
-
-  const clientSubmit = async () => {
-    emit("loading-modal-open")
-    
-    const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
-    form.client_barangay = client_barangay.description
-    const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
-    form.guardian_barangay = guardian_barangay.description
-    const bhw_barangay = await getUserBarangay({ barangay_id:form.bhw_address })
-    form.bhw_barangay = bhw_barangay.description
-    const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
-    form.health_provider_barangay = health_provider_barangay.description
-    form.created_by = mainStore.userId
-    
-    let message = ""
-    let status = ""
-    if(form.id) {
-      message = "Client was successfully updated!"
-      form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
-      await updateClient(form) // update into mongo db
-      status = "updated"
-    } else {
-      message = "Client was successfully added!"
-      form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
-      const create_response = await createClient(form) // insert into mongo db
-      form.id = create_response.id
-      status = "created"
-      //insertFirebase(form.guardian_contact_number+"@ Vaccine ID " + form.vaccine_id + " was successfully enrolled. Thank you!")
-    }
-
-    props_form.value = {
-      id : form.id,
-      firstname : form.firstname,
-      middlename : form.middlename,
-      lastname : form.lastname,
-      client_barangay : form.client_barangay,
-      status : status,
-      client_address : form.client_address
-    } //send to props
-
-    console.log(props_form.value)
-
-    clearClientForm()
-
-    client_modal.value?.hide();
-    emit("loading-modal-close")
-
-    notify({
-      group: "success",
-      title: "Success",
-      text: message
-    }, 2000)
-  };
-
-  const clearClientForm = async (option:String = "") => {
-    form.vaccine_id = "LLC # "+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
-    form.id = 0
-    
-    if(option != "create")
-      form.vaccine_id = ""
-    
-    form.firstname = ""
-    form.middlename = ""
-    form.lastname = ""
-    form.birthdate = ""
-    form.birthplace = ""
-    form.sex = ""
-    form.client_address = 0
-    form.client_barangay = ""
-    form.guardian_name = ""
-    form.guardian_contact_number = ""
-    form.guardian_alternate_number = ""
-    form.guardian_address = 0
-    form.guardian_barangay = ""
-    form.bhw_name = ""
-    form.bhw_contact_number = ""
-    form.bhw_address = 0
-    form.bhw_barangay = ""
-    form.health_provider_name = ""
-    form.health_provider_contact = ""
-    form.health_provider_address = 0
-    form.health_provider_barangay = ""
-    form.is_active = true
-    form.created_by = 0
-    form.created_on = ""
-    form.updated_on = ""
-  }
-
-  const clearDose = async () => {
-    schedule.given_1 = ""
-    schedule.given_2 = ""
-    schedule.given_3 = ""
-    schedule.given_administerred_1 = ""
-    schedule.given_administerred_2 = ""
-    schedule.given_administerred_3 = ""
-    schedule.scheduled_1 = ""
-    schedule.scheduled_2 = ""
-    schedule.scheduled_3 = ""
-    schedule.scheduled_administerred_1 = ""
-    schedule.scheduled_administerred_2 = ""
-    schedule.scheduled_administerred_3 = ""
-    schedule.status1 = ""
-    schedule.status2 = ""
-    schedule.status3 = ""
-    schedule.button_type1 = ""
-    schedule.button_type2 = ""
-    schedule.button_type3 = ""
   }
 
   const doseSubmit = async () => {
@@ -363,51 +266,6 @@
 
   };
 
-  const handleClientInfo = async (id:Number) => {
-      _getInfoClient(id)
-  };
-
-  const _getInfoClient = async (id:Number) => {
-    button_label.value = "Update"
-    const response = await getInfoClient({ id : id })
-    console.log(response)
-    form.id = response.id
-    form.bhw_address = response.bhw_address
-    form.bhw_contact_number = response.bhw_contact_number
-    form.bhw_name = response.bhw_name
-    form.birthdate = response.birthdate
-    form.birthplace = response.birthplace
-    form.client_address = response.client_address
-    form.client_barangay = response.client_barangay
-    form.created_by = response.created_by
-    form.firstname = response.firstname
-    form.guardian_address = response.guardian_address
-    form.guardian_barangay = response.guardian_barangay
-    form.guardian_alternate_number = response.guardian_alternate_number
-    form.guardian_contact_number = response.guardian_contact_number
-    form.guardian_name = response.guardian_name
-    form.health_provider_address = response.health_provider_address
-    form.health_provider_barangay = response.health_provider_barangay
-    form.health_provider_contact = response.health_provider_contact
-    form.health_provider_name = response.health_provider_name
-    form.is_active = response.is_active
-    form.lastname = response.lastname
-    form.middlename = response.middlename
-    form.sex = response.sex
-    form.vaccine_id = response.vaccine_id
-    form.created_on = response.created_on
-    form.updated_on = response.updated_on
-  }
-
-  const handleSearchClient = async (payload:"") => {
-      search_keyword.value = payload
-  };
-
-  const handleCreateClient = () => {
-      button_label.value = "Submit"
-      clearClientForm("create")
-  };
-
   const given_1 = computed(() => schedule.given_1);
   watch(given_1, (value) => {
     console.log(value)
@@ -446,18 +304,17 @@
 </script>
 
 <template>
-  <LayoutAuthenticated @search-client="handleSearchClient">
+  <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+      <SectionTitleLineWithButton :icon="mdiHandHeartOutline" title="Accepted Client" main>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableClients @client-info="handleClientInfo" :search_keyword="search_keyword" :form="props_form" checkable />
+        <TableAccepted @client-info="handleClientInfo" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" ref="el_client_modal" id="clientModal" data-bs-backdrop="static" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-body relative p-4">
@@ -470,81 +327,88 @@
 
           <NotificationMessage></NotificationMessage>
 
-          <CardBox is-form @submit.prevent="clientSubmit">
+          <CardBox is-form>
             <FormField label="Personal Information" class="text-xl">
               <FormField label="Vaccine Card Number ID" class="text-sm">
-                <FormControl v-model="form.vaccine_id" :icon="mdiCardBulletedSettings" :readonly="true"/>
+                {{ form.vaccine_id }}
               </FormField>
-              <FormControl v-model="form.firstname" :icon="mdiAccount" class="mt-7" placeholder="Firstname" required/>
+              <FormField label="Firstname" class="text-sm">
+                {{ form.firstname }}
+              </FormField>
             </FormField>
             
-            <FormField>
-              <FormControl v-model="form.middlename" :icon="mdiAccount" placeholder="Middlename" required/>
-              <FormControl v-model="form.lastname" :icon="mdiAccount" placeholder="Lastname" required/>
+            <FormField class="text-xl">
+              <FormField label="Middlename" class="text-sm">
+                {{ form.middlename }}
+              </FormField>
+              <FormField label="Lastname" class="text-sm">
+                {{ form.lastname }}
+              </FormField>
             </FormField>
 
-            <FormField>
-              <FormField label="Birthdate">
-                <FormControl v-model="form.birthdate" type="date" :icon="mdiCalendarEditOutline" required/>
+            <FormField class="text-xl">
+              <FormField label="Birthdate" class="text-sm">
+                {{ form.birthdate }}
               </FormField>
-              <FormControl v-model="form.birthplace" :icon="mdiHomeCityOutline" class="mt-8" placeholder="Birthplace" required/>
+              <FormField label="Birthplace" class="text-sm">
+                {{ form.birthplace }}
+              </FormField>
             </FormField>
 
             <FormField label="Sex">
-              <FormCheckRadioGroup
-                v-model="form.sex"
-                name="sex"
-                type="radio"
-                :options="{ male: 'Male', female: 'Female' }"
-              />
+              {{ form.sex.charAt(0).toUpperCase() + form.sex.slice(1) }}
             </FormField>
 
             <FormField label="Client Address">
-              <FormControl v-model="form.client_address" :options="get_barangay"/>
+              {{ form.client_barangay }}
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Parents / Guardian">
-              <FormControl v-model="form.guardian_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              {{ form.guardian_name }}
             </FormField>
 
-            <FormField >
-              <FormControl v-model="form.guardian_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
-              <FormControl v-model="form.guardian_alternate_number" :icon="mdiCardAccountPhoneOutline" placeholder="Alternate Number"/>
+            <FormField class="text-xl">
+              <FormField label="Guardian Contact Number" class="text-sm">
+                {{ form.guardian_contact_number }}
+              </FormField>
+              <FormField label="Guardian Alternate Number" class="text-sm">
+                {{ form.guardian_alternate_number }}
+              </FormField>
             </FormField>
 
             <FormField label="Parent/Guardian Address">
-              <FormControl v-model="form.guardian_address" :options="get_barangay" required/>
+              {{ form.guardian_barangay }}
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of BHW">
-              <FormControl v-model="form.bhw_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname" required/>
+              {{  form.bhw_name }}
             </FormField>
 
             <FormField >
               <FormField label="BHW contact number">
-                <FormControl v-model="form.bhw_contact_number" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number" required/>
+                {{ form.bhw_contact_number }}
               </FormField>
               <FormField label="BHW Address">
-                <FormControl v-model="form.bhw_address" :options="get_barangay" required/>
+                {{ form.bhw_barangay }}
               </FormField>
             </FormField>
 
             <BaseDivider />
 
             <FormField label="Name of Health Provider">
-              <FormControl v-model="form.health_provider_name" :icon="mdiAccount" placeholder="Firstname Middlename Lastname"/>
+              {{ form.health_provider_name }}
             </FormField>
 
             <FormField >
               <FormField label="Health Provider Contact Number">
-                <FormControl v-model="form.health_provider_contact" :icon="mdiCardAccountPhoneOutline" placeholder="Contact Number"/>
+                {{ form.health_provider_contact }}
               </FormField>
               <FormField label="Health Provider Address">
-                <FormControl v-model="form.health_provider_address" :options="get_barangay"/>
+                {{ form.bhw_barangay }}
               </FormField>
             </FormField>
 
@@ -626,16 +490,18 @@
             </FormField>
 
             <BaseDivider />
-            
+
             <BaseButtons>
-              <BaseButton type="submit" color="info" :label="button_label" />
+              <BaseButton type="button" color="warning" label="Print PDF" />
               <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
             </BaseButtons>
+            
           </CardBox>
         </div>
       </div>
     </div>
   </div>
+
 
   <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_dose_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
@@ -689,7 +555,5 @@
   </div>
   
 </template>
-
 <style scoped>
-  /* @import '@/css/main.css'; */
 </style>

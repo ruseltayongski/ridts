@@ -17,9 +17,7 @@
 
   import { insertFirebase, readFirebase } from "@/utils/firebase.ts"
   import { trace } from "console";
-
-  import axios from 'axios'
-
+  
   const props = defineProps({
     checkable: Boolean,
     search_keyword: {
@@ -116,10 +114,14 @@
   const referring_facility_list = ref([])
   const referred_facility_list = ref([])
 
+  const refer_modal = ref<HTMLInputElement | null>(null)
+  const el_refer_modal = ref<HTMLInputElement | null>(null)
+  
   onMounted(() => {
     _referringFacility()
     _referredFacility()
     _getAllClient()
+    refer_modal.value = new Modal(el_refer_modal.value); //initialize modal instance
   })
 
   const _getAllClient = async (params: {} = {}) => {
@@ -221,6 +223,7 @@
     refer_json["Activity"] = [activity.id]
     await createTracking(refer_json)
     
+    refer_modal.value?.hide()
     notify({
       group: "success",
       title: "success",
@@ -241,6 +244,41 @@
 </script>
 
 <template>
+  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref="el_refer_modal" id='referModal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
+      <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+        <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+          <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
+            Refer Patient
+          </h5>
+          <button type="button"
+            class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+            data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body relative p-4">
+          <CardBox is-form @submit.prevent="referClient">
+            <FormField label="Referring Facility" class="mt-6">
+              <FormControl v-model="referring_facility" :options="referring_facility_list" />
+            </FormField>
+            <FormField label="Referred Facility" class="mt-6">
+              <FormControl v-model="referred_facility" :options="referred_facility_list" />
+            </FormField>
+            <FormField label="Remarks">
+              <FormControl
+                v-model="remarks"
+                type="textarea"
+              />
+            </FormField>
+            <BaseButtons>
+              <BaseButton type="submit" color="success" label="Refer" />
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" data-bs-toggle="modal" 
+              data-bs-target="#clientModal"/>
+            </BaseButtons>
+          </CardBox>
+        </div>
+      </div>
+    </div>
+  </div>
   <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer @refer="referClient">
     <FormField label="Referring Facility" class="mt-6">
       <FormControl v-model="referring_facility" :options="referring_facility_list" />
@@ -342,7 +380,9 @@
               color="success"
               :icon="mdiAmbulance"
               small
-              @click="isModalActive = true, handleReferClient(client)"
+              data-bs-toggle="modal" 
+              data-bs-target="#referModal"
+              @click="handleReferClient(client)"
             />
             <BaseButton
               color="danger"

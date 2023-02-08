@@ -15,7 +15,10 @@ import {
     mdiAmbulance,
     mdiFolderArrowUp,
     mdiFolderArrowDown,
-    mdiMessageProcessing
+    mdiMessageProcessing,
+    mdiHandHeartOutline,
+    mdiFileDocumentMultiple,
+    mdiBed
   } from "@mdi/js";
   
   export default [
@@ -32,17 +35,22 @@ import {
     {
       to: "/archived",
       label: "Archived",
-      icon: mdiAmbulance,
+      icon: mdiFileDocumentMultiple,
     },
     {
       to: "/referred",
       label: "Referred",
-      icon: mdiFolderArrowUp,
+      icon: mdiAmbulance,
+    },
+    {
+      to: "/accepted",
+      label: "Accepted",
+      icon: mdiHandHeartOutline,
     },
     {
       to: "/incoming",
       label: "Incoming",
-      icon: mdiFolderArrowDown,
+      icon: mdiBed,
     },
     {
       to: "/text_blast",

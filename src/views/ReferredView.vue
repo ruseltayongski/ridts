@@ -69,7 +69,12 @@
   }
 
   const fullname = (client:{}) => {
-    return client.firstname+" "+client.lastname
+    return client.firstname+" "+client.lastname+" ["+client.sex.charAt(0).toUpperCase() + client.sex.slice(1)+", "+getAge(client.birthdate)+"]"
+  }
+
+  const getAge = (dateString:String) => {
+    const ageInMilliseconds = new Date() - new Date(dateString);
+    return Math.floor(ageInMilliseconds/1000/60/60/24/365); // convert to years
   }
 
   defineEmits(["loading-modal-open","loading-modal-close"]);
@@ -81,22 +86,24 @@
       <SectionTitleLineWithButton :icon="mdiAmbulance" title="Referred" main>
       </SectionTitleLineWithButton>
       <CardBox hasBoxTitle hasBoxFooter class="mb-6" v-for="tracking in trackings.results" :client="tracking.Client[0]" :name="fullname(tracking.Client[0])" :key="tracking.id">
-        <div class="wrapper option-1 option-1-1">
-  <ol class="c-stepper">
-    <li class="c-stepper__item">
-      <h3 class="c-stepper__title">Step 1</h3>
-      <p class="c-stepper__desc">Some desc text</p>
-    </li>
-    <li class="c-stepper__item">
-      <h3 class="c-stepper__title">Step 2</h3>
-      <p class="c-stepper__desc">Some desc text</p>
-    </li>
-    <li class="c-stepper__item">
-      <h3 class="c-stepper__title">Step 3</h3>
-      <p class="c-stepper__desc">Some desc text</p>
-    </li>
-  </ol>
-</div>
+        <div class="stepper-wrapper">
+          <div class="stepper-item completed">
+            <div class="step-counter">1</div>
+            <div class="step-name">Referred</div>
+          </div>
+          <div class="stepper-item" :class="{ 'completed' : tracking.date_accepted }">
+            <div class="step-counter">2</div>
+            <div class="step-name">Accepted</div>
+          </div>
+          <div class="stepper-item" :class="{ 'completed' : tracking.date_scheduled }">
+            <div class="step-counter">3</div>
+            <div class="step-name">Scheduled</div>
+          </div>
+          <div class="stepper-item" :class="{ 'completed' : tracking.date_vaccinated }">
+            <div class="step-counter">4</div>
+            <div class="step-name">Vaccinated</div>
+          </div>
+        </div>
         <!-- <div class="max-w-xl mx-auto my-4 border-b-2 pb-4">
           <div class="flex pb-3">
             <div class="flex-1">
@@ -172,6 +179,81 @@
 </template>
 
 <style scoped>
-  @import '@/assets/tailwind0.3.0.css';
+  .stepper-wrapper {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+
+  .stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
+  }
+
+  .stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+  }
+
+  .stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+    margin-bottom: 6px;
+  }
+
+  .stepper-item.active {
+    font-weight: bold;
+  }
+
+  .stepper-item.completed .step-counter {
+    background-color: #4bb543;
+  }
+
+  .stepper-item.completed::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #4bb543;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 3;
+  }
+
+  .stepper-item:first-child::before {
+    content: none;
+  }
+  .stepper-item:last-child::after {
+    content: none;
+  }
+  /* @import '@/assets/tailwind0.3.0.css'; */
   /* @import 'https://unpkg.com/tailwindcss@0.3.0/dist/tailwind.min.css' */
 </style>
