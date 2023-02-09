@@ -8,8 +8,9 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
-  import { getUserBarangay } from '@/api/auth'
-  import { getAllClientArchived } from "@/api/python"
+  import { getUserBarangay, getUserBarangayAssignment } from '@/api/auth'
+  import { getAccepted } from "@/api/python";
+  import { useUseridStore } from "@/stores"
   import moment from "moment"
 
   defineProps({
@@ -93,17 +94,15 @@
 
   onMounted(() => {
     _getUserBarangay()
-    _getAllClientArchived()
+    _getAllClientAccepted()
   })
 
   const data = ref([])
-  const _getAllClientArchived = async (params: {} = {}) => {
-    const response = await getAllClientArchived(params)
-    data.value = await Promise.all(response.map(async (item: any) => {
-        return {
-          ...item
-        }
-    }))
+  const _getAllClientAccepted = async () => {
+    const get_brangay = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(get_brangay.map(async (item: any) => item.id))
+    const response = await getAccepted({ referred_to : barangay_assignment })
+    data.value = await Promise.all(response.results)
   }
 
   const _getUserBarangay = async () => {
@@ -175,18 +174,18 @@
         />
         <td class="border-b-0 lg:w-6 before:hidden">
           <UserAvatar
-          :firstname="client.firstname+client.middlename+client.lastname"
+          :firstname="client.Client[0].firstname+client.Client[0].middlename+client.Client[0].lastname"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
         </td>
         <td data-label="Name">
-          {{ client.firstname+" "+client.middlename+" "+client.lastname }}
+          {{ client.Client[0].firstname+" "+client.Client[0].middlename+" "+client.Client[0].lastname }}
         </td>
         <td data-label="Company">
-          Cebu City
+          Lapu-lapu City
         </td>
         <td data-label="City">
-          {{ client.client_barangay }}
+          {{ client.Client[0].client_barangay }}
         </td>
         <td data-label="Progress" class="lg:w-32">
           <progress
@@ -200,10 +199,10 @@
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
-            :title="client.created_on"
-            >{{ moment(client.created_on).format('ll') }}</small
+            :title="client.Client[0].created_on"
+            >{{ moment(client.Client[0].created_on).format('ll') }}</small
           > <br>
-          <small class="text-gray-400 dark:text-slate-400">{{ moment(client.created_on).format('h:mm:ss a') }}</small>
+          <small class="text-gray-400 dark:text-slate-400">{{ moment(client.Client[0].created_on).format('h:mm:ss a') }}</small>
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
@@ -213,7 +212,7 @@
               small
               data-bs-toggle="modal" 
               data-bs-target="#exampleModalLg"
-              @click="handleClientInfo(client.id)"
+              @click="handleClientInfo(client.Client[0].id)"
             />
           </BaseButtons>
         </td>

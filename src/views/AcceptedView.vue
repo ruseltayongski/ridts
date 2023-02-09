@@ -249,15 +249,12 @@
     vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
     vaccine_info_save.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
   
-    console.log(vaccine_info_save)
-    console.log(button_label.value)
-
     if(button_label.value == "Update")
       await updateVaccineInfo(vaccine_info_save)
     else {
       await createVaccineInfo(vaccine_info_save)    
     }
-      
+    
     notify({
       group: "success_dose",
       title: "Success",

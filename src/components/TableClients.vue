@@ -111,7 +111,7 @@
 
   const referring_facility = ref(0)
   const referred_facility = ref(0)
-  const referring_facility_list = ref([])
+  const referring_facility_list = ref([]) 
   const referred_facility_list = ref([])
 
   const refer_modal = ref<HTMLInputElement | null>(null)
@@ -120,7 +120,7 @@
   onMounted(() => {
     _referringFacility()
     _referredFacility()
-    _getAllClient()
+    _getAllClient({ created_by: useUseridStore().value })
     refer_modal.value = new Modal(el_refer_modal.value); //initialize modal instance
   })
 
@@ -136,22 +136,26 @@
   const _referringFacility = async () => {
     const response = await getUserBarangayAssignment({ userid: useUseridStore().value })
     referring_facility_list.value = await Promise.all(response.map(async (item: any) => {
-        return {
-          id : item.id,
-          label: item.description
-        }
+      return {
+        id : item.id,
+        label: item.description
+      }
     }))
-    console.log(referring_facility_list.value)
   }
 
   const _referredFacility = async () => {
+    const response_includes = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(response_includes.map(async (item: any) => item.id))
     const response = await getUserBarangay()
-    referred_facility_list.value = await Promise.all(response.map(async (item: any) => {
+    const handler = await Promise.all(response.map(async (item: any) => {
+      if(!barangay_assignment.includes(item.id)) {
         return {
           id : item.id,
           label: item.description
         }
+      }
     }))
+    referred_facility_list.value = handler.filter((item: any) => { return typeof item ==='object' } )
   }
   
   const handleDeleteClient = async (client_id:any,client_name:any) => {
@@ -178,7 +182,7 @@
   const search_keyword = computed(() => props.search_keyword);
   watch(search_keyword, (value) => {
     console.log("search keyword")
-    _getAllClient({ search : value })
+    _getAllClient({ search : value, created_by: useUseridStore().value })
   })
 
   const forms = computed(() => props.form);
@@ -271,8 +275,7 @@
             </FormField>
             <BaseButtons>
               <BaseButton type="submit" color="success" label="Refer" />
-              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" data-bs-toggle="modal" 
-              data-bs-target="#clientModal"/>
+              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal"/>
             </BaseButtons>
           </CardBox>
         </div>
@@ -344,7 +347,7 @@
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
         <td data-label="Company">
-          Cebu City
+          Lapu-lapu City
         </td>
         <td data-label="City">
           {{ client.client_barangay }}

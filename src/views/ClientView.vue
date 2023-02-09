@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
-  import { insertFirebase } from "@/utils/firebase.ts"
+  import { insertFirebase, readFirebase } from "@/utils/firebase.ts"
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -150,6 +150,16 @@
     button_type2: "",
     button_type3: "",
     updated_on: ""
+  });
+
+  const vaccine_button = reactive({
+    bcg: "default",
+    hepb: "default",
+    pentavalent: "default",
+    opv: "default",
+    ipv: "default",
+    pcv: "default",
+    mcv: "default"
   });
 
   const buttonSettingsModel = ref([]);
@@ -354,13 +364,24 @@
     else {
       await createVaccineInfo(vaccine_info_save)    
     }
+
+    vaccine_button[schedule.vaccine_type] = await Promise.resolve(handleDose3(form.id,schedule.vaccine_type))
+    
+    let sms_message = ""
+    if(schedule.vaccine_type == 'bcg') {
+      //sms1
+      sms_message = "(1) Congratulations!\n\n"
+      sms_message += " Baby "+form.firstname+" "+form.middlename+" "+form.lastname
+      sms_message += " is scheduled for BCG Vaccination on"
+      sms_message += " "+ moment(vaccine_info_save.created_on).format('LL')+".";
+      insertFirebase(form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+    }
       
     notify({
       group: "success_dose",
       title: "Success",
       text: "Vaccine info was successfully updated!"
     }, 2000)
-
   };
 
   const handleClientInfo = async (id:Number) => {
@@ -380,7 +401,6 @@
     form.client_address = response.client_address
     form.client_barangay = response.client_barangay
     form.created_by = response.created_by
-    form.firstname = response.firstname
     form.guardian_address = response.guardian_address
     form.guardian_barangay = response.guardian_barangay
     form.guardian_alternate_number = response.guardian_alternate_number
@@ -391,12 +411,63 @@
     form.health_provider_contact = response.health_provider_contact
     form.health_provider_name = response.health_provider_name
     form.is_active = response.is_active
+    form.firstname = response.firstname
     form.lastname = response.lastname
     form.middlename = response.middlename
     form.sex = response.sex
     form.vaccine_id = response.vaccine_id
     form.created_on = response.created_on
     form.updated_on = response.updated_on
+
+    vaccine_button.pentavalent = await Promise.resolve(handleDose3(form.id,'pentavalent'))
+    vaccine_button.opv = await Promise.resolve(handleDose3(form.id,'opv'))
+    vaccine_button.pcv = await Promise.resolve(handleDose3(form.id,'pcv'))
+    vaccine_button.mcv = await Promise.resolve(handleDose2(form.id,'mcv'))
+    vaccine_button.bcg = await Promise.resolve(handleDose1(form.id,'bcg'))
+    vaccine_button.hepb = await Promise.resolve(handleDose1(form.id,'hepb'))
+    vaccine_button.ipv = await Promise.resolve(handleDose1(form.id,'ipv'))
+
+    console.log(vaccine_button)
+  }
+
+  const handleDose3 = async (client_id:Number,vaccine_type:String) => {
+    const response = await getVaccineInfo({ client_id : client_id, vaccine_type: vaccine_type, status: 1 })
+    if(response.length > 0) {
+      if(response[0].scheduled_3 != "") {
+        return response[0].button_type3
+      }
+      else if(response[0].scheduled_2 != "") {
+        return response[0].button_type2
+      }
+      else if(response[0].scheduled_1 != "") {
+        return response[0].button_type1
+      }
+    } else {
+      return ""
+    }
+  }
+
+  const handleDose2 = async (client_id:Number,vaccine_type:String) => {
+    const response = await getVaccineInfo({ client_id : client_id, vaccine_type: vaccine_type, status: 1 })
+    if(response.length > 0) {
+      if(response[0].scheduled_2 != "")
+        return response[0].button_type2
+      else if(response[0].scheduled_1 != "")
+        return response[0].button_type1
+    } else {
+      return ""
+    }
+    
+  }
+
+  const handleDose1 = async (client_id:Number,vaccine_type:String) => {
+    const response = await getVaccineInfo({ client_id : client_id, vaccine_type: vaccine_type, status: 1 })
+    if(response.length > 0) {
+      if(response[0].scheduled_1 != "")
+        return response[0].button_type1
+    } else {
+      return ""
+    }
   }
 
   const handleSearchClient = async (payload:"") => {
@@ -443,6 +514,8 @@
     console.log(value)
     schedule.scheduled_administerred_3 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
   })
+
+  readFirebase()
 </script>
 
 <template>
@@ -553,7 +626,7 @@
             <FormField label="Vaccine Type">
               <BaseButtons>
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.bcg"
                   label="BCG"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -563,7 +636,7 @@
                   @click="handleVaccineInfo('bcg')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.hepb"
                   label="HepB"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -573,7 +646,7 @@
                   @click="handleVaccineInfo('hepb')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.pentavalent"
                   label="Pentavalent"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -583,7 +656,7 @@
                   @click="handleVaccineInfo('pentavalent')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.opv"
                   label="OPV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -593,7 +666,7 @@
                   @click="handleVaccineInfo('opv')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.ipv"
                   label="IPV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -603,7 +676,7 @@
                   @click="handleVaccineInfo('ipv')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.pcv"
                   label="PCV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"
@@ -613,7 +686,7 @@
                   @click="handleVaccineInfo('pcv')"
                 />
                 <BaseButton
-                  color="info"
+                  :color="vaccine_button.mcv"
                   label="MCV"
                   :icon="mdiNeedle"
                   :small="buttonsSmall"

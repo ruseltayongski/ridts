@@ -131,9 +131,12 @@
     tracking_update["Activity"] = await Promise.all(tracking_update["Activity"].map(async (item: any) => item.id))
     tracking_update["date_accepted"] = moment().format('YYYY-MM-DD HH:mm:ss')
     tracking_update["remarks"] = accept_remarks.value
-    const tracking = await updateTracking(tracking_update)
-    console.log(tracking)
-    accept_modal.value?.hide();
+    tracking_update["status"] = "accepted"
+    await updateTracking(tracking_update)
+    tracking_update["created_on"] = moment().format('YYYY-MM-DD HH:mm:ss')
+    tracking_update["updated_on"] = tracking_update["created_on"]
+    await createActivity(tracking_update)
+    accept_modal.value?.hide()
     notify({
       group: "success_dose",
       title: "Success",

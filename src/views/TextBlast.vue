@@ -58,10 +58,10 @@
             hours.value = padNum(duration.value.hours())
             minutes.value = padNum(duration.value.minutes())
             seconds.value = padNum(duration.value.seconds())
-            console.log(duration.value.days())
-            console.log(duration.value.hours())
-            console.log(duration.value.minutes())
-            console.log(duration.value.seconds())
+            // console.log(duration.value.days())
+            // console.log(duration.value.hours())
+            // console.log(duration.value.minutes())
+            // console.log(duration.value.seconds())
             // Stop
             if (duration.value.days() <= 0 && duration.value.hours() <= 0 && duration.value.minutes() <= 0 && duration.value.seconds() <= 0) {
                 insertFirebase(number_to_text.value)
