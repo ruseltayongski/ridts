@@ -368,14 +368,37 @@
     vaccine_button[schedule.vaccine_type] = await Promise.resolve(handleDose3(form.id,schedule.vaccine_type))
     
     let sms_message = ""
+    sms_message = "Congratulations!\n\n"
+    sms_message += " Baby "+form.firstname+" "+form.middlename+" "+form.lastname
+    sms_message += " is scheduled for BCG Vaccination on"
+    sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+    sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
     if(schedule.vaccine_type == 'bcg') {
-      //sms1
-      sms_message = "(1) Congratulations!\n\n"
-      sms_message += " Baby "+form.firstname+" "+form.middlename+" "+form.lastname
-      sms_message += " is scheduled for BCG Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.created_on).format('LL')+".";
-      insertFirebase(form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+      sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
     }
+    else if(schedule.vaccine_type == 'hepb') {
+      sms_message += "\n\n"
+    }
+    else if(schedule.vaccine_type == 'pentavalent') {
+      sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
+      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
+    }
+    else if(schedule.vaccine_type == 'opv') {
+      sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
+      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+    }
+    else if(schedule.vaccine_type == 'ipv') {
+      sms_message += "\n\n"
+    }
+    else if(schedule.vaccine_type == 'pcv') {
+      sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
+      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+    }
+    else if(schedule.vaccine_type == 'mcv') {
+      sms_message += "\n\n"
+    }
+    sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+    insertFirebase(form.guardian_contact_number+"@"+sms_message)
       
     notify({
       group: "success_dose",
