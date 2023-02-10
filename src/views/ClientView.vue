@@ -374,7 +374,8 @@
       sms_message += " Baby "+form.firstname+" "+form.middlename+" "+form.lastname
       sms_message += " is scheduled for BCG Vaccination on"
       sms_message += " "+ moment(vaccine_info_save.created_on).format('LL')+".";
-      insertFirebase(form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+      insertFirebase(form.guardian_contact_number+"@"+sms_message)
+      //insertFirebase(form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
     }
       
     notify({
