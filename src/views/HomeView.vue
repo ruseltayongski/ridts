@@ -1,55 +1,63 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useMainStore } from "@/stores/main";
-import { useTokenStore } from "@/stores"
-import {
-  mdiAccountMultiple,
-  mdiCartOutline,
-  mdiChartTimelineVariant,
-  mdiMonitorCellphone,
-  mdiReload,
-  mdiGithub,
-  mdiChartPie,
-  mdiNeedle,
-  mdiCalendarRemoveOutline,
-  mdiTableArrowDown,
-  mdiChartBar,
-  mdiChartMultiple
-} from "@mdi/js";
-import * as chartConfig from "@/components/Charts/chart.config.ts";
-import LineChart from "@/components/Charts/LineChart.vue";
-import * as barChartConfig from "@/components/Charts/bar_chart.config.ts";
-import BarChart from "@/components/Charts/BarChart.vue";
-import SectionMain from "@/components/SectionMain.vue";
-import CardBoxWidget from "@/components/CardBoxWidget.vue";
-import CardBox from "@/components/CardBox.vue";
-import TableClients from "@/components/TableClients.vue";
-import NotificationBar from "@/components/NotificationBar.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import CardBoxTransaction from "@/components/CardBoxTransaction.vue";
-import CardBoxClient from "@/components/CardBoxClient.vue";
-import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
-import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
+  import { computed, ref, onMounted } from "vue";
+  import { useMainStore } from "@/stores/main";
+  import { useTokenStore } from "@/stores"
+  import {
+    mdiAccountMultiple,
+    mdiCartOutline,
+    mdiChartTimelineVariant,
+    mdiMonitorCellphone,
+    mdiReload,
+    mdiGithub,
+    mdiChartPie,
+    mdiNeedle,
+    mdiCalendarRemoveOutline,
+    mdiTableArrowDown,
+    mdiChartBar,
+    mdiChartMultiple
+  } from "@mdi/js";
+  import * as chartConfig from "@/components/Charts/chart.config.ts";
+  import LineChart from "@/components/Charts/LineChart.vue";
+  import * as barChartConfig from "@/components/Charts/bar_chart.config.ts";
+  import BarChart from "@/components/Charts/BarChart.vue";
+  import SectionMain from "@/components/SectionMain.vue";
+  import CardBoxWidget from "@/components/CardBoxWidget.vue";
+  import CardBox from "@/components/CardBox.vue";
+  import TableClients from "@/components/TableClients.vue";
+  import NotificationBar from "@/components/NotificationBar.vue";
+  import BaseButton from "@/components/BaseButton.vue";
+  import CardBoxTransaction from "@/components/CardBoxTransaction.vue";
+  import CardBoxClient from "@/components/CardBoxClient.vue";
+  import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+  import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
+  import { useRouter } from "vue-router"
 
-const chartData = ref(null);
-const fillChartData = () => {
-  chartData.value = chartConfig.sampleChartData();
-};
+  const router = useRouter();
 
-const barchartData = ref(null);
-const fillBarChartData = () => {
-  barchartData.value = barChartConfig.sampleChartData();
-};
+  const chartData = ref(null);
+  const fillChartData = () => {
+    chartData.value = chartConfig.sampleChartData();
+  };
 
-const tokenStore = useTokenStore()
-console.log(tokenStore.value)
+  const barchartData = ref(null);
+  const fillBarChartData = () => {
+    barchartData.value = barChartConfig.sampleChartData();
+  };
 
-onMounted(() => {
-  fillChartData();
-  fillBarChartData();
-});
+  const tokenStore = useTokenStore()
+  console.log(tokenStore.value)
 
+  onMounted(() => {
+    fillChartData();
+    fillBarChartData();
+  });
+
+  const handleCarboxMenu = (redirect:String) => {
+    router.push({
+      path: "/"+redirect,
+    });
+  }
 </script>
 
 <template>
@@ -70,6 +78,8 @@ onMounted(() => {
           :icon="mdiAccountMultiple"
           :number="7770"
           label="Clients"
+          class="cursor-pointer"
+          @click="handleCarboxMenu('clients')"
         />
         <CardBoxWidget
           trend="12%"
@@ -79,24 +89,30 @@ onMounted(() => {
           :number="512"
           prefix=""
           label="Vaccinated"
+          class="cursor-pointer"
+          @click="handleCarboxMenu('vaccinated')"
         />
         <CardBoxWidget
           trend="Overflow"
           trend-type="alert"
           color="text-yellow-500"
-          :icon="mdiCalendarRemoveOutline"
+          :icon="mdiTableArrowDown"
           :number="256"
           suffix=""
           label="Date Due"
+          class="cursor-pointer"
+          @click="handleCarboxMenu('date_due')"
         />
         <CardBoxWidget
           trend="12%"
           trend-type="down"
           color="text-red-500"
-          :icon="mdiTableArrowDown"
+          :icon="mdiCalendarRemoveOutline"
           :number="256"
           suffix=""
           label="Missed"
+          class="cursor-pointer"
+          @click="handleCarboxMenu('missed')"
         />
       </div>
 

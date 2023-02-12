@@ -2,7 +2,7 @@
   import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
   import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import { useTokenStore,useUseridStore } from "@/stores"
+  import { useTokenStore,useUseridStore,useMuncityStore,useMuncityDescriptionStore } from "@/stores"
   import { getUserProfile } from "@/api/auth"
   import menuAside from "@/menuAside.ts";
   import menuNavBar from "@/menuNavBar.ts";
@@ -54,6 +54,8 @@
   const router_path = ref(router.currentRoute.value.path)
   const tokenStore = useTokenStore()
   const useridStore = useUseridStore()
+  const muncityStore = useMuncityStore()
+  const muncityDescriptionStore = useMuncityDescriptionStore()
 
   const isAsideMobileExpanded = ref(false);
   const isAsideLgActive = ref(false);
@@ -75,6 +77,8 @@
       S.deleteAll(true);
       tokenStore.dispatch("");
       useridStore.dispatch("");
+      muncityStore.dispatch("");
+      muncityDescriptionStore.dispatch("");
       useMainStore().setUser({
         firstname: "",
         lastname: "",

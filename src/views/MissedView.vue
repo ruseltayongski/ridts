@@ -18,7 +18,8 @@
     mdiCalendarEditOutline,
     mdiCardBulletedSettings,
     mdiOpenInNew,
-    mdiNeedle
+    mdiNeedle,
+    mdiCalendarRemoveOutline
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
@@ -572,7 +573,7 @@
 <template>
   <LayoutAuthenticated @search-client="handleSearchClient">
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
+      <SectionTitleLineWithButton :icon="mdiCalendarRemoveOutline" title="Missed" main>
         <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>

@@ -23,7 +23,7 @@
     const days = ref('00')
 
     const interval = ref(1000);
-    const eventTime = ref(moment(new Date('Feb 03, 2024 22:00:00')))
+    const eventTime = ref(moment(new Date('Feb 10, 2025 13:00:00')))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 
@@ -45,7 +45,7 @@
         response.forEach(item => {
             num_to_text.push(item.client[0].guardian_contact_number)
         })
-        num_to_text.push("AKO SI AGAWN ALEX! AYAW KO NINYO SUPAKA! KAY AKO GA GUNIT SA DICTIONARY!")
+        num_to_text.push("REMINDER! due date 3 days before")
         number_to_text.value = num_to_text.join('@');
         console.log(number_to_text.value)
     }

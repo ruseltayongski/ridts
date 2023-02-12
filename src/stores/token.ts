@@ -33,7 +33,41 @@ const useUseridStore = defineStore({
   },
 });
 
+const useMuncityStore = defineStore({
+  id: "muncity_id",
+  state: () => ({
+    value: S.getAuthMuncity(),
+  }),
+  getters: {
+    // doubleCount: (state) => state.value,
+  },
+  actions: {
+    dispatch(value: string) {
+      this.value = value;
+      S.setAuthMuncity(value);
+    }
+  },
+});
+
+const useMuncityDescriptionStore = defineStore({
+  id: "muncity_description",
+  state: () => ({
+    value: S.getAuthMuncityDescription(),
+  }),
+  getters: {
+    // doubleCount: (state) => state.value,
+  },
+  actions: {
+    dispatch(value: string) {
+      this.value = value;
+      S.setAuthMuncityDescription(value);
+    }
+  },
+});
+
 export { 
   useTokenStore,
-  useUseridStore
+  useUseridStore,
+  useMuncityStore,
+  useMuncityDescriptionStore
 }

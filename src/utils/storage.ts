@@ -422,6 +422,30 @@ class Sx extends Lexicon {
         });
     }
 
+    getAuthMuncity(): string {
+        return this.localMemory.getItem("authMuncity");
+    }
+
+    setAuthMuncity(token: string) {
+        this.localMemory.setItem({
+        key: "authMuncity",
+        value: token,
+        expired: 24 * 60 * 60 * 1000, // 过期时间 24 小时
+        });
+    }
+
+    getAuthMuncityDescription(): string {
+        return this.localMemory.getItem("authMuncityDescription");
+    }
+
+    setAuthMuncityDescription(token: string) {
+        this.localMemory.setItem({
+        key: "authMuncityDescription",
+        value: token,
+        expired: 24 * 60 * 60 * 1000, // 过期时间 24 小时
+        });
+    }
+
     /**
      * 读取缓存
      *

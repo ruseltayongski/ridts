@@ -572,7 +572,7 @@
 <template>
   <LayoutAuthenticated @search-client="handleSearchClient">
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
+      <SectionTitleLineWithButton :icon="mdiNeedle" title="Vaccinated" main>
         <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>

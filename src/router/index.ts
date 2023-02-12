@@ -8,6 +8,9 @@ import Referred from '@/views/ReferredView.vue'
 import Accepted from '@/views/AcceptedView.vue'
 import Incoming from '@/views/IncomingView.vue'
 import TextBlast from '@/views/TextBlast.vue'
+import Vaccinated from '@/views/VaccinatedView.vue'
+import DateDue from '@/views/DateDueView.vue'
+import Missed from '@/views/MissedView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -85,6 +88,30 @@ const router = createRouter({
           path: "/dashboard",
           name: "dashboard",
           component: Home,
+        },
+        {
+          meta: {
+            title: "Vaccinated",
+          },
+          path: "/vaccinated",
+          name: "vaccinated",
+          component: Vaccinated,
+        },
+        {
+          meta: {
+            title: "Date Due",
+          },
+          path: "/date_due",
+          name: "date_due",
+          component: DateDue,
+        },
+        {
+          meta: {
+            title: "Missed",
+          },
+          path: "/missed",
+          name: "missed",
+          component: Missed,
         },
         {
           meta: {

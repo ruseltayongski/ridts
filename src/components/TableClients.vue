@@ -120,11 +120,16 @@
   onMounted(() => {
     _referringFacility()
     _referredFacility()
-    _getAllClient({ created_by: useUseridStore().value })
+    _getAllClient()
     refer_modal.value = new Modal(el_refer_modal.value); //initialize modal instance
   })
 
   const _getAllClient = async (params: {} = {}) => {
+    if(!params.search) {
+      const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
+      const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
+      params = { barangay_assignment : barangay_assignment }
+    }
     const response = await getAllClient(params)
     data.value = await Promise.all(response.map(async (item: any) => {
         return {
@@ -193,7 +198,8 @@
           client.firstname = value.firstname
           client.middlename = value.middlename
           client.lastname = value.lastname
-          client.client_barangay = value.client_barangay
+          client.client_barangay = value.client_barangay,
+          client.muncity_description = value.muncity_description
         }
       })
     } else {
@@ -326,7 +332,7 @@
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
-        <th>Progress</th>
+        <!-- <th>Progress</th> -->
         <th>Created</th>
         <th />
       </tr>
@@ -347,12 +353,12 @@
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
         <td data-label="Company">
-          Lapu-lapu City
+          {{ client.muncity_description }}
         </td>
         <td data-label="City">
           {{ client.client_barangay }}
         </td>
-        <td data-label="Progress" class="lg:w-32">
+        <!-- <td data-label="Progress" class="lg:w-32">
           <progress
             class="flex w-2/5 self-center lg:w-full"
             max="100"
@@ -360,7 +366,7 @@
           >
             80
           </progress>
-        </td>
+        </td> -->
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
