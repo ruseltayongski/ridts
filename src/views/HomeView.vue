@@ -32,6 +32,10 @@
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
   import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
   import { useRouter } from "vue-router"
+  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
+  import { useUseridStore } from "@/stores"
+  import { async } from "@firebase/util";
+  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking } from "@/api/python"
 
   const router = useRouter();
 
@@ -51,7 +55,16 @@
   onMounted(() => {
     fillChartData();
     fillBarChartData();
+    cardBoxCount()
   });
+
+  const clients_count = ref(0)
+  const cardBoxCount = async () => {
+    const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
+    const client_count = await getAllClient({ barangay_assignment : barangay_assignment })
+    clients_count.value = client_count.length
+  }
 
   const handleCarboxMenu = (redirect:String) => {
     router.push({
@@ -76,7 +89,7 @@
           trend-type="enrolled"
           color="text-blue-500"
           :icon="mdiAccountMultiple"
-          :number="7770"
+          :number="clients_count"
           label="Clients"
           class="cursor-pointer"
           @click="handleCarboxMenu('clients')"
@@ -86,7 +99,7 @@
           trend-type="up"
           color="text-emerald-500"
           :icon="mdiNeedle"
-          :number="512"
+          :number="0"
           prefix=""
           label="Vaccinated"
           class="cursor-pointer"
@@ -97,7 +110,7 @@
           trend-type="alert"
           color="text-yellow-500"
           :icon="mdiTableArrowDown"
-          :number="256"
+          :number="0"
           suffix=""
           label="Date Due"
           class="cursor-pointer"
@@ -108,7 +121,7 @@
           trend-type="down"
           color="text-red-500"
           :icon="mdiCalendarRemoveOutline"
-          :number="256"
+          :number="0"
           suffix=""
           label="Missed"
           class="cursor-pointer"

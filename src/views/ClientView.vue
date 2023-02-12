@@ -676,6 +676,7 @@
               <FormControl
                 v-model="form.remarks"
                 type="textarea"
+                required
               />
             </FormField>
 

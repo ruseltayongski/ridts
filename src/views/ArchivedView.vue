@@ -118,6 +118,7 @@
     health_provider_contact: "",
     health_provider_address: 0,
     health_provider_barangay: "",
+    remarks: "",
     is_active: true,
     created_by: 0,
     created_on: "",
@@ -131,6 +132,7 @@
     form.bhw_address = response.bhw_address
     form.bhw_contact_number = response.bhw_contact_number
     form.bhw_name = response.bhw_name
+    form.bhw_barangay = response.bhw_barangay
     form.birthdate = response.birthdate
     form.birthplace = response.birthplace
     form.client_address = response.client_address
@@ -151,8 +153,25 @@
     form.middlename = response.middlename
     form.sex = response.sex
     form.vaccine_id = response.vaccine_id
+    form.remarks = response.remarks
     form.created_on = response.created_on
     form.updated_on = response.updated_on
+  }
+
+  const getAge = (dob:any) => {
+    const check = moment(dob, 'YYYY/MM/DD');
+    const a = moment([moment().format('YYYY'), moment().format('MM'), moment().format('DD')]);
+    const b = moment([check.format('YYYY'), check.format('MM'), check.format('DD')]);
+    console.log(a)
+    console.log(b)
+
+    const diffDuration = moment.duration(a.diff(b));
+
+    const year = diffDuration.years()
+    const month = diffDuration.months()
+    const days = diffDuration.days()  
+    
+    return year+" Years, "+month+" month, "+days+" days"; 
   }
 
   defineEmits(["loading-modal-open","loading-modal-close"]);
@@ -189,7 +208,7 @@
               </FormField>
             </FormField>
             
-            <FormField class="text-xl">
+            <FormField >
               <FormField label="Middlename" class="text-sm">
                 {{ form.middlename }}
               </FormField>
@@ -198,30 +217,35 @@
               </FormField>
             </FormField>
 
-            <FormField class="text-xl">
+            <FormField >
               <FormField label="Birthdate" class="text-sm">
-                {{ form.birthdate }}
+                {{ moment(form.birthdate).format('MMMM Do, YYYY') }}
               </FormField>
+              <FormField label="Age" class="text-sm">
+                {{ getAge(form.birthdate) }}
+              </FormField>
+            </FormField>
+
+            <FormField>
               <FormField label="Birthplace" class="text-sm">
                 {{ form.birthplace }}
               </FormField>
+              <FormField label="Sex" class="text-sm">
+                {{ form.sex.charAt(0).toUpperCase() + form.sex.slice(1) }}
+              </FormField>
             </FormField>
 
-            <FormField label="Sex">
-              {{ form.sex.charAt(0).toUpperCase() + form.sex.slice(1) }}
-            </FormField>
-
-            <FormField label="Client Address">
+            <FormField label="Client Address" class="text-sm">
               {{ form.client_barangay }}
             </FormField>
 
             <BaseDivider />
 
-            <FormField label="Name of Parents / Guardian">
+            <FormField label="Name of Parents / Guardian" class="text-sm">
               {{ form.guardian_name }}
             </FormField>
 
-            <FormField class="text-xl">
+            <FormField>
               <FormField label="Guardian Contact Number" class="text-sm">
                 {{ form.guardian_contact_number }}
               </FormField>
@@ -230,39 +254,47 @@
               </FormField>
             </FormField>
 
-            <FormField label="Parent/Guardian Address">
+            <FormField label="Parent/Guardian Address" class="text-sm">
               {{ form.guardian_barangay }}
             </FormField>
 
             <BaseDivider />
 
-            <FormField label="Name of BHW">
-              {{  form.bhw_name }}
+            <FormField label="Name of BHW" class="text-sm">
+              {{ form.bhw_name }}
             </FormField>
 
             <FormField >
-              <FormField label="BHW contact number">
+              <FormField label="BHW contact number" class="text-sm">
                 {{ form.bhw_contact_number }}
               </FormField>
-              <FormField label="BHW Address">
+              <FormField label="BHW Address" class="text-sm">
                 {{ form.bhw_barangay }}
               </FormField>
             </FormField>
 
             <BaseDivider />
 
-            <FormField label="Name of Health Provider">
+            <FormField label="Name of Health Provider" class="text-sm">
               {{ form.health_provider_name }}
             </FormField>
 
             <FormField >
-              <FormField label="Health Provider Contact Number">
+              <FormField label="Health Provider Contact Number" class="text-sm">
                 {{ form.health_provider_contact }}
               </FormField>
-              <FormField label="Health Provider Address">
-                {{ form.bhw_barangay }}
+              <FormField label="Health Provider Address" class="text-sm">
+                {{ form.health_provider_barangay }}
               </FormField>
             </FormField>
+
+            <BaseDivider />
+
+            <FormField label="Remarks" class="text-sm">
+              {{ form.remarks }}
+            </FormField>
+
+            <BaseDivider />
 
             <BaseButtons>
               <BaseButton type="button" color="warning" label="Print PDF" />
@@ -275,7 +307,7 @@
     </div>
   </div>
 
-  <CardBoxModal v-model="isModalActive" title="Vaccinee Info" has-cancel>
+  <!-- <CardBoxModal v-model="isModalActive" title="Vaccinee Info" has-cancel>
     <FormField label="1st Dose">
       <FormField label="Date Scheduled">
         <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
@@ -302,9 +334,9 @@
         <FormControl type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
       </FormField>
     </FormField>
-  </CardBoxModal>
+  </CardBoxModal> -->
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
+  <!-- <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="vaccineeModal" data-bs-backdrop="static" ref='el_modal' aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
       <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
@@ -355,7 +387,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 </template>
 

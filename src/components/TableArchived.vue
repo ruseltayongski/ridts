@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, reactive, onMounted } from "vue";
   import { useMainStore } from "@/stores/main";
+  import { useMuncityDescriptionStore } from "@/stores"
   import { mdiBadgeAccount } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
   import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
@@ -162,7 +163,7 @@
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
-        <th>Progress</th>
+        <!-- <th>Progress</th> -->
         <th>Created</th>
         <th />
       </tr>
@@ -183,12 +184,12 @@
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
         <td data-label="Company">
-          Cebu City
+          {{ useMuncityDescriptionStore().value }}
         </td>
         <td data-label="City">
           {{ client.client_barangay }}
         </td>
-        <td data-label="Progress" class="lg:w-32">
+        <!-- <td data-label="Progress" class="lg:w-32">
           <progress
             class="flex w-2/5 self-center lg:w-full"
             max="100"
@@ -196,7 +197,7 @@
           >
             80
           </progress>
-        </td>
+        </td> -->
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
