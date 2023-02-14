@@ -39,14 +39,27 @@
               console.log("loaded: wow")
           })
           .catch(() => {
-              console.log("not loaded (wow)");
+            loadScript('/assets/wow.min.js')
+                .then(() => {
+                    console.log("loaded: wow")
+                })
+                .catch(() => {
+                    console.log("not loaded (wow)");
+                });
           });
+
       await loadScript('/src/assets/login/assets/js/main.js')
           .then(() => {
               console.log("loaded: main")
           })
           .catch(() => {
-              console.log("not loaded (main)");
+            loadScript('/assets/main.js')
+                .then(() => {
+                    console.log("loaded: wow")
+                })
+                .catch(() => {
+                    console.log("not loaded (wow)");
+                });
           });
     })();
   })
@@ -191,9 +204,9 @@
                                             <li class="nav-item ml-5 lg:ml-11">
                                                 <a class="page-scroll" href="#services">Services</a>
                                             </li>
-                                            <li class="nav-item ml-5 lg:ml-11">
+                                            <!-- <li class="nav-item ml-5 lg:ml-11">
                                                 <a class="page-scroll" href="#contact">Contact</a>
-                                            </li>
+                                            </li> -->
                                         </ul>
                                     </div> 
                                 </nav> 
@@ -325,7 +338,7 @@
                                 </div>
                                 <div class="services_content mt-5">
                                     <h3 class="services_title text-black font-semibold text-xl md:text-3xl">Create Client</h3>
-                                    <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
+                                    <!-- <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p> -->
                                 </div>
                             </div> <!-- single services -->
                         </div>
@@ -339,7 +352,7 @@
                                 </div>
                                 <div class="services_content mt-5">
                                     <h3 class="services_title text-black font-semibold text-xl md:text-3xl">Vaccinate Client</h3>
-                                    <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
+                                    <!-- <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p> -->
                                 </div>
                             </div> <!-- single services -->
                         </div>
@@ -353,22 +366,23 @@
                                 </div>
                                 <div class="services_content mt-5">
                                     <h3 class="services_title text-black font-semibold text-xl md:text-3xl">Text Client</h3>
-                                    <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
+                                    <!-- <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p> -->
                                 </div>
                             </div> <!-- single services -->
                         </div>
                     </div> <!-- row -->
                 </div> <!-- container -->
-            </section>
+            </section><br><br><br><br><br>
             <!--====== SERVICES PART ENDS ======-->
 
             <!--====== ABOUT PART START ======-->
-            <section id="why" class="about_area pt-120 relative">
+
+            <!-- <section id="why" class="about_area pt-120 relative">
                 <div class="about_image flex items-end justify-end">
                     <div class="image lg:pr-13">
                         <img :src="about" alt="about">
                     </div>
-                </div> <!-- about image -->
+                </div> 
                 <div class="container">
                     <div class="row justify-end">
                         <div class="w-full lg:w-1/2">
@@ -376,7 +390,7 @@
                                 <div class="section_title pb-9">
                                     <h5 class="sub_title">Our Vision</h5>
                                     <h4 class="main_title">This is Our Goal Achievement</h4>
-                                </div> <!-- section title -->
+                                </div> 
                                 <p>Nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat sed diam voluptua. At vero eos et accusam et justo duo dolores et rebum. Stet clita kasd gubergren, no sea takimata sanctus. </p>
                                 <ul class="about_list pt-3">
                                     <li class="flex mt-5">
@@ -404,24 +418,24 @@
                                         </div>
                                     </li>
                                 </ul>
-                            </div> <!-- about content -->
+                            </div> 
                         </div>
-                    </div> <!-- row -->
-                </div> <!-- container -->
-            </section>
+                    </div> 
+                </div> 
+            </section> -->
             <!--====== ABOUT PART ENDS ======-->
 
             <!--====== SERVICES PART START ======-->
-            <section id="services" class="services_area pt-120 pb-120">
+            <!-- <section id="services" class="services_area pt-120 pb-120">
                 <div class="container">
                     <div class="row justify-center">
                         <div class="w-full lg:w-1/2">
                             <div class="section_title text-center pb-6">
                                 <h5 class="sub_title">What We Do</h5>
                                 <h4 class="main_title">Our Services</h4>
-                            </div> <!-- section title -->
+                            </div> 
                         </div>
-                    </div> <!-- row -->
+                    </div> 
                     <div class="row justify-center">
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
                             <div class="single_services text-center mt-8 mx-3">
@@ -435,7 +449,7 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">Web Design</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
 
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
@@ -450,7 +464,7 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">Digital Marketing</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
 
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
@@ -465,7 +479,7 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">Mobile Apps</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
 
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
@@ -480,7 +494,7 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">SEO Consultancy</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
 
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
@@ -495,7 +509,7 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">Graphic Design</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
 
                         <div class="w-full sm:w-10/12 md:w-6/12 lg:w-4/12">
@@ -510,20 +524,20 @@
                                     <h3 class="services_title text-black font-semibold text-xl md:text-2xl lg:text-xl xl:text-3xl">Business Consultancy</h3>
                                     <p class="mt-4">Lorem ipsum dolor sit amet, consetetur sadi aliquyam erat, sed diam voluptua. At vero eos accusam et justo duo dolores </p>
                                 </div>
-                            </div> <!-- single services -->
+                            </div> 
                         </div>
-                    </div> <!-- row -->
-                </div> <!-- container -->
-            </section>
+                    </div>
+                </div> 
+            </section> -->
 
             <!--====== CONTACT PART START ======-->
 
-            <section id="contact" class="contact_area relative pt-18 pb-120">
+            <!-- <section id="contact" class="contact_area relative pt-18 pb-120">
                 <div class="contact_image flex items-center justify-end">
                     <div class="image lg:pr-13">
                         <img :src="contact" alt="about">
                     </div>
-                </div> <!-- about image -->
+                </div> 
                 
                 <div class="container">
                     <div class="row justify-end">
@@ -533,7 +547,7 @@
                                     <h5 class="sub_title">Contact</h5>
                                     <h4 class="main_title">Get In Touch</h4>
                                     <p>Lorem ipsum dolor sitrg amet, consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut labore et dolore magna.</p>
-                                </div> <!-- section title -->
+                                </div> 
                                 
                                 <div class="contact_form">
                                     <form id="contact-form" action="" method="POST">
@@ -542,21 +556,21 @@
                                                 <div class="mx-3">
                                                     <div class="single_form mt-8">
                                                         <input name="name" id="name" type="text" placeholder="Name" class="w-full rounded-md py-4 px-6 border border-solid border-body-color">
-                                                    </div> <!-- single form -->
+                                                    </div> 
                                                 </div>
                                             </div>
                                             <div class="w-full md:w-1/2">
                                                 <div class="mx-3">
                                                     <div class="single_form mt-8">
                                                         <input name="email" id="email" type="email" placeholder="Email" class="w-full rounded-md py-4 px-6 border border-solid border-body-color">
-                                                    </div> <!-- single form -->
+                                                    </div> 
                                                 </div>
                                             </div>
                                             <div class="w-full">
                                                 <div class="mx-3">
                                                     <div class="single_form mt-8">
                                                         <textarea name="message" id="message" placeholder="Message" rows="5" class="w-full rounded-md py-4 px-6 border border-solid border-body-color resize-none"></textarea>
-                                                    </div> <!-- single form -->
+                                                    </div> 
                                                 </div>
                                             </div>
                                             <p class="form-message mx-3"></p>
@@ -564,17 +578,17 @@
                                                 <div class="mx-3">
                                                     <div class="single_form mt-8">
                                                         <button type="submit" class="main-btn contact-btn">Submit</button>
-                                                    </div> <!-- single form -->
+                                                    </div> 
                                                 </div>
                                             </div>
-                                        </div> <!-- row -->
+                                        </div> 
                                     </form>
-                                </div> <!-- contact form -->
-                            </div> <!-- contact wrapper -->
+                                </div> 
+                            </div> 
                         </div>
-                    </div> <!-- row -->
-                </div> <!-- container -->
-            </section>
+                    </div> 
+                </div> 
+            </section> -->
 
             <!--====== CONTACT PART ENDS ======-->
 
@@ -588,7 +602,7 @@
                     <img :src="footer_shape_right" alt="">
                 </div>
                 <div class="container">
-                    <div class="footer_widget pt-18 pb-120">
+                    <!-- <div class="footer_widget pt-18 pb-120">
                         <div class="row justify-center">
                             <div class="w-full md:w-1/2 lg:w-3/12">
                                 <div class="footer_about mt-13 mx-3">
@@ -623,7 +637,7 @@
                                     </div> 
                                 </div> 
                             </div>
-                            <!-- <div class="w-full md:w-2/3 lg:w-4/12">
+                            <div class="w-full md:w-2/3 lg:w-4/12">
                                 <div class="footer_subscribe mt-13 mx-3">
                                     <h2 class="footer_title text-xl font-semibold text-white">Newsletter</h2>
                                     <div class="subscribe_form text-right mt-9 relative">
@@ -633,9 +647,9 @@
                                         </form>
                                     </div>
                                 </div> 
-                            </div> -->
+                            </div>
                         </div> 
-                    </div> 
+                    </div>  -->
                     <div class="footer_copyright pt-3 pb-6 border-t-2 border-solid border-white border-opacity-10 sm:flex justify-between">
                         <div class="footer_social pt-4 mx-3 text-center">
                             <ul class="social flex justify-center sm:justify-start">

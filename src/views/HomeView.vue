@@ -35,7 +35,7 @@
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
   import { async } from "@firebase/util";
-  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking } from "@/api/python"
+  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking,getVaccineInfo } from "@/api/python"
 
   const router = useRouter();
 
@@ -59,11 +59,23 @@
   });
 
   const clients_count = ref(0)
+  const vaccinated_count = ref(0)
+  const date_due_count = ref(0)
+  const missed_count = ref(0)
   const cardBoxCount = async () => {
     const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
     const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
-    const client_count = await getAllClient({ barangay_assignment : barangay_assignment })
-    clients_count.value = client_count.length
+    const client_api = await getAllClient({ barangay_assignment : barangay_assignment })
+    clients_count.value = client_api.length
+
+    const vacinated_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"VACCINATED" })
+    vaccinated_count.value = vacinated_api.length
+
+    const date_due_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"DUE DATE" })
+    date_due_count.value = date_due_api.length
+
+    const missed_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED" })
+    missed_count.value = missed_api.length
   }
 
   const handleCarboxMenu = (redirect:String) => {
@@ -85,7 +97,7 @@
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 mb-6">
         <CardBoxWidget
-          trend="12%"
+          trend="#"
           trend-type="enrolled"
           color="text-blue-500"
           :icon="mdiAccountMultiple"
@@ -95,33 +107,33 @@
           @click="handleCarboxMenu('clients')"
         />
         <CardBoxWidget
-          trend="12%"
+          trend="#"
           trend-type="up"
           color="text-emerald-500"
           :icon="mdiNeedle"
-          :number="0"
+          :number="vaccinated_count"
           prefix=""
           label="Vaccinated"
           class="cursor-pointer"
           @click="handleCarboxMenu('vaccinated')"
         />
         <CardBoxWidget
-          trend="Overflow"
+          trend="#"
           trend-type="alert"
           color="text-yellow-500"
           :icon="mdiTableArrowDown"
-          :number="0"
+          :number="date_due_count"
           suffix=""
           label="Date Due"
           class="cursor-pointer"
           @click="handleCarboxMenu('date_due')"
         />
         <CardBoxWidget
-          trend="12%"
+          trend="#"
           trend-type="down"
           color="text-red-500"
           :icon="mdiCalendarRemoveOutline"
-          :number="0"
+          :number="missed_count"
           suffix=""
           label="Missed"
           class="cursor-pointer"

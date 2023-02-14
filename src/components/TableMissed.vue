@@ -9,8 +9,9 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
-  import { getUserBarangay } from '@/api/auth'
-  import { getAllClientArchived } from "@/api/python"
+  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
+  import { useUseridStore } from "@/stores"
+  import { getAllClientArchived,getVaccineInfo } from "@/api/python"
   import moment from "moment"
 
   defineProps({
@@ -99,11 +100,29 @@
 
   const data = ref([])
   const _getAllClientArchived = async (params: {} = {}) => {
-    const response = await getAllClientArchived(params)
-    console.log(response)
+    const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
+    const response = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED" })
+    let vaccine_type = ""
     data.value = await Promise.all(response.map(async (item: any) => {
+        if(item.vaccine_type === 'bcg') {
+            vaccine_type = "BCG"
+        } else if(item.vaccine_type === 'hepb') {
+            vaccine_type = "HepB"
+        } else if(item.vaccine_type === 'pentavalent') {
+            vaccine_type = "Pentavalent"
+        } else if(item.vaccine_type === 'opv') {
+            vaccine_type = "OPV"
+        } else if(item.vaccine_type === 'ipv') {
+            vaccine_type = 'IPV'
+        } else if(item.vaccine_type === 'pcv') {
+            vaccine_type = 'PCV'
+        } else if(item.vaccine_type === 'mcv') {
+            vaccine_type = 'MCV'
+        }
         return {
-          ...item
+            vaccine_type : vaccine_type,
+            ...item.client[0]
         }
     }))
   }
@@ -164,9 +183,9 @@
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
+        <th>Vaccine Type</th>
         <!-- <th>Progress</th> -->
         <th>Created</th>
-        <th>In Active</th>
         <th />
       </tr>
     </thead>
@@ -191,6 +210,7 @@
         <td data-label="City">
           {{ client.client_barangay }}
         </td>
+        <td>{{ client.vaccine_type }}</td>
         <!-- <td data-label="Progress" class="lg:w-32">
           <progress
             class="flex w-2/5 self-center lg:w-full"
@@ -208,7 +228,6 @@
           > <br>
           <small class="text-gray-400 dark:text-slate-400">{{ moment(client.created_on).format('h:mm:ss a') }}</small>
         </td>
-        <td>{{ client.is_active ? 'Yes' : 'No' }}</td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
             <BaseButton
@@ -241,4 +260,3 @@
     </BaseLevel>
   </div>
 </template>
-

@@ -423,7 +423,7 @@
       sms_message += "\n\n"
     }
     sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-    //insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+    insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
       
     notify({
       group: "success_dose",

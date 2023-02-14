@@ -1,30 +1,45 @@
 <script setup lang="ts">
-import AsideMenuLayer from "@/components/AsideMenuLayer.vue";
-import OverlayLayer from "@/components/OverlayLayer.vue";
+  import { ref, onMounted } from "vue";
+  import AsideMenuLayer from "@/components/AsideMenuLayer.vue";
+  import OverlayLayer from "@/components/OverlayLayer.vue";
+  import { useUseridStore } from "@/stores"
 
-defineProps({
-  menu: {
-    type: Array,
-    required: true,
-  },
-  isAsideMobileExpanded: Boolean,
-  isAsideLgActive: Boolean,
-});
+  const props = defineProps({
+    menu: {
+      type: Array,
+      required: true,
+    },
+    isAsideMobileExpanded: Boolean,
+    isAsideLgActive: Boolean,
+  });
 
-const emit = defineEmits(["menu-click", "aside-lg-close-click"]);
+  const menu_display = ref([])
+  onMounted(() => {
+    menu_display.value = props.menu.map((item: any) => {
+        // if(useUseridStore().value !== 4413 && item.label === 'Text Blast') {
+        //   return;
+        // }
+        return {
+          ...item
+        }
+    })
+    //menu_display.value = handler.filter((item: any) => { return typeof item === 'Object' } )
+  })            
 
-const menuClick = (event, item) => {
-  emit("menu-click", event, item);
-};
+  const emit = defineEmits(["menu-click", "aside-lg-close-click"]);
 
-const asideLgCloseClick = (event) => {
-  emit("aside-lg-close-click", event);
-};
+  const menuClick = (event, item) => {
+    emit("menu-click", event, item);
+  };
+
+  const asideLgCloseClick = (event) => {
+    emit("aside-lg-close-click", event);
+  };
 </script>
 
 <template>
   <AsideMenuLayer
-    :menu="menu"
+    :menu="menu_display"
     :class="[
       isAsideMobileExpanded ? 'left-0' : '-left-60 lg:left-0',
       { 'lg:hidden xl:flex': !isAsideLgActive },

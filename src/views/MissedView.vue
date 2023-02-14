@@ -22,7 +22,7 @@
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
-  import TableArchived from "@/components/TableArchived.vue";
+  import TableMissed from "@/components/TableMissed.vue";
   import CardBox from "@/components/CardBox.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
@@ -184,7 +184,7 @@
       <SectionTitleLineWithButton :icon="mdiCalendarRemoveOutline" title="Missed" main>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableArchived @client-info="handleClientInfo" checkable />
+        <TableMissed @client-info="handleClientInfo" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -220,7 +220,7 @@
 
             <FormField >
               <FormField label="Birthdate" class="text-sm">
-                {{ moment(form.birthdate).format('MMMM Do, YYYY') }}
+                {{ moment(form.birthdate).format('ll') }}
               </FormField>
               <FormField label="Age" class="text-sm">
                 {{ getAge(form.birthdate) }}

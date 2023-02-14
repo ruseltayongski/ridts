@@ -21,7 +21,7 @@
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
-  import TableArchived from "@/components/TableArchived.vue";
+  import TableVaccinated from "@/components/TableVaccinated.vue";
   import CardBox from "@/components/CardBox.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
@@ -162,8 +162,6 @@
     const check = moment(dob, 'YYYY/MM/DD');
     const a = moment([moment().format('YYYY'), moment().format('MM'), moment().format('DD')]);
     const b = moment([check.format('YYYY'), check.format('MM'), check.format('DD')]);
-    console.log(a)
-    console.log(b)
 
     const diffDuration = moment.duration(a.diff(b));
 
@@ -183,7 +181,7 @@
       <SectionTitleLineWithButton :icon="mdiNeedle" title="Vaccinated" main>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableArchived @client-info="handleClientInfo" checkable />
+        <TableVaccinated @client-info="handleClientInfo" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
@@ -219,7 +217,7 @@
 
             <FormField >
               <FormField label="Birthdate" class="text-sm">
-                {{ moment(form.birthdate).format('MMMM Do, YYYY') }}
+                {{ moment(form.birthdate).format('ll') }}
               </FormField>
               <FormField label="Age" class="text-sm">
                 {{ getAge(form.birthdate) }}

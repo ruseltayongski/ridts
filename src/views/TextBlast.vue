@@ -43,7 +43,7 @@
         }))
         const num_to_text = []
         response.forEach(item => {
-            num_to_text.push(item.client[0].guardian_contact_number)
+            num_to_text.push(item.bhw_contact_number+"@"+item.client[0].guardian_contact_number)
         })
         num_to_text.push("REMINDER! due date 3 days before")
         number_to_text.value = num_to_text.join('@');
