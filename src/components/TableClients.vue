@@ -309,6 +309,7 @@
     button="danger"
     has-cancel
     has-confirm
+    title="."
     @confirm-delete="handleConfirmDelete"
   >
     <p>Are you sure you want to delete {{ client_delete.client_name }}?</p>
@@ -385,14 +386,14 @@
               data-bs-target="#clientModal"
               @click="handleClientInfo(client.id)"
             />
-            <BaseButton
+            <!-- <BaseButton
               color="success"
               :icon="mdiAmbulance"
               small
               data-bs-toggle="modal" 
               data-bs-target="#referModal"
               @click="handleReferClient(client)"
-            />
+            /> -->
             <BaseButton
               color="danger"
               :icon="mdiTrashCan"

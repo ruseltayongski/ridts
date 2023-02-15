@@ -34,33 +34,39 @@
   
   onMounted(() => {
     (async () => {
-      await loadScript('/src/assets/login/assets/js/wow.min.js')
+      if(process.env.NODE_ENV === 'development') {
+        await loadScript('/src/assets/login/assets/js/wow.min.js')
           .then(() => {
-              console.log("loaded: wow")
+              console.log("loaded: wow1")
           })
           .catch(() => {
-            loadScript('/assets/wow.min.js')
-                .then(() => {
-                    console.log("loaded: wow")
-                })
-                .catch(() => {
-                    console.log("not loaded (wow)");
-                });
+            console.log("not loaded (wow)");
           });
+        await loadScript('/src/assets/login/assets/js/main.js')
+        .then(() => {
+            console.log("loaded: main")
+        })
+        .catch(() => {
+            console.log("not loaded (main)");
+        });
+      } else {
+        await loadScript('/assets/wow.min.js')
+            .then(() => {
+                console.log("loaded: wow2")
+            })
+            .catch(() => {
+                console.log("not loaded (wow2)");
+            });
 
-      await loadScript('/src/assets/login/assets/js/main.js')
-          .then(() => {
-              console.log("loaded: main")
-          })
-          .catch(() => {
-            loadScript('/assets/main.js')
-                .then(() => {
-                    console.log("loaded: wow")
-                })
-                .catch(() => {
-                    console.log("not loaded (wow)");
-                });
-          });
+        await loadScript('/assets/main.js')
+            .then(() => {
+                console.log("loaded: main2")
+            })
+            .catch(() => {
+                console.log("not loaded (main2)");
+            });      
+      }
+      
     })();
   })
 
