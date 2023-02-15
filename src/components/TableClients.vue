@@ -288,6 +288,7 @@
       </div>
     </div>
   </div>
+
   <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer @refer="referClient">
     <FormField label="Referring Facility" class="mt-6">
       <FormControl v-model="referring_facility" :options="referring_facility_list" />
@@ -305,7 +306,6 @@
 
   <CardBoxModal
     v-model="isModalDangerActive"
-    title="Please confirm"
     button="danger"
     has-cancel
     has-confirm

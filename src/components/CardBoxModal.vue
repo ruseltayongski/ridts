@@ -77,7 +77,7 @@ window.addEventListener("keydown", (e) => {
       class="shadow-lg max-h-modal w-11/12 md:w-3/5 lg:w-2/5 xl:w-4/12 z-50"
       is-modal
     >
-      <CardBoxComponentTitle :title="title">
+      <!-- <CardBoxComponentTitle :title="title">
         <BaseButton
           v-if="hasCancel"
           :icon="mdiClose"
@@ -86,13 +86,23 @@ window.addEventListener("keydown", (e) => {
           rounded-full
           @click.prevent="cancel"
         />
-      </CardBoxComponentTitle>
+      </CardBoxComponentTitle> -->
 
       <div class="space-y-3">
         <slot />
       </div>
 
-      <template #footer>
+      <BaseButtons class="mt-6">
+        <BaseButton :label="hasConfirm ? buttonLabel_confirm : hasRefer ? buttonLabel_refer : buttonLabel" :color="button" @click="confirm" />
+        <BaseButton
+          v-if="hasCancel"
+          label="Cancel"
+          :color="button"
+          outline
+          @click="cancel"
+        />
+      </BaseButtons>
+      <!-- <template #footer>
         <BaseButtons>
           <BaseButton :label="hasConfirm ? buttonLabel_confirm : hasRefer ? buttonLabel_refer : buttonLabel" :color="button" @click="confirm" />
           <BaseButton
@@ -103,7 +113,7 @@ window.addEventListener("keydown", (e) => {
             @click="cancel"
           />
         </BaseButtons>
-      </template>
+      </template> -->
     </CardBox>
   </OverlayLayer>
 </template>
