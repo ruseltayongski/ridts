@@ -33,6 +33,7 @@
   const mainStore = useMainStore()
   //const items = computed(() => mainStore.clients);
   const data = ref([])
+  const data_handler = ref([])
   const items = computed(() => data.value);
 
   const isModalActive = ref(false);
@@ -133,9 +134,11 @@
     const response = await getAllClient(params)
     data.value = await Promise.all(response.map(async (item: any) => {
         return {
-          ...item
+          ...item,
+          fullname: item.firstname+" "+item.middlename+" "+item.lastname
         }
     }))
+    data_handler.value = data.value
   }
 
   const _referringFacility = async () => {
@@ -187,7 +190,14 @@
   const search_keyword = computed(() => props.search_keyword);
   watch(search_keyword, (value) => {
     console.log("search keyword")
-    _getAllClient({ search : value, created_by: useUseridStore().value })
+    let filter = data_handler.value.filter((client) => client.fullname.toLowerCase().includes(value.toLowerCase()) )
+    if(filter.length > 0) {
+      data.value = filter
+      currentPage.value = 0
+    }
+    else
+      data.value = []
+    //_getAllClient({ search : value, created_by: useUseridStore().value })
   })
 
   const forms = computed(() => props.form);
@@ -200,6 +210,7 @@
           client.lastname = value.lastname
           client.client_barangay = value.client_barangay,
           client.muncity_description = value.muncity_description
+          client.fullname = value.firstname+" "+value.middlename+" "+value.lastname
         }
       })
     } else {
@@ -351,7 +362,7 @@
           />
         </td>
         <td data-label="Name">
-          {{ client.firstname+" "+client.middlename+" "+client.lastname }}
+          {{ client.fullname }}
         </td>
         <td data-label="Company">
           {{ client.muncity_description }}

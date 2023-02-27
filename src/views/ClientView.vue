@@ -264,6 +264,7 @@
       firstname : form.firstname,
       middlename : form.middlename,
       lastname : form.lastname,
+      fullname : form.firstname+" "+form.middlename+" "+form.lastname,
       client_barangay : form.client_barangay,
       status : status,
       client_address : form.client_address,
