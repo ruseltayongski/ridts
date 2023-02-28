@@ -383,48 +383,138 @@
       sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'hepb') {
       sms_message += " is scheduled for HEPA B Vaccination on"
       sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'pentavalent') {
       sms_message += " is scheduled for PENTAVALENT Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      if(vaccine_info_save.scheduled_3) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+      } else if(vaccine_info_save.scheduled_2) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+      } else {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      }
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
       sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_3) {
+        if(!vaccine_info_save.given_3) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_2) {
+        if(!vaccine_info_save.given_2) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'opv') {
       sms_message += " is scheduled for OPV Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      if(vaccine_info_save.scheduled_3) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+      } else if(vaccine_info_save.scheduled_2) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+      } else {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      }
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
       sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_3) {
+        if(!vaccine_info_save.given_3) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_2) {
+        if(!vaccine_info_save.given_2) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'ipv') {
       sms_message += " is scheduled for IPV Vaccination on"
       sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'pcv') {
       sms_message += " is scheduled for PCV Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      if(vaccine_info_save.scheduled_3) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+      } else if(vaccine_info_save.scheduled_2) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+      } else {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      } 
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
       sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_3) {
+        if(!vaccine_info_save.given_3) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_2) {
+        if(!vaccine_info_save.given_2) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
     else if(schedule.vaccine_type == 'mcv') {
       sms_message += " is scheduled for MCV Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      if(vaccine_info_save.scheduled_2) {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+      } else {
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+      }  
       sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
       sms_message += "\n\n"
+      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+      if(vaccine_info_save.scheduled_2) {
+        if(!vaccine_info_save.given_2) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      } else if(vaccine_info_save.scheduled_1) {
+        if(!vaccine_info_save.given_1) {
+          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+        }
+      }
     }
-    sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-    insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
       
     notify({
       group: "success_dose",
