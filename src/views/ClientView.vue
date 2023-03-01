@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
-  import { insertFirebase, readFirebase } from "@/utils/firebase.ts"
+  import { insertFirebase } from "@/utils/firebase.ts"
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -656,8 +656,6 @@
     console.log(value)
     schedule.scheduled_administerred_3 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
   })
-
-  readFirebase()
 </script>
 
 <template>

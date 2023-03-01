@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
-import { getDatabase, ref, set, push, onValue, get, child } from "firebase/database";
+import { getDatabase, ref, set, push, onValue, get, child, limitToLast, query } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,11 +43,23 @@ const insertFirebase = (remarks:"") => {
 }
 
 const readFirebase = () => {
+    // const db = initFirebase();
+    // const starCountRef = ref(db, 'ridts');
+    // onValue(starCountRef, (snapshot) => {
+    //     const data = snapshot.val();
+    //     console.log(data)
+    // });
+
     const db = initFirebase();
-    const starCountRef = ref(db, 'ridts');
+    const starCountRef = query(ref(db, 'ridts'), limitToLast(1));
     onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
         console.log(data)
+        try { 
+            document.querySelector('.text_blast').innerHTML="Connected" 
+            document.querySelector('.text_blast').classList.add("text-green-600")
+        }
+        catch(e){}
     });
 }
 

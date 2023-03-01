@@ -14,6 +14,7 @@
   import NavBarItemPlain from "@/components/NavBarItemPlain.vue";
   import AsideMenu from "@/components/AsideMenu.vue";
   import FooterBar from "@/components/FooterBar.vue";
+  import { readFirebase } from "@/utils/firebase.ts"
 
   import { S } from "@/utils"
 
@@ -32,6 +33,7 @@
     if(!useMainStore().userFirstname && !props.hasLandingPage) {
       _getUserProfile()
     }
+    readFirebase()
   })
 
   const _getUserProfile = async () => {
@@ -143,6 +145,9 @@
             v-model="search_keyword"
             @keyup="handleSearchClient"
           />
+        </NavBarItemPlain>
+        <NavBarItemPlain use-margin>
+          TEXT BLAST: <p class="ml-2 text_blast">Connecting...</p>
         </NavBarItemPlain>
       </NavBar>
       <AsideMenu
