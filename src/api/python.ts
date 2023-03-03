@@ -63,3 +63,7 @@ export function getIncoming(params: {} = {}) {
 export function getAccepted(params: {} = {}) {
   return req.get("/accepted/all",params);
 }
+
+export function barChartData(params: {} = {}) {
+  return req.get("/barchart",params);
+}

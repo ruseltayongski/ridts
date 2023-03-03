@@ -36,6 +36,7 @@
   import { useUseridStore } from "@/stores"
   import { async } from "@firebase/util";
   import { getAllClient,deleteClient,createActivity,createTracking,updateTracking,getVaccineInfo } from "@/api/python"
+  import moment from "moment"
 
   const router = useRouter();
 
@@ -143,7 +144,6 @@
 
       <SectionTitleLineWithButton :icon="mdiChartBar" title="Trends per month">
         <BaseButton
-          :icon="mdiReload"
           color="whiteDark"
           @click="fillBarChartData"
         />

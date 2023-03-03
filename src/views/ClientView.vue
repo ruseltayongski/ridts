@@ -2,7 +2,6 @@
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import { insertFirebase } from "@/utils/firebase.ts"
-  import Axios from "axios";
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
