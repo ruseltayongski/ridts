@@ -13,6 +13,7 @@
   import { useUseridStore } from "@/stores"
   import { getAllClientArchived,getVaccineInfo } from "@/api/python"
   import moment from "moment"
+  import loadingModal from "@/assets/spin.gif"
 
   defineProps({
     checkable: Boolean,
@@ -175,11 +176,11 @@
     </span>
   </div>
 
-  <table>
+  <table v-if="itemsPaginated.length > 0">
     <thead>
       <tr>
-        <th v-if="checkable" />
-        <th />
+        <!-- <th v-if="checkable" />
+        <th /> -->
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
@@ -191,7 +192,7 @@
     </thead>
     <tbody>
       <tr v-for="client in itemsPaginated" :key="client.id">
-        <TableCheckboxCell
+        <!-- <TableCheckboxCell
           v-if="checkable"
           @checked="checked($event, client)"
         />
@@ -200,7 +201,7 @@
           :firstname="client.firstname+client.middlename+client.lastname"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
-        </td>
+        </td> -->
         <td data-label="Name">
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
@@ -243,6 +244,10 @@
       </tr>
     </tbody>
   </table>
+  <div class="flex flex-row mt-2 p-10" v-else>
+    <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
+    <p class="text-xl ml-2">Processing...</p>
+  </div>
   <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
     <BaseLevel>
       <BaseButtons>

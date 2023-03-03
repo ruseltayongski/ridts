@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import numeral from "numeral";
+import loadingModal from "@/assets/spin.gif"
 
 const props = defineProps({
   prefix: {
@@ -59,6 +60,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>{{ prefix }}{{ newValueFormatted }}{{ suffix }}</div>
+  <div v-if="newValueFormatted">{{ prefix }}{{ newValueFormatted }}{{ suffix }}</div>
+  <div class="flex flex-row mt-2" v-else>
+    <img :src="loadingModal" alt="loading_gif" class="w-5 h-5">
+    <p class="text-xs ml-2">Processing...</p>
+  </div>
 </template>
 

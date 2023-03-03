@@ -29,3 +29,7 @@ export function getUserMunicipality(params: {} = {}) {
   return req.get("/user/muncity", params);
 }
 
+export function textBlast(params: {} = {}) {
+  return req.get("/user/text_blast", params);
+}
+

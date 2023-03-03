@@ -68,14 +68,14 @@
     const client_api = await getAllClient({ barangay_assignment : barangay_assignment })
     clients_count.value = client_api.length
 
-    const vacinated_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"VACCINATED" })
-    vaccinated_count.value = vacinated_api.length
+    const vacinated_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"VACCINATED",count:"true" })
+    vaccinated_count.value = vacinated_api
 
-    const date_due_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"DUE DATE" })
-    date_due_count.value = date_due_api.length
+    const date_due_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"DUE DATE",count:"true" })
+    date_due_count.value = date_due_api
 
-    const missed_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED" })
-    missed_count.value = missed_api.length
+    const missed_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED",count:"true" })
+    missed_count.value = missed_api
   }
 
   const handleCarboxMenu = (redirect:String) => {

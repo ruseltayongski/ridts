@@ -2,6 +2,7 @@
   import { reactive, ref, computed, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import { insertFirebase } from "@/utils/firebase.ts"
+  import Axios from "axios";
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -28,7 +29,7 @@
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import NotificationMessage from "@/components/NotificationMessage.vue";
-  import { getUserBarangay, getUserMunicipality, getUserInfo, getUserBarangayAssignment } from '@/api/auth'
+  import { getUserBarangay, getUserMunicipality, getUserInfo, getUserBarangayAssignment,textBlast } from '@/api/auth'
   import { useUseridStore,useMuncityStore,useMuncityDescriptionStore } from "@/stores"
 
   import moment from "moment"
@@ -387,6 +388,7 @@
       if(vaccine_info_save.scheduled_1) {
         if(!vaccine_info_save.given_1) {
           insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          //await sendTextBlast(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
         }
       }
     }
@@ -656,6 +658,10 @@
     console.log(value)
     schedule.scheduled_administerred_3 = mainStore.userFirstname + " " + mainStore.userMiddlename + " " + mainStore.userLastname
   })
+
+  const sendTextBlast = async (message:String) => {
+    await textBlast({ message: message, to:"eN0lsyKOTK-3alOQSopGnb:APA91bF1yFP8QfvUr7lZZ9WfS39y6SD--bVcco7hqFx_SKAuOyCrSHNxvIFz5HSiPum5kjrnwqZ76XJGzTiGQKF0pi39a69vnYGbdMa3OX8Lhe7lnNBt_be_qqLKE53eao_wO0FIXsd5" })
+  }
 </script>
 
 <template>
