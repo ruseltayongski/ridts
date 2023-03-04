@@ -14,7 +14,7 @@ const props = defineProps({
   },
   status: {
     type: String,
-    default: null,
+    default: "",
   },
   value: {
     type: Number,
@@ -61,6 +61,7 @@ watch(value, () => {
 onMounted(() => {
   growInit();
 });
+
 </script>
 
 <template>

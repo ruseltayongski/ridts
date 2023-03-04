@@ -1,13 +1,14 @@
 <script setup lang="ts">
   import { computed, ref, reactive, onMounted, watch, normalizeStyle } from "vue";
   import { useMainStore } from "@/stores/main";
-  import { mdiTrashCan,mdiNeedle,mdiAmbulance } from "@mdi/js";
+  import { mdiTrashCan,mdiNeedle,mdiAmbulance,mdiInformation } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
   import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
   import BaseLevel from "@/components/BaseLevel.vue";
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
+  import NotificationBar from "@/components/NotificationBar.vue";
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { getAllClient,deleteClient,createActivity,createTracking,updateTracking } from "@/api/python"
   import { useUseridStore } from "@/stores"
@@ -216,6 +217,9 @@
       })
     } else {
       data.value.unshift(value)
+      if(props.search_keyword) {
+        data_handler.value.unshift(value)
+      }
     }
   })
 
@@ -262,7 +266,10 @@
     refer_client.value = client
   }
 
-  readFirebase()
+  const notificationSettingsModel = ref([]);
+  const notificationsOutline = computed(
+    () => notificationSettingsModel.value.indexOf("outline") > -1
+  );
 </script>
 
 <template>
@@ -417,11 +424,19 @@
       </tr>
     </tbody>
   </table>
+  <NotificationBar
+    color="info"
+    :icon="mdiInformation"
+    :outline="notificationsOutline"
+    v-else-if="data.length <= 0 && search_keyword"
+  >
+    <b>Info state</b>. No client found!
+  </NotificationBar>
   <div class="flex flex-row mt-2 p-10" v-else>
     <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
     <p class="text-xl ml-2">Processing...</p>
   </div>
-  <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
+  <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800" v-if="data.length > 0">
     <BaseLevel>
       <BaseButtons>
         <BaseButton
