@@ -126,6 +126,7 @@
             ...item.client[0]
         }
     }))
+    console.log(data.value)
   }
 
   const _getUserBarangay = async () => {

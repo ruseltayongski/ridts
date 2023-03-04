@@ -35,19 +35,15 @@
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
   import { async } from "@firebase/util";
-  import { getAllClient,clientCount,getVaccineInfo } from "@/api/python"
-  import moment from "moment"
+  import { clientCount,getVaccineInfo } from "@/api/python"
+  import loadingModal from "@/assets/spin.gif"
 
   const router = useRouter();
 
   const chartData = ref(null);
-  const fillChartData = () => {
-    chartData.value = chartConfig.sampleChartData();
-  };
-
-  const barchartData = ref(null);
-  const fillBarChartData = () => {
-    barchartData.value = barChartConfig.sampleChartData();
+  const fillChartData = async () => {
+    chartData.value = await chartConfig.lineChartDataProcess()
+    console.log(chartData.value)
   };
 
   const tokenStore = useTokenStore()
@@ -55,7 +51,6 @@
 
   onMounted(() => {
     fillChartData();
-    fillBarChartData();
     cardBoxCount()
   });
 
@@ -146,30 +141,32 @@
         />
       </div>
 
-      <SectionTitleLineWithButton :icon="mdiChartBar" title="Trends per month">
-        <BaseButton
+      <SectionTitleLineWithButton :icon="mdiChartBar" title="Clients per month">
+        <!-- <BaseButton
           color="whiteDark"
           @click="fillBarChartData"
-        />
+        /> -->
       </SectionTitleLineWithButton>
 
       <CardBox class="mb-6">
-        <div v-if="barchartData">
-          <bar-chart :data="barchartData" class="h-96" />
-        </div>
+        <bar-chart class="h-96" />
       </CardBox>
 
       <SectionTitleLineWithButton :icon="mdiChartMultiple" title="Trends overview last 9 days">
-        <BaseButton
+        <!-- <BaseButton
           :icon="mdiReload"
           color="whiteDark"
           @click="fillChartData"
-        />
+        /> -->
       </SectionTitleLineWithButton>
 
       <CardBox class="mb-6">
         <div v-if="chartData">
-          <line-chart :data="chartData" class="h-96" />
+          <line-chart :data="JSON.parse(JSON.stringify(chartData))" class="h-96" />
+        </div>
+        <div class="flex flex-row mt-2 p-10" v-else>
+          <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
+          <p class="text-xl ml-2">Processing...</p>
         </div>
       </CardBox>
       

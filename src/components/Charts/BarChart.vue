@@ -15,16 +15,7 @@
   import { getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
 
-  const props = defineProps({
-    data: {
-      type: Object,
-      required: true,
-    },
-  });
-
   const root = ref(null);
-
-  let chart;
 
   Chart.register(
     LineElement,
@@ -39,37 +30,6 @@
 
   onMounted(() => {
     _barChartData()
-
-    // chart = new Chart(root.value, {
-    //   type: "line",
-    //   data: props.data,
-    //   options: {
-    //     responsive: true,
-    //     maintainAspectRatio: false,
-    //     scales: {
-    //       y: {
-    //         display: false,
-    //       },
-    //       x: {
-    //         display: true,
-    //       },
-    //     },
-    //     plugins: {
-    //       legend: {
-    //         display: false,
-    //       },
-    //     },
-    //   },
-    // });
-  });
-
-  const chartData = computed(() => props.data);
-
-  watch(chartData, (data) => {
-    if (chart) {
-      chart.data = data;
-      chart.update();
-    }
   });
 
   const _barChartData = async () => {

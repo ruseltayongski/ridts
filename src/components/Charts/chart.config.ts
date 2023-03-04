@@ -1,11 +1,13 @@
 import moment from "moment"
+import { lineChartData } from "@/api/python"
+import { getUserBarangayAssignment } from '@/api/auth'
+import { useUseridStore } from "@/stores"
 
 export const chartColors : any = {
   default: {
     primary: "#00D1B2",
     info: "#209CEE",
-    danger: "#FF3860",
-    warning: "#EAB308"
+    danger: "#FF3860"
   },
 };
 
@@ -19,8 +21,9 @@ const randomChartData = (n:Number) => {
   return data;
 };
 
-const datasetObject = (color:any, points:any) => {
-  const data = randomChartData(points)
+const datasetObject = async (color:any, points:any) => {
+  //const data = randomChartData(points)
+  const data = points
   console.log(data)
   return {
     fill: false,
@@ -41,7 +44,15 @@ const datasetObject = (color:any, points:any) => {
   };
 };
 
-export const sampleChartData = (points = 9) => {
+const _lineChartData = async (vaccine_status:String) => {
+  const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
+  const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
+  const params = { status: 1, for_sms: "true", barangay_assignment: barangay_assignment, filter: "individual", vaccine_status: vaccine_status, linechart: "true" }
+  const response = await lineChartData(params)
+  return response
+}
+
+export const lineChartDataProcess = async (points = 9) => {
   let labels = [];
 
   // for (let i = 1; i <= points; i++) {
@@ -57,13 +68,13 @@ export const sampleChartData = (points = 9) => {
 
   labels = labels.reverse()
 
-  return {
+  const data = {
     labels,
     datasets: [
-      datasetObject("primary", points),
-      datasetObject("info", points),
-      datasetObject("danger", points),
-      datasetObject("warning", points),
+      await datasetObject("primary", await _lineChartData("CLIENT")),
+      await datasetObject("info", await _lineChartData("VACCINATED")),
+      await datasetObject("danger", await _lineChartData("MISSED"))
     ],
-  };
+  }
+  return data
 };

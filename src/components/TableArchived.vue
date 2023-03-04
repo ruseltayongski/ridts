@@ -9,8 +9,9 @@
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
-  import { getUserBarangay } from '@/api/auth'
+  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { getAllClientArchived } from "@/api/python"
+  import { useUseridStore } from "@/stores"
   import moment from "moment"
 
   defineProps({
@@ -99,8 +100,10 @@
 
   const data = ref([])
   const _getAllClientArchived = async (params: {} = {}) => {
+    const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
+    const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
+    params = { barangay_assignment : barangay_assignment }
     const response = await getAllClientArchived(params)
-    console.log(response)
     data.value = await Promise.all(response.map(async (item: any) => {
         return {
           ...item
@@ -159,8 +162,8 @@
   <table>
     <thead>
       <tr>
-        <th v-if="checkable" />
-        <th />
+        <!-- <th v-if="checkable" />
+        <th /> -->
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
@@ -172,7 +175,7 @@
     </thead>
     <tbody>
       <tr v-for="client in itemsPaginated" :key="client.id">
-        <TableCheckboxCell
+        <!-- <TableCheckboxCell
           v-if="checkable"
           @checked="checked($event, client)"
         />
@@ -181,7 +184,7 @@
           :firstname="client.firstname+client.middlename+client.lastname"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
-        </td>
+        </td> -->
         <td data-label="Name">
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>

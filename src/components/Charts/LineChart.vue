@@ -55,7 +55,6 @@ onMounted(() => {
 });
 
 const chartData = computed(() => props.data);
-
 watch(chartData, (data) => {
   if (chart) {
     chart.data = data;

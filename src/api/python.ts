@@ -71,3 +71,7 @@ export function getAccepted(params: {} = {}) {
 export function barChartData(params: {} = {}) {
   return req.get("/barchart",params);
 }
+
+export function lineChartData(params: {} = {}) {
+  return req.get("/linechart",params);
+}
