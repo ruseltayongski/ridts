@@ -35,7 +35,7 @@
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
   import { async } from "@firebase/util";
-  import { getAllClient,deleteClient,createActivity,createTracking,updateTracking,getVaccineInfo } from "@/api/python"
+  import { getAllClient,clientCount,getVaccineInfo } from "@/api/python"
   import moment from "moment"
 
   const router = useRouter();
@@ -66,8 +66,8 @@
   const cardBoxCount = async () => {
     const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
     const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
-    const client_api = await getAllClient({ barangay_assignment : barangay_assignment })
-    clients_count.value = client_api.length
+    const client_api = await clientCount({ barangay_assignment : barangay_assignment })
+    clients_count.value = client_api
 
     const vacinated_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"VACCINATED",count:"true" })
     vaccinated_count.value = vacinated_api
@@ -102,7 +102,8 @@
           trend-type="enrolled"
           color="text-blue-500"
           :icon="mdiAccountMultiple"
-          :number="clients_count"
+          :number="clients_count.count"
+          :status="clients_count.status"
           label="Clients"
           class="cursor-pointer"
           @click="handleCarboxMenu('clients')"
@@ -112,7 +113,8 @@
           trend-type="up"
           color="text-emerald-500"
           :icon="mdiNeedle"
-          :number="vaccinated_count"
+          :number="vaccinated_count.count"
+          :status="clients_count.status"
           prefix=""
           label="Vaccinated"
           class="cursor-pointer"
@@ -123,7 +125,8 @@
           trend-type="alert"
           color="text-yellow-500"
           :icon="mdiTableArrowDown"
-          :number="date_due_count"
+          :number="date_due_count.count"
+          :status="clients_count.status"
           suffix=""
           label="Date Due"
           class="cursor-pointer"
@@ -134,7 +137,8 @@
           trend-type="down"
           color="text-red-500"
           :icon="mdiCalendarRemoveOutline"
-          :number="missed_count"
+          :number="missed_count.count"
+          :status="clients_count.status"
           suffix=""
           label="Missed"
           class="cursor-pointer"

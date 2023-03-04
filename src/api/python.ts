@@ -20,6 +20,10 @@ export function getInfoClient(params: {} = {}) {
   return req.get("/client",params);
 }
 
+export function clientCount(params: {} = {}) {
+  return req.get("/clients/count",params);
+}
+
 export function updateClient(params: {} = {}) {
   return req.put("/client?id="+params.id,params);
 }

@@ -28,6 +28,10 @@ defineProps({
     type: String,
     default: null,
   },
+  status: {
+    type: String,
+    default: null,
+  },
   color: {
     type: String,
     default: null,
@@ -61,7 +65,7 @@ defineProps({
           {{ label }}
         </h3>
         <h1 class="text-3xl leading-tight font-semibold">
-          <NumberDynamic :value="number" :prefix="prefix" :suffix="suffix" />
+          <NumberDynamic :value="number" :status="status" :prefix="prefix" :suffix="suffix" />
         </h1>
       </div>
       <BaseIcon

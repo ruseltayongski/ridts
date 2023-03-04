@@ -12,6 +12,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  status: {
+    type: String,
+    default: null,
+  },
   value: {
     type: Number,
     default: 0,
@@ -60,7 +64,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="newValueFormatted">{{ prefix }}{{ newValueFormatted }}{{ suffix }}</div>
+  <div v-if="status == 'success'">{{ prefix }}{{ newValueFormatted }}{{ suffix }}</div>
   <div class="flex flex-row mt-2" v-else>
     <img :src="loadingModal" alt="loading_gif" class="w-5 h-5">
     <p class="text-xs ml-2">Processing...</p>
