@@ -23,17 +23,17 @@
     const days = ref('00')
 
     const interval = ref(1000);
-    const eventTime = ref(moment(new Date('Feb 10, 2025 13:00:00')))
+    const static_date = ref(new Date('Mar 5, 2023 21:20:00'))
+    const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 
     onMounted(() => {
         start()
-        _getVaxForText({ status:1,for_sms:"true" })
+        _getVaxForText({ status: 1,for_sms: "true", filter: "overall", vaccine_status: "-3days" })
     })
 
     const vax_for_text = ref([]);
-    const number_to_text = ref();
     const _getVaxForText = async (params: {} = {}) => {
         const response = await getVaccineInfo(params)
         vax_for_text.value = await Promise.all(response.map(async (item: any) => {
@@ -41,37 +41,102 @@
             ...item
             }
         }))
-        const num_to_text = []
-        response.forEach(item => {
-            num_to_text.push(item.bhw_contact_number+"@"+item.client[0].guardian_contact_number)
+        // const num_to_text = []
+        // response.forEach(item => {
+        //     num_to_text.push(item.bhw_contact_number+"@"+item.client[0].guardian_contact_number)
+        // })
+        // num_to_text.push("REMINDER! due date 3 days before")
+        // number_to_text.value = num_to_text.join('@');
+        // console.log(number_to_text.value)
+    }
+
+    const reminderTextProcess = () => {
+        const num_to_text: any[] = []
+        vax_for_text.value.forEach(item => {
+            let sms_message = ""
+            sms_message = "Reminders!\n\n"
+            sms_message += "Baby "+item.client[0].firstname+" "+item.client[0].middlename+" "+item.client[0].lastname
+            if(item.vaccine_type == 'bcg') {
+                sms_message += " is scheduled for BCG Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+                //insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+            }
+            else if(item.vaccine_type == 'hepb') {
+                sms_message += " is scheduled for HEPA B Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            else if(item.vaccine_type == 'pentavalent') {
+                sms_message += " is scheduled for PENTAVALENT Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
+                sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            else if(item.vaccine_type == 'opv') {
+                sms_message += " is scheduled for OPV Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
+                sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            else if(item.vaccine_type == 'ipv') {
+                sms_message += " is scheduled for IPV Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            else if(item.vaccine_type == 'pcv') {
+                sms_message += " is scheduled for PCV Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+"."; 
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
+                sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            else if(item.vaccine_type == 'mcv') {
+                sms_message += " is scheduled for MCV Vaccination on"
+                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+                sms_message += "\n\n"
+                sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+            }
+            //num_to_text.push(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
+            insertFirebase(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
         })
-        num_to_text.push("REMINDER! due date 3 days before")
-        number_to_text.value = num_to_text.join('@');
-        console.log(number_to_text.value)
     }
 
     const start = () => {
         const myIntervalID = setInterval(() => {
+            console.log("wew")
             // Calculate time
             duration.value = moment.duration(duration.value - interval.value, 'milliseconds')
             days.value = padNum(duration.value.days())
             hours.value = padNum(duration.value.hours())
             minutes.value = padNum(duration.value.minutes())
             seconds.value = padNum(duration.value.seconds())
-            // console.log(duration.value.days())
-            // console.log(duration.value.hours())
-            // console.log(duration.value.minutes())
-            // console.log(duration.value.seconds())
-            // Stop
-            if (duration.value.days() <= 0 && duration.value.hours() <= 0 && duration.value.minutes() <= 0 && duration.value.seconds() <= 0) {
-                insertFirebase(number_to_text.value)
-                days.value = '00'
-                hours.value = '00'
-                minutes.value = '00'
-                seconds.value = '00'
-                clearInterval(myIntervalID);
-            }
-        },interval.value);
+        },1000);
+
+        const specifiedDate = static_date.value
+        const currentDate = new Date();
+        // calculate the overall seconds between the two dates
+        const overallSeconds = Math.floor((specifiedDate.getTime() - currentDate.getTime()));
+        setTimeout(function() {
+            clearInterval(myIntervalID);
+            days.value = '00'
+            hours.value = '00'
+            minutes.value = '00'
+            seconds.value = '00'
+            reminderTextProcess()
+        }, overallSeconds);
     }
 
     const padNum = (num:Number) => {
