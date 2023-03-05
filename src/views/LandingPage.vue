@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { reactive, onMounted, ref } from "vue"
+  import { reactive, onMounted, ref, watch, computed } from "vue"
   import { userLogin,getUserProfile } from '@/api/auth'
   import { useMainStore } from "@/stores/main.ts"
   import { useTokenStore } from "@/stores"
@@ -70,66 +70,63 @@
     })();
   })
 
-  const search_keyword = ref("")
-  const search_props = ref("")
-
-  const tokenStore = useTokenStore()
+//   const tokenStore = useTokenStore()
   const router = useRouter();
 
-  const form = reactive({
-    username: "",
-    password: "",
-    remember: true,
-  })
+//   const form = reactive({
+//     username: "",
+//     password: "",
+//     remember: true,
+//   })
 
-  const submit = async () => {
-    if (!form.username && !form.password) {
-      toastError("Please enter your username and password!")
-      return;
-    } else if(!form.username) {
-      toastError("Please enter your username")
-      return;
-    } else if(!form.password) {
-      toastError("Please enter your password")
-      return;
-    }
-    try {
-      const response = await userLogin({
-          username: form.username,
-          password: form.password
-      })
-      /**
-      * invalid credential
-      * */
-      if(response.message) {
-        console.log(response.message)
-        toastError(response.message)
-        return;
-      }
+//   const submit = async () => {
+//     if (!form.username && !form.password) {
+//       toastError("Please enter your username and password!")
+//       return;
+//     } else if(!form.username) {
+//       toastError("Please enter your username")
+//       return;
+//     } else if(!form.password) {
+//       toastError("Please enter your password")
+//       return;
+//     }
+//     try {
+//       const response = await userLogin({
+//           username: form.username,
+//           password: form.password
+//       })
+//       /**
+//       * invalid credential
+//       * */
+//       if(response.message) {
+//         console.log(response.message)
+//         toastError(response.message)
+//         return;
+//       }
 
-      notify({
-        group: "foo",
-        title: "Success",
-        text: "Successfully Login!"
-      }, 4000)
+//       notify({
+//         group: "foo",
+//         title: "Success",
+//         text: "Successfully Login!"
+//       }, 4000)
 
-      let token = response.access_token
-      tokenStore.dispatch(token)
+//       let token = response.access_token
+//       tokenStore.dispatch(token)
 
-      useMainStore().setUser({
-        firstname: "",
-        lastname: "",
-        avatar:
-          "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
-      });
+//       useMainStore().setUser({
+//         firstname: "",
+//         lastname: "",
+//         avatar:
+//           "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
+//       });
 
-      router.push({
-        path: "/dashboard",
-      });
-    } catch (err) {
-      console.log(err)
-    }
-  };
+//       router.push({
+//         path: "/dashboard",
+//       });
+//     } catch (err) {
+//       console.log(err)
+//     }
+//   };
 
   const toastError = (message: String) => {
     notify({
@@ -145,8 +142,11 @@
     });
   }
 
+  const search_keyword = ref("")
+  const search_props = ref("")
   const handleTrackBaby = () => {
     search_props.value = search_keyword.value
+    console.log(search_props.value )
   }
 </script>
 
@@ -304,6 +304,7 @@
                             <div class="w-full">
                                 <div class="single_form mt-8">
                                     <FormControl :icon="mdiMagnifyExpand" v-model="search_keyword" placeholder="Track your baby here..." required/>
+                                    <small><i>Must track using this format Firstname Middlename Lastname Birthdate(YYYY-mm-dd)</i> - example : <b class="text-red-500">Carlo Garcia Bolante 2000-05-25</b></small>
                                     <!-- <input name="name" id="name" type="text" placeholder="Search your baby here" class="w-full rounded-md py-4 px-6 border border-solid border-body-color"> -->
                                 </div>
                             </div>
@@ -313,7 +314,7 @@
                         </div>
                     </div> <!-- row -->
                 </div>
-                <LayoutAuthenticated v-if="search_props != ''" hasLandingPage>
+                <LayoutAuthenticated hasLandingPage>
                     <SectionMain>
                         <CardBox class="mb-6" has-table>
                             <TableSearchBaby :search_keyword="search_props" checkable />

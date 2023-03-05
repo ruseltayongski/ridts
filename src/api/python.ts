@@ -24,6 +24,10 @@ export function clientCount(params: {} = {}) {
   return req.get("/clients/count",params);
 }
 
+export function trackClient(params: {} = {}) {
+  return req.get("/track/client",params);
+}
+
 export function updateClient(params: {} = {}) {
   return req.put("/client?id="+params.id,params);
 }
