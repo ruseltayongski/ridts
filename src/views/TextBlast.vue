@@ -23,7 +23,7 @@
     const days = ref('00')
 
     const interval = ref(1000);
-    const static_date = ref(new Date('Mar 5, 2023 21:20:00'))
+    const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
@@ -116,7 +116,7 @@
 
     const start = () => {
         const myIntervalID = setInterval(() => {
-            console.log("wew")
+            console.log("tick")
             // Calculate time
             duration.value = moment.duration(duration.value - interval.value, 'milliseconds')
             days.value = padNum(duration.value.days())
