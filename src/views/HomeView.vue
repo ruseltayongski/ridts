@@ -32,10 +32,9 @@
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
   import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
   import { useRouter } from "vue-router"
-  import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
+  import { getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
-  import { async } from "@firebase/util";
-  import { clientCount,getVaccineInfo } from "@/api/python"
+  import { clientCount, getVaccineInfo, clientVaccinated, clientDateDue, clientMissed } from "@/api/python"
   import loadingModal from "@/assets/spin.gif"
 
   const router = useRouter();
@@ -64,13 +63,13 @@
     const client_api = await clientCount({ barangay_assignment : barangay_assignment })
     clients_count.value = client_api
 
-    const vacinated_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"VACCINATED",count:"true" })
+    const vacinated_api = await clientVaccinated({ barangay_assignment:barangay_assignment,count:"true" })
     vaccinated_count.value = vacinated_api
 
-    const date_due_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"DUE DATE",count:"true" })
+    const date_due_api = await clientDateDue({ barangay_assignment:barangay_assignment,count:"true" })
     date_due_count.value = date_due_api
 
-    const missed_api = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED",count:"true" })
+    const missed_api = await clientMissed({ barangay_assignment:barangay_assignment,count:"true" })
     missed_count.value = missed_api
   }
 

@@ -24,6 +24,18 @@ export function clientCount(params: {} = {}) {
   return req.get("/clients/count",params);
 }
 
+export function clientVaccinated(params: {} = {}) {
+  return req.get("/client/vaccinated",params);
+}
+
+export function clientDateDue(params: {} = {}) {
+  return req.get("/client/date_due",params);
+}
+
+export function clientMissed(params: {} = {}) {
+  return req.get("/client/missed",params);
+}
+
 export function trackClient(params: {} = {}) {
   return req.get("/track/client",params);
 }
