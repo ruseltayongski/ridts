@@ -1398,9 +1398,60 @@ a, button {
   height: 500px;
 }
 
-@media (max-width: 1400px) {
+@media screen and (max-width: 912px) {
+  .header_hero {
+    height: 470px;
+    /* background-color: lightcoral; */
+  }
+}
+
+@media screen and (max-width: 820px) {
+  .header_hero {
+    height: 470px;
+    /* background-color: lightblue; */
+  }
+}
+
+@media screen and (max-width: 820px) {
+  .header_hero {
+    height: 470px;
+    /* background-color: lightblue; */
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .header_hero {
+    height: 500px;
+    /* background-color: orange; */
+  }
+}
+
+
+@media screen and (max-width: 425px) {
   .header_hero {
     height: 515px;
+    /* background-color: yellow; */
+  }
+}
+
+@media screen and (max-device-width: 375px) {
+  .header_hero {
+    height: 570px;
+    /* background-color: red; */
+  }
+}
+
+@media screen and (max-device-width: 320px) {
+  .header_hero {
+    height: 620px;
+    /* background-color: lightpink; */
+  }
+}
+
+@media screen and (max-device-width: 280px) {
+  .header_hero {
+    height: 700px;
+    /* background-color: lightgreen; */
   }
 }
 
