@@ -11,7 +11,7 @@
   import UserAvatar from "@/components/UserAvatar.vue";
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
-  import { getAllClientArchived,getVaccineInfo } from "@/api/python"
+  import { clientMissed } from "@/api/python"
   import moment from "moment"
   import loadingModal from "@/assets/spin.gif"
 
@@ -103,7 +103,7 @@
   const _getAllClientArchived = async (params: {} = {}) => {
     const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
     const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
-    const response = await getVaccineInfo({ status:1,for_sms:"true",barangay_assignment:barangay_assignment,filter:"individual",vaccine_status:"MISSED" })
+    const response = await clientMissed({ barangay_assignment:barangay_assignment })
     let vaccine_type = ""
     data.value = await Promise.all(response.map(async (item: any) => {
         if(item.vaccine_type === 'bcg') {

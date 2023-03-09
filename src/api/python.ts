@@ -91,3 +91,7 @@ export function barChartData(params: {} = {}) {
 export function lineChartData(params: {} = {}) {
   return req.get("/linechart",params);
 }
+
+export function lineChartDataNew(params: {} = {}) {
+  return req.get("/linechart/new",params);
+}

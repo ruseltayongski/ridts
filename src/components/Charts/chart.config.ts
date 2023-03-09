@@ -1,5 +1,5 @@
 import moment from "moment"
-import { lineChartData } from "@/api/python"
+import { lineChartDataNew } from "@/api/python"
 import { getUserBarangayAssignment } from '@/api/auth'
 import { useUseridStore } from "@/stores"
 
@@ -47,8 +47,8 @@ const datasetObject = async (color:any, points:any) => {
 const _lineChartData = async (vaccine_status:String) => {
   const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
   const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
-  const params = { status: 1, for_sms: "true", barangay_assignment: barangay_assignment, filter: "individual", vaccine_status: vaccine_status, linechart: "true" }
-  const response = await lineChartData(params)
+  const params = { barangay_assignment: barangay_assignment, vaccine_status: vaccine_status }
+  const response = await lineChartDataNew(params)
   return response
 }
 
@@ -71,8 +71,8 @@ export const lineChartDataProcess = async (points = 9) => {
   const data = {
     labels,
     datasets: [
-      await datasetObject("primary", await _lineChartData("CLIENT")),
-      await datasetObject("info", await _lineChartData("VACCINATED")),
+      await datasetObject("primary", await _lineChartData("VACCINATED")),
+      await datasetObject("info", await _lineChartData("CLIENT")),
       await datasetObject("danger", await _lineChartData("MISSED"))
     ],
   }
