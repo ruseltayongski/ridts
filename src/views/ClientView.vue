@@ -731,7 +731,7 @@
               :fields="json_fields"
               :before-generate = "finishDownloadExcel"
               :before-finish   = "startDownloadExcel"
-              worksheet="Vaccinated"
+              worksheet="Clients"
               name="clients.xls"
             >
               <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
