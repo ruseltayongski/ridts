@@ -123,9 +123,12 @@
         }
         return {
             vaccine_type : vaccine_type,
+            sex: item.client[0].sex.charAt(0).toUpperCase() + item.client[0].sex.slice(1),
+            fullname: item.client[0].firstname+" "+item.client[0].middlename+" "+item.client[0].lastname,
             ...item.client[0]
         }
     }))
+    emit("client-data",data.value)
   }
 
   const _getUserBarangay = async () => {
@@ -138,7 +141,7 @@
     }))
   }
 
-  const emit = defineEmits(["client-info"])
+  const emit = defineEmits(["client-info","client-data"])
   const handleClientInfo = (id:Number) => {
     emit("client-info", id);
   };

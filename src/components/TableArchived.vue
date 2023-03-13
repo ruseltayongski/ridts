@@ -106,9 +106,12 @@
     const response = await getAllClientArchived(params)
     data.value = await Promise.all(response.map(async (item: any) => {
         return {
-          ...item
+          ...item,
+          sex: item.sex.charAt(0).toUpperCase() + item.sex.slice(1),
+          fullname: item.firstname+" "+item.middlename+" "+item.lastname
         }
     }))
+    emit("client-data",data.value)
   }
 
   const _getUserBarangay = async () => {
@@ -121,7 +124,7 @@
     }))
   }
 
-  const emit = defineEmits(["client-info"])
+  const emit = defineEmits(["client-info","client-data"])
   const handleClientInfo = (id:Number) => {
     emit("client-info", id);
   };

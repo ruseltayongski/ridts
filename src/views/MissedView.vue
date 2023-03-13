@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { reactive, ref, computed, onMounted } from "vue";
   import { useMainStore } from "@/stores/main";
+  import JsonExcel from "vue-json-excel3";
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -18,7 +19,8 @@
     mdiCardBulletedSettings,
     mdiOpenInNew,
     mdiNeedle,
-    mdiCalendarRemoveOutline
+    mdiCalendarRemoveOutline,
+    mdiMicrosoftExcel
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
@@ -175,16 +177,63 @@
     return year+" Years, "+month+" month, "+days+" days"; 
   }
 
-  defineEmits(["loading-modal-open","loading-modal-close"]);
+  const json_fields = ref({
+    "Vaccine ID": "vaccine_id",
+    "Fullname": "fullname",
+    "Birth Date": "birthdate",
+    "Birth Place": "birthplace",
+    "Sex" : "sex",
+    "Guardian Name": "guardian_name",
+    "Guardian Contact #": "guardian_contact_number",
+    "Guardian Alternate Number": "guardian_alternate_number",
+    "Guardian Address": "guardian_barangay",
+    "BHW Name": "bhw_name",
+    "BHW Contact #": "bhw_contact_number",
+    "BHW Address": "bhw_barangay",
+    "Health Provider Name": "health_provider_name",
+    "Health Provider Contact #": "health_provider_contact",
+    "Health Provider Address": "health_provider_barangay",
+    "Municipality": "muncity_description",
+    "Barangay": "client_barangay",
+    "Created On" : "created_on"
+  })
+
+  const client_data = ref([])
+  const handleClientData = async (data:any) => {
+      client_data.value = data
+  }
+
+  const startDownloadExcel = () => {
+    emit("loading-modal-open")
+  }
+
+  const finishDownloadExcel = () => {
+    setTimeout(function(){
+      emit("loading-modal-close")
+    }, 1000);
+  }
+
+  const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
 </script>
 
 <template>
   <LayoutAuthenticated>
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiCalendarRemoveOutline" title="Missed" main>
+        <json-excel
+          class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+          :data="client_data"
+          :fields="json_fields"
+          :before-generate = "finishDownloadExcel"
+          :before-finish   = "startDownloadExcel"
+          worksheet="Missed"
+          name="missed.xls"
+        >
+          <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
+        </json-excel>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableMissed @client-info="handleClientInfo" checkable />
+        <TableMissed @client-data="handleClientData" @client-info="handleClientInfo" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>

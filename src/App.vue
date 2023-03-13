@@ -5,11 +5,13 @@ import { ref } from "vue";
   const el_loading_modal = ref<HTMLInputElement | null>(null)
   const loading_modal = ref<HTMLInputElement | null>(null)
   const handleOpenLoading = () => {
+    console.log("open")
     loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
     loading_modal.value?.show()
   }
 
   const handleCloseModal = () => {
+    console.log("closed")
     loading_modal.value?.hide()
   }
 </script>

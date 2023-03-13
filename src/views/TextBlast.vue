@@ -24,6 +24,7 @@
 
     const interval = ref(1000);
     const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
+    //const static_date = ref(new Date('Mar 13,2023 09:34:00'))
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))

@@ -137,10 +137,12 @@
     data.value = await Promise.all(response.map(async (item: any) => {
         return {
           ...item,
+          sex: item.sex.charAt(0).toUpperCase() + item.sex.slice(1),
           fullname: item.firstname+" "+item.middlename+" "+item.lastname
         }
     }))
     data_handler.value = data.value
+    emit("client-data",data.value)
   }
 
   const _referringFacility = async () => {
@@ -184,7 +186,7 @@
     }, 2000)
   }
 
-  const emit = defineEmits(["client-info"])
+  const emit = defineEmits(["client-info","client-data"])
   const handleClientInfo = (id:Number) => {
     emit("client-info", id);
   };

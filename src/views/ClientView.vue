@@ -1,7 +1,8 @@
 <script setup lang="ts">
-  import { reactive, ref, computed, onMounted, watch } from "vue";
+  import { reactive, ref, computed, onMounted, watch, defineComponent } from "vue";
   import { useMainStore } from "@/stores/main";
   import { insertFirebase } from "@/utils/firebase.ts"
+  import JsonExcel from "vue-json-excel3";
   import {
     mdiMonitorCellphone,
     mdiTableBorder,
@@ -18,7 +19,8 @@
     mdiCalendarEditOutline,
     mdiCardBulletedSettings,
     mdiOpenInNew,
-    mdiNeedle
+    mdiNeedle,
+    mdiMicrosoftExcel
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
@@ -26,6 +28,7 @@
   import CardBox from "@/components/CardBox.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
+  import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import NotificationMessage from "@/components/NotificationMessage.vue";
   import { getUserBarangay, getUserMunicipality, getUserInfo, getUserBarangayAssignment,textBlast } from '@/api/auth'
@@ -34,8 +37,7 @@
   import moment from "moment"
   import { notify } from "notiwind"
   import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
-  import { findProp } from "@vue/compiler-core";
-  import loadingModal from "@/assets/spin.gif"
+  import BaseIcon from "@/components/BaseIcon.vue";
   
   const search_keyword = ref("")
   const get_barangay = ref([])
@@ -188,101 +190,112 @@
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
   const handleVaccineInfo = async (vaccine_type:"") => {
-    clearDose()
-    const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type, status: 1 })
-    console.log(response)
+    try {
+      clearDose()
+      const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type, status: 1 })
+      console.log(response)
 
-    schedule.client_id = form.id
-    schedule.vaccine_type = vaccine_type
-    if(response.length > 0) {
-      emit("loading-modal-open")
-      button_label.value = "Update"
-      schedule.scheduled_1 = response[0].scheduled_1
-      schedule.scheduled_2 = response[0].scheduled_2
-      schedule.scheduled_3 = response[0].scheduled_3
-      const scheduled_administerred_1 = await getUserInfo({ id : response[0].scheduled_administerred_1 })
-      schedule.scheduled_administerred_1 = scheduled_administerred_1.fname+" "+scheduled_administerred_1.mname+" "+scheduled_administerred_1.lname
-      const scheduled_administerred_2 = await getUserInfo({ id : response[0].scheduled_administerred_2 })
-      schedule.scheduled_administerred_2 = scheduled_administerred_2.fname+" "+scheduled_administerred_2.mname+" "+scheduled_administerred_2.lname
-      const scheduled_administerred_3 = await getUserInfo({ id : response[0].scheduled_administerred_3 })
-      schedule.scheduled_administerred_3 = scheduled_administerred_3.fname+" "+scheduled_administerred_3.mname+" "+scheduled_administerred_3.lname
-      schedule.given_1 = response[0].given_1
-      schedule.given_2 = response[0].given_2
-      schedule.given_3 = response[0].given_3
-      const given_administerred_1 = await getUserInfo({ id : response[0].given_administerred_1 })
-      schedule.given_administerred_1 = given_administerred_1.fname+" "+given_administerred_1.mname+" "+given_administerred_1.lname
-      const given_administerred_2 = await getUserInfo({ id : response[0].given_administerred_2 })
-      schedule.given_administerred_2 = given_administerred_2.fname+" "+given_administerred_2.mname+" "+given_administerred_2.lname
-      const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
-      schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
-      schedule.status1 = response[0].status1
-      schedule.status2 = response[0].status2
-      schedule.status3 = response[0].status3
-      schedule.button_type1 = response[0].button_type1
-      schedule.button_type2 = response[0].button_type2
-      schedule.button_type3 = response[0].button_type3
-      emit("loading-modal-close")
-    } else {
-      button_label.value = "Submit"
+      schedule.client_id = form.id
+      schedule.vaccine_type = vaccine_type
+      if(response.length > 0) {
+        emit("loading-modal-open")
+        button_label.value = "Update"
+        schedule.scheduled_1 = response[0].scheduled_1
+        schedule.scheduled_2 = response[0].scheduled_2
+        schedule.scheduled_3 = response[0].scheduled_3
+        const scheduled_administerred_1 = await getUserInfo({ id : response[0].scheduled_administerred_1 })
+        schedule.scheduled_administerred_1 = scheduled_administerred_1.fname+" "+scheduled_administerred_1.mname+" "+scheduled_administerred_1.lname
+        const scheduled_administerred_2 = await getUserInfo({ id : response[0].scheduled_administerred_2 })
+        schedule.scheduled_administerred_2 = scheduled_administerred_2.fname+" "+scheduled_administerred_2.mname+" "+scheduled_administerred_2.lname
+        const scheduled_administerred_3 = await getUserInfo({ id : response[0].scheduled_administerred_3 })
+        schedule.scheduled_administerred_3 = scheduled_administerred_3.fname+" "+scheduled_administerred_3.mname+" "+scheduled_administerred_3.lname
+        schedule.given_1 = response[0].given_1
+        schedule.given_2 = response[0].given_2
+        schedule.given_3 = response[0].given_3
+        const given_administerred_1 = await getUserInfo({ id : response[0].given_administerred_1 })
+        schedule.given_administerred_1 = given_administerred_1.fname+" "+given_administerred_1.mname+" "+given_administerred_1.lname
+        const given_administerred_2 = await getUserInfo({ id : response[0].given_administerred_2 })
+        schedule.given_administerred_2 = given_administerred_2.fname+" "+given_administerred_2.mname+" "+given_administerred_2.lname
+        const given_administerred_3 = await getUserInfo({ id : response[0].given_administerred_3 })
+        schedule.given_administerred_3 = given_administerred_3.fname+" "+given_administerred_3.mname+" "+given_administerred_3.lname
+        schedule.status1 = response[0].status1
+        schedule.status2 = response[0].status2
+        schedule.status3 = response[0].status3
+        schedule.button_type1 = response[0].button_type1
+        schedule.button_type2 = response[0].button_type2
+        schedule.button_type3 = response[0].button_type3
+        emit("loading-modal-close")
+      } else {
+        button_label.value = "Submit"
+      }
+      schedule.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
+      
+      dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
+      dose_modal.value?.show()
+    } catch (error) {
+      console.error(error)
+      alert("There was something wrong, will restart your page.")
+      window.location.reload()
     }
-    schedule.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
-    
-    dose_modal.value = new Modal(el_dose_modal.value); //initialize modal instance
-    dose_modal.value?.show()
   }
 
   const clientSubmit = async () => {
-    emit("loading-modal-open")
+    try {
+      emit("loading-modal-open")
+      const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
+      form.client_barangay = client_barangay.description
+      const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
+      form.guardian_barangay = guardian_barangay.description
+      const bhw_barangay = await getUserBarangay({ barangay_id:form.bhw_address })
+      form.bhw_barangay = bhw_barangay.description
+      const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
+      form.health_provider_barangay = health_provider_barangay.description
+      form.created_by = mainStore.userId
     
-    const client_barangay = await getUserBarangay({ barangay_id:form.client_address })
-    form.client_barangay = client_barangay.description
-    const guardian_barangay = await getUserBarangay({ barangay_id:form.guardian_address })
-    form.guardian_barangay = guardian_barangay.description
-    const bhw_barangay = await getUserBarangay({ barangay_id:form.bhw_address })
-    form.bhw_barangay = bhw_barangay.description
-    const health_provider_barangay = await getUserBarangay({ barangay_id:form.health_provider_address })
-    form.health_provider_barangay = health_provider_barangay.description
-    form.created_by = mainStore.userId
-  
-    let message = ""
-    let status = ""
-    if(form.id) {
-      message = "Client was successfully updated!"
-      form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
-      await updateClient(form) // update into mongo db
-      status = "updated"
-    } else {
-      message = "Client was successfully added!"
-      form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
-      const create_response = await createClient(form) // insert into mongo db
-      form.id = create_response.id
-      status = "created"
+      let message = ""
+      let status = ""
+      if(form.id) {
+        message = "Client was successfully updated!"
+        form.updated_on = moment().format('YYYY-MM-DD HH:mm:ss')
+        await updateClient(form) // update into mongo db
+        status = "updated"
+      } else {
+        message = "Client was successfully added!"
+        form.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
+        const create_response = await createClient(form) // insert into mongo db
+        form.id = create_response.id
+        status = "created"
+      }
+
+      props_form.value = {
+        id : form.id,
+        firstname : form.firstname,
+        middlename : form.middlename,
+        lastname : form.lastname,
+        fullname : form.firstname+" "+form.middlename+" "+form.lastname,
+        client_barangay : form.client_barangay,
+        status : status,
+        client_address : form.client_address,
+        muncity_description : form.muncity_description
+      } //send to props
+
+      console.log(props_form.value)
+
+      clearClientForm()
+
+      client_modal.value?.hide();
+      emit("loading-modal-close")
+
+      notify({
+        group: "success",
+        title: "Success",
+        text: message
+      }, 2000)
+    } catch (error) {
+      console.error(error)
+      alert("There was something wrong, will restart your page.")
+      window.location.reload()
     }
-
-    props_form.value = {
-      id : form.id,
-      firstname : form.firstname,
-      middlename : form.middlename,
-      lastname : form.lastname,
-      fullname : form.firstname+" "+form.middlename+" "+form.lastname,
-      client_barangay : form.client_barangay,
-      status : status,
-      client_address : form.client_address,
-      muncity_description : form.muncity_description
-    } //send to props
-
-    console.log(props_form.value)
-
-    clearClientForm()
-
-    client_modal.value?.hide();
-    emit("loading-modal-close")
-
-    notify({
-      group: "success",
-      title: "Success",
-      text: message
-    }, 2000)
   };
 
   const clearClientForm = async (option:String = "") => {
@@ -342,186 +355,192 @@
   }
 
   const doseSubmit = async () => {
-    dose_modal.value?.hide();
-    const vaccine_info_save = {
-        client_id: schedule.client_id,
-        vaccine_type: schedule.vaccine_type,
-        scheduled_administerred_1: schedule.scheduled_1 ? mainStore.userId : 0,
-        scheduled_administerred_2: schedule.scheduled_2 ? mainStore.userId : 0,
-        scheduled_administerred_3: schedule.scheduled_3 != "" ? mainStore.userId : 0,
-        given_administerred_1: schedule.given_1 || schedule.given_administerred_1 != "" ? mainStore.userId : 0,
-        given_administerred_2: schedule.given_2 || schedule.given_administerred_2 != "" ? mainStore.userId : 0,
-        given_administerred_3: schedule.given_3 || schedule.given_administerred_3 != "" ? mainStore.userId : 0,
-        updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
-        Client: [schedule.client_id]
-    }
+    try {
+      dose_modal.value?.hide();
+      const vaccine_info_save = {
+          client_id: schedule.client_id,
+          vaccine_type: schedule.vaccine_type,
+          scheduled_administerred_1: schedule.scheduled_1 ? mainStore.userId : 0,
+          scheduled_administerred_2: schedule.scheduled_2 ? mainStore.userId : 0,
+          scheduled_administerred_3: schedule.scheduled_3 != "" ? mainStore.userId : 0,
+          given_administerred_1: schedule.given_1 || schedule.given_administerred_1 != "" ? mainStore.userId : 0,
+          given_administerred_2: schedule.given_2 || schedule.given_administerred_2 != "" ? mainStore.userId : 0,
+          given_administerred_3: schedule.given_3 || schedule.given_administerred_3 != "" ? mainStore.userId : 0,
+          updated_on: moment(schedule.updated_on).format('YYYY-MM-DD HH:mm:ss'),
+          Client: [schedule.client_id]
+      }
 
-    vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null
-    vaccine_info_save.scheduled_2 = schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : null
-    vaccine_info_save.scheduled_3 = schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : null
-    vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
-    vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
-    vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
-    vaccine_info_save.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
-  
-    console.log(vaccine_info_save)
-    console.log(button_label.value)
-
-    if(button_label.value == "Update")
-      await updateVaccineInfo(vaccine_info_save)
-    else {
-      await createVaccineInfo(vaccine_info_save)    
-    }
-
-    vaccine_button[schedule.vaccine_type] = await Promise.resolve(handleDose3(form.id,schedule.vaccine_type))
+      vaccine_info_save.scheduled_1 = schedule.scheduled_1 ? moment(schedule.scheduled_1).format('YYYY-MM-DD') : null
+      vaccine_info_save.scheduled_2 = schedule.scheduled_2 ? moment(schedule.scheduled_2).format('YYYY-MM-DD') : null
+      vaccine_info_save.scheduled_3 = schedule.scheduled_3 ? moment(schedule.scheduled_3).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_1 = schedule.given_1 ? moment(schedule.given_1).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_2 = schedule.given_2 ? moment(schedule.given_2).format('YYYY-MM-DD') : null
+      vaccine_info_save.given_3 = schedule.given_3 ? moment(schedule.given_3).format('YYYY-MM-DD') : null
+      vaccine_info_save.created_on = moment().format('YYYY-MM-DD HH:mm:ss')
     
-    let sms_message = ""
-    sms_message = "Congratulations!\n\n"
-    sms_message += "Baby "+form.firstname+" "+form.middlename+" "+form.lastname
-    if(schedule.vaccine_type == 'bcg') {
-      sms_message += " is scheduled for BCG Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-          //await sendTextBlast(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
+      console.log(vaccine_info_save)
+      console.log(button_label.value)
+
+      if(button_label.value == "Update")
+        await updateVaccineInfo(vaccine_info_save)
+      else {
+        await createVaccineInfo(vaccine_info_save)    
       }
-    }
-    else if(schedule.vaccine_type == 'hepb') {
-      sms_message += " is scheduled for HEPA B Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
-    else if(schedule.vaccine_type == 'pentavalent') {
-      sms_message += " is scheduled for PENTAVALENT Vaccination on"
-      if(vaccine_info_save.scheduled_3) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
-      } else if(vaccine_info_save.scheduled_2) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
-      } else {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      }
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
-      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_3) {
-        if(!vaccine_info_save.given_3) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_2) {
-        if(!vaccine_info_save.given_2) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
-    else if(schedule.vaccine_type == 'opv') {
-      sms_message += " is scheduled for OPV Vaccination on"
-      if(vaccine_info_save.scheduled_3) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
-      } else if(vaccine_info_save.scheduled_2) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
-      } else {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      }
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
-      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_3) {
-        if(!vaccine_info_save.given_3) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_2) {
-        if(!vaccine_info_save.given_2) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
-    else if(schedule.vaccine_type == 'ipv') {
-      sms_message += " is scheduled for IPV Vaccination on"
-      sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
-    else if(schedule.vaccine_type == 'pcv') {
-      sms_message += " is scheduled for PCV Vaccination on"
-      if(vaccine_info_save.scheduled_3) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
-      } else if(vaccine_info_save.scheduled_2) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
-      } else {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      } 
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
-      sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_3) {
-        if(!vaccine_info_save.given_3) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_2) {
-        if(!vaccine_info_save.given_2) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
-    else if(schedule.vaccine_type == 'mcv') {
-      sms_message += " is scheduled for MCV Vaccination on"
-      if(vaccine_info_save.scheduled_2) {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
-      } else {
-        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
-      }  
-      sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
-      sms_message += "\n\n"
-      sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
-      if(vaccine_info_save.scheduled_2) {
-        if(!vaccine_info_save.given_2) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      } else if(vaccine_info_save.scheduled_1) {
-        if(!vaccine_info_save.given_1) {
-          insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
-        }
-      }
-    }
+
+      vaccine_button[schedule.vaccine_type] = await Promise.resolve(handleDose3(form.id,schedule.vaccine_type))
       
-    notify({
-      group: "success_dose",
-      title: "Success",
-      text: "Vaccine info was successfully updated!"
-    }, 2000)
+      let sms_message = ""
+      sms_message = "Congratulations!\n\n"
+      sms_message += "Baby "+form.firstname+" "+form.middlename+" "+form.lastname
+      if(schedule.vaccine_type == 'bcg') {
+        sms_message += " is scheduled for BCG Vaccination on"
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+            //await sendTextBlast(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'hepb') {
+        sms_message += " is scheduled for HEPA B Vaccination on"
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'pentavalent') {
+        sms_message += " is scheduled for PENTAVALENT Vaccination on"
+        if(vaccine_info_save.scheduled_3) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+        } else if(vaccine_info_save.scheduled_2) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+        } else {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        }
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
+        sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_3) {
+          if(!vaccine_info_save.given_3) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_2) {
+          if(!vaccine_info_save.given_2) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'opv') {
+        sms_message += " is scheduled for OPV Vaccination on"
+        if(vaccine_info_save.scheduled_3) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+        } else if(vaccine_info_save.scheduled_2) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+        } else {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        }
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
+        sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_3) {
+          if(!vaccine_info_save.given_3) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_2) {
+          if(!vaccine_info_save.given_2) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'ipv') {
+        sms_message += " is scheduled for IPV Vaccination on"
+        sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'pcv') {
+        sms_message += " is scheduled for PCV Vaccination on"
+        if(vaccine_info_save.scheduled_3) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_3).format('LL')+".";
+        } else if(vaccine_info_save.scheduled_2) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+        } else {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        } 
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
+        sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_3) {
+          if(!vaccine_info_save.given_3) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_2) {
+          if(!vaccine_info_save.given_2) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+      else if(schedule.vaccine_type == 'mcv') {
+        sms_message += " is scheduled for MCV Vaccination on"
+        if(vaccine_info_save.scheduled_2) {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_2).format('LL')+".";
+        } else {
+          sms_message += " "+ moment(vaccine_info_save.scheduled_1).format('LL')+".";
+        }  
+        sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
+        sms_message += "\n\n"
+        sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
+        if(vaccine_info_save.scheduled_2) {
+          if(!vaccine_info_save.given_2) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        } else if(vaccine_info_save.scheduled_1) {
+          if(!vaccine_info_save.given_1) {
+            insertFirebase(form.bhw_contact_number+"@"+form.guardian_contact_number+"@"+sms_message)
+          }
+        }
+      }
+        
+      notify({
+        group: "success_dose",
+        title: "Success",
+        text: "Vaccine info was successfully updated!"
+      }, 2000)
+    } catch(error) {
+      console.error(error); // return error
+      alert("There was something wrong, will restart your page.")
+      window.location.reload()
+    }
   };
 
   const handleClientInfo = async (id:Number) => {
@@ -661,16 +680,67 @@
   const sendTextBlast = async (message:String) => {
     await textBlast({ message: message, to:"eN0lsyKOTK-3alOQSopGnb:APA91bF1yFP8QfvUr7lZZ9WfS39y6SD--bVcco7hqFx_SKAuOyCrSHNxvIFz5HSiPum5kjrnwqZ76XJGzTiGQKF0pi39a69vnYGbdMa3OX8Lhe7lnNBt_be_qqLKE53eao_wO0FIXsd5" })
   }
+
+  const startDownloadExcel = () => {
+    emit("loading-modal-open")
+  }
+
+  const finishDownloadExcel = () => {
+    setTimeout(function(){
+      emit("loading-modal-close")
+    }, 1000);
+  }
+
+  const json_fields = ref({
+    "Vaccine ID": "vaccine_id",
+    "Fullname": "fullname",
+    "Birth Date": "birthdate",
+    "Birth Place": "birthplace",
+    "Sex" : "sex",
+    "Guardian Name": "guardian_name",
+    "Guardian Contact #": "guardian_contact_number",
+    "Guardian Alternate Number": "guardian_alternate_number",
+    "Guardian Address": "guardian_barangay",
+    "BHW Name": "bhw_name",
+    "BHW Contact #": "bhw_contact_number",
+    "BHW Address": "bhw_barangay",
+    "Health Provider Name": "health_provider_name",
+    "Health Provider Contact #": "health_provider_contact",
+    "Health Provider Address": "health_provider_barangay",
+    "Municipality": "muncity_description",
+    "Barangay": "client_barangay",
+    "Created On" : "created_on"
+  })
+
+  const client_data = ref([])
+  const handleClientData = async (data:any) => {
+      console.log(data)
+      client_data.value = data
+  }
+
 </script>
 
 <template>
   <LayoutAuthenticated @search-client="handleSearchClient">
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
-        <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+        <div class="flex gap-4">
+            <json-excel
+              class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+              :data="client_data"
+              :fields="json_fields"
+              :before-generate = "finishDownloadExcel"
+              :before-finish   = "startDownloadExcel"
+              worksheet="Vaccinated"
+              name="clients.xls"
+            >
+              <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
+            </json-excel>
+          <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+        </div>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableClients @client-info="handleClientInfo" :search_keyword="search_keyword" :form="props_form" checkable />
+        <TableClients @client-info="handleClientInfo" @client-data="handleClientData" :search_keyword="search_keyword" :form="props_form" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
