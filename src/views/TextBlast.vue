@@ -24,7 +24,7 @@
 
     const interval = ref(1000);
     const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
-    //const static_date = ref(new Date('Mar 13,2023 09:34:00'))
+    //const static_date = ref(new Date('Mar 20,2023 13:33:00'))
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
@@ -53,7 +53,8 @@
 
     const reminderTextProcess = () => {
         const num_to_text: any[] = []
-        vax_for_text.value.forEach(item => {
+        let counter = 0;
+        vax_for_text.value.forEach((item,index) => {
             let sms_message = ""
             sms_message = "Reminders!\n\n"
             sms_message += "Baby "+item.client[0].firstname+" "+item.client[0].middlename+" "+item.client[0].lastname
@@ -111,8 +112,15 @@
                 sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
             }
             //num_to_text.push(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
-            insertFirebase(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
+            setTimeout(() => {
+                console.log(item)
+                insertFirebase(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
+                counter++
+            }, 10000 * (index + 1));
         })
+        if (counter == vax_for_text.value.length-1) {
+            console.log('Text blast finished!');
+        }
     }
 
     const start = () => {

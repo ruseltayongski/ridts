@@ -16,14 +16,18 @@
   const menu_display = ref([])
   onMounted(() => {
     menu_display.value = props.menu.map((item: any) => {
-        // if(useUseridStore().value !== 4413 && item.label === 'Text Blast') {
-        //   return;
-        // }
+      if(useUseridStore().value === 4413) {
         return {
           ...item
         }
+      }
+      else if(useUseridStore().value !== 4413 && !['/text_blast'].includes(item.to)) {
+        return {
+          ...item
+        }
+      }
     })
-    //menu_display.value = handler.filter((item: any) => { return typeof item === 'Object' } )
+    menu_display.value = menu_display.value.filter((item: any) => { return typeof item === 'object' } )
   })            
 
   const emit = defineEmits(["menu-click", "aside-lg-close-click"]);

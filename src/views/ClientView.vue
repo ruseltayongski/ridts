@@ -722,21 +722,23 @@
 
 <template>
   <LayoutAuthenticated @search-client="handleSearchClient">
-    <SectionMain>
+    <SectionMain class="mt-8 lg:mt-0">
       <SectionTitleLineWithButton :icon="mdiBabyFaceOutline" title="Clients for new born baby" main>
         <div class="flex gap-4">
-            <json-excel
-              class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
-              :data="client_data"
-              :fields="json_fields"
-              :before-generate = "finishDownloadExcel"
-              :before-finish   = "startDownloadExcel"
-              worksheet="Clients"
-              name="clients.xls"
-            >
+            <div class="md:block">
+              <json-excel
+                class="w-full md:w-40 inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+                :data="client_data"
+                :fields="json_fields"
+                :before-generate = "finishDownloadExcel"
+                :before-finish   = "startDownloadExcel"
+                worksheet="Clients"
+                name="clients.xls"
+              >
               <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
-            </json-excel>
-          <BaseButton @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+              </json-excel>
+              <BaseButton class="w-full md:w-40" @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
+            </div>
         </div>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>

@@ -134,21 +134,23 @@
         >
           <BaseIcon :path="mdiMenu" size="24" />
         </NavBarItemPlain>
-        <NavBarItemPlain use-margin>
-          <FormControl
-            v-if="router_path == '/clients'"
-            placeholder="Search (ctrl+k)"
-            ctrl-k-focus
-            transparent
-            borderless
-            class="border-2 border-indigo-500/100 lg:w-96"
-            v-model="search_keyword"
-            @keyup="handleSearchClient"
-          />
-        </NavBarItemPlain>
-        <NavBarItemPlain use-margin>
-          TEXT BLAST: <p class="ml-2 text_blast">Connecting...</p>
-        </NavBarItemPlain>
+        <div class="block md:flex">
+          <NavBarItemPlain use-margin>
+            <FormControl
+              v-if="router_path == '/clients'"
+              placeholder="Search (ctrl+k)"
+              ctrl-k-focus
+              transparent
+              borderless
+              class="border-2 border-indigo-500/100 lg:w-96"
+              v-model="search_keyword"
+              @keyup="handleSearchClient"
+            />
+          </NavBarItemPlain>
+          <NavBarItemPlain use-margin>
+            TEXT BLAST: <p class="ml-2 text_blast">Connecting...</p>
+          </NavBarItemPlain>
+        </div>
       </NavBar>
       <AsideMenu
         :is-aside-mobile-expanded="isAsideMobileExpanded"

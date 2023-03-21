@@ -30,7 +30,7 @@
   import CardBoxClient from "@/components/CardBoxClient.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
-  import SectionBannerStarOnGitHub from "@/components/SectionBannerStarOnGitHub.vue";
+  import PillTagTrend from "@/components/PillTagTrend.vue";
   import { useRouter } from "vue-router"
   import { getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
@@ -152,12 +152,37 @@
       </CardBox>
 
       <SectionTitleLineWithButton :icon="mdiChartMultiple" title="Trends overview last 9 days">
-        <!-- <BaseButton
-          :icon="mdiReload"
-          color="whiteDark"
-          @click="fillChartData"
-        /> -->
+        <div class="hidden md:block">
+          <div class="flex flex-row">
+            <div class="p-1 pr-1">
+              <h3>Legend:</h3>
+            </div>
+            <div class="p-1">
+              <PillTagTrend trend="Clients" trend-type="enrolled" small />
+            </div>
+            <div class="p-1">
+              <PillTagTrend trend="Vaccinated" trend-type="up" small />
+            </div>
+            <div class="p-1">
+              <PillTagTrend trend="Missed" trend-type="down" small />
+            </div>
+          </div>
+        </div>
       </SectionTitleLineWithButton>
+      <div class="md:hidden">
+        <h3>Legend:</h3>
+        <div class="flex flex-row">
+          <div class="p-1">
+            <PillTagTrend trend="Clients" trend-type="enrolled" small />
+          </div>
+          <div class="p-1">
+            <PillTagTrend trend="Vaccinated" trend-type="up" small />
+          </div>
+          <div class="p-1">
+            <PillTagTrend trend="Missed" trend-type="down" small />
+          </div>
+        </div>
+      </div>
 
       <CardBox class="mb-6">
         <div v-if="chartData">
