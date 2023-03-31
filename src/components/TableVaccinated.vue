@@ -208,10 +208,10 @@
         <td data-label="Name">
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
-        <td data-label="Company">
+        <td data-label="Municipality">
           {{ useMuncityDescriptionStore().value }}
         </td>
-        <td data-label="City">
+        <td data-label="Barangay">
           {{ client.client_barangay }}
         </td>
         <td>{{ client.vaccine_type }}</td>

@@ -144,10 +144,10 @@
         <td data-label="Name">
           {{ client.name }}
         </td>
-        <td data-label="Company">
+        <td data-label="Municipality">
           Cebu City
         </td>
-        <td data-label="City">
+        <td data-label="Barangay">
           Sambag II
         </td>
         <td data-label="Progress" class="lg:w-32">

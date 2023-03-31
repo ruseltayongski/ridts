@@ -374,10 +374,10 @@
         <td data-label="Name">
           {{ client.fullname }}
         </td>
-        <td data-label="Company">
+        <td data-label="Municipality">
           {{ client.muncity_description }}
         </td>
-        <td data-label="City">
+        <td data-label="Barangay">
           {{ client.client_barangay }}
         </td>
         <!-- <td data-label="Progress" class="lg:w-32">

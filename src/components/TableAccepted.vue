@@ -181,10 +181,10 @@
         <td data-label="Name">
           {{ client.Client[0].firstname+" "+client.Client[0].middlename+" "+client.Client[0].lastname }}
         </td>
-        <td data-label="Company">
+        <td data-label="Municipality">
           Lapu-lapu City
         </td>
-        <td data-label="City">
+        <td data-label="Barangay">
           {{ client.Client[0].client_barangay }}
         </td>
         <td data-label="Progress" class="lg:w-32">
