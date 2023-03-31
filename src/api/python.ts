@@ -56,6 +56,10 @@ export function getVaccineInfo(params: {} = {}) {
   return req.get("/vaxinfo/all",params);
 }
 
+export function getVaccineClientInfo(params: {} = {}) {
+  return req.get("/vaxinfo/client",params);
+}
+
 export function updateVaccineInfo(params: {} = {}) {
   return req.put("/vaxinfo?client_id="+params.client_id+"&vaccine_type="+ params.vaccine_type,params);
 }

@@ -31,6 +31,8 @@
   import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
   import { getUserBarangay, getUserMunicipality } from '@/api/auth'
   import { getInfoClient } from "@/api/python"
+  import BaseIcon from "@/components/BaseIcon.vue";
+  import loadingModal from "@/assets/spin.gif"
 
   import moment from "moment"
 
@@ -176,6 +178,7 @@
 
   const json_fields = ref({
     "Vaccine ID": "vaccine_id",
+    "Vaccine Type": "vaccine_type",
     "Fullname": "fullname",
     "Birth Date": "birthdate",
     "Birth Place": "birthplace",
@@ -195,10 +198,17 @@
     "Created On" : "created_on"
   })
 
+  const isDisabled = ref(true)
   const client_data = ref([])
   const handleClientData = async (data:any) => {
       console.log(data)
       client_data.value = data
+      isDisabled.value = false // re-enable the button
+  }
+
+  const handleClickExcel = () => {
+    if(isDisabled.value)
+      alert("Some data are still processing in excel, please wait for a while.")
   }
 
   const startDownloadExcel = () => {
@@ -226,6 +236,25 @@
           :before-finish   = "startDownloadExcel"
           worksheet="Vaccinated"
           name="vaccinated.xls"
+          @click="handleClickExcel"
+          v-if="isDisabled"
+        >
+          <BaseIcon :path="mdiMicrosoftExcel"/>
+          <div class="flex flex-row">
+            <p class="text-sm">Processing</p>
+            <img :src="loadingModal" alt="loading_gif" class="ml-2 w-4 h-4">
+          </div>
+        </json-excel>
+        <json-excel
+          class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+          :data="client_data"
+          :fields="json_fields"
+          :before-generate = "finishDownloadExcel"
+          :before-finish   = "startDownloadExcel"
+          worksheet="Vaccinated"
+          name="vaccinated.xls"
+          @click="handleClickExcel"
+          v-else
         >
           <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
         </json-excel>

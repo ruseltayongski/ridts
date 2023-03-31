@@ -227,10 +227,10 @@
         <td data-label="Name">
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
-        <td data-label="Company">
+        <td data-label="Municipality">
           {{ client.muncity_description }}
         </td>
-        <td data-label="City">
+        <td data-label="barangay">
           {{ client.client_barangay }}
         </td>
         <!-- <td data-label="Progress" class="lg:w-32">
@@ -250,7 +250,7 @@
           > <br>
           <small class="text-gray-400 dark:text-slate-400">{{ moment(client.created_on).format('h:mm:ss a') }}</small>
         </td>
-        <td>{{ client.is_active ? 'Yes' : 'No' }}</td>
+        <td data-label="In Active">{{ client.is_active ? 'Yes' : 'No' }}</td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
             <BaseButton

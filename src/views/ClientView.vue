@@ -36,8 +36,9 @@
 
   import moment from "moment"
   import { notify } from "notiwind"
-  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo } from "@/api/python"
+  import { createClient, getInfoClient, updateClient, getVaccineInfo, createVaccineInfo, updateVaccineInfo, getVaccineClientInfo } from "@/api/python"
   import BaseIcon from "@/components/BaseIcon.vue";
+  import loadingModal from "@/assets/spin.gif"
   
   const search_keyword = ref("")
   const get_barangay = ref([])
@@ -55,6 +56,7 @@
   const props_form = ref({})
   const button_label = ref("")
   const show_vaccine_type = ref(false)
+  const clientModalStatus = ref("")
 
   const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
 
@@ -189,7 +191,7 @@
 
   const dose_modal = ref<HTMLInputElement | null>(null)
   const el_dose_modal = ref<HTMLInputElement | null>(null)
-  const handleVaccineInfo = async (vaccine_type:"") => {
+  const handleVaccineInfo = async (vaccine_type:"") => { 
     try {
       clearDose()
       const response = await getVaccineInfo({ client_id : form.id, vaccine_type: vaccine_type, status: 1 })
@@ -544,6 +546,7 @@
   };
 
   const handleClientInfo = async (id:Number) => {
+      clientModalStatus.value = 'update'
       show_vaccine_type.value = true
       _getInfoClient(id)
   };
@@ -551,7 +554,6 @@
   const _getInfoClient = async (id:Number) => {
     button_label.value = "Update"
     const response = await getInfoClient({ id : id })
-    console.log(response)
     form.id = response.id
     form.bhw_address = response.bhw_address
     form.bhw_contact_number = response.bhw_contact_number
@@ -636,7 +638,9 @@
   };
 
   const handleCreateClient = () => {
+      clientModalStatus.value = 'create'
       button_label.value = "Submit"
+      clientModal
       show_vaccine_type.value = false
       clearClientForm("create")
   };
@@ -709,13 +713,262 @@
     "Health Provider Address": "health_provider_barangay",
     "Municipality": "muncity_description",
     "Barangay": "client_barangay",
-    "Created On" : "created_on"
+    "Created On" : "created_on",
+    "BCG": "bcg", //1st dose
+    "BCG Date Scheduled": "bcg_date_scheduled",
+    //"BCG Administerred Schedule": "bcg_administerred_schedule",
+    "BCG Date Given": "bcg_date_given",
+    //"BCG Administerred Given": "bcg_administerred_given",
+    "HepB": "hepb", //1st dose
+    "HepB Date Scheduled": "hepb_date_scheduled",
+    //"HepB Administerred Schedule": "hepb_administerred_schedule",
+    "HepB Date Given": "hepb_date_given",
+    //"HepB Administerred Given": "hepb_administerred_given",
+    "IPV": "ipv", //1st dose
+    "IPV Date Scheduled": "ipv_date_scheduled",
+    //"IPV Administerred Schedule": "ipv_administerred_schedule",
+    "IPV Date Given": "ipv_date_given",
+    //"IPV Administerred Given": "ipv_administerred_given",
+    "MCV": "mcv", //2nd dose
+    "MCV Date Scheduled1": "mcv_date_scheduled1",
+    //"MCV Administerred Schedule1": "mcv_administerred_schedule1",
+    "MCV Date Given1": "mcv_date_given1",
+    //"MCV Administerred Given1": "mcv_administerred_given1",
+    "MCV Date Scheduled2": "mcv_date_scheduled2",
+    //"MCV Administerred Schedule2": "mcv_administerred_schedule2",
+    "MCV Date Given2": "mcv_date_given2",
+    //"MCV Administerred Given2": "mcv_administerred_given2",
+    "Pentavalent": "pentavalent", //3rd dose
+    "Pentavalent Date Scheduled1": "pentavalent_date_scheduled1",
+    //"Pentavalent Administerred Schedule1": "pentavalent_administerred_schedule1",
+    "Pentavalent Date Given1": "pentavalent_date_given1",
+    //"Pentavalent Administerred Given1": "pentavalent_administerred_given1",
+    "Pentavalent Date Scheduled2": "pentavalent_date_scheduled2",
+    //"Pentavalent Administerred Schedule2": "pentavalent_administerred_schedule2",
+    "Pentavalent Date Given2": "pentavalent_date_given2",
+    //"Pentavalent Administerred Given2": "pentavalent_administerred_given2",
+    "Pentavalent Date Scheduled3": "pentavalent_date_scheduled3",
+    //"Pentavalent Administerred Schedule3": "pentavalent_administerred_schedule3",
+    "Pentavalent Date Given3": "pentavalent_date_given3",
+    //"Pentavalent Administerred Given3": "pentavalent_administerred_given3",
+    "OPV": "opv", //3rd dose
+    "OPV Date Scheduled1": "opv_date_scheduled1",
+    //"OPV Administerred Schedule1": "opv_administerred_schedule1",
+    "OPV Date Given1": "opv_date_given1",
+    //"OPV Administerred Given1": "opv_administerred_given1",
+    "OPV Date Scheduled2": "opv_date_scheduled2",
+    //"OPV Administerred Schedule2": "opv_administerred_schedule2",
+    "OPV Date Given2": "opv_date_given2",
+    //"OPV Administerred Given2": "opv_administerred_given2",
+    "OPV Date Scheduled3": "opv_date_scheduled3",
+    //"OPV Administerred Schedule3": "opv_administerred_schedule3",
+    "OPV Date Given3": "opv_date_given3",
+    //"OPV Administerred Given3": "opv_administerred_given3",
+    "PCV": "pcv", //3rd dose
+    "PCV Date Scheduled1": "pcv_date_scheduled1",
+    //"PCV Administerred Schedule1": "pcv_administerred_schedule1",
+    "PCV Date Given1": "pcv_date_given1",
+    //"PCV Administerred Given1": "pcv_administerred_given1",
+    "PCV Date Scheduled2": "pcv_date_scheduled2",
+    //"PCV Administerred Schedule2": "pcv_administerred_schedule2",
+    "PCV Date Given2": "pcv_date_given2",
+    //"PCV Administerred Given2": "pcv_administerred_given2",
+    "PCV Date Scheduled3": "pcv_date_scheduled3",
+    //"PCV Administerred Schedule3": "pcv_administerred_schedule3",
+    "PCV Date Given3": "pcv_date_given3",
+    //"PCV Administerred Given3": "pcv_administerred_given3",
   })
 
   const client_data = ref([])
+  const isDisabled = ref(true)
   const handleClientData = async (data:any) => {
-      console.log(data)
-      client_data.value = data
+      client_data.value = await Promise.all(data.map(async (item:any) => {
+        const bcg = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "bcg" }) 
+        const hepb = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "hepb" }) 
+        const ipv = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "ipv" }) 
+        const mcv = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "mcv" }) 
+        const pentavalent = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "pentavalent" })
+        const opv = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "opv" }) 
+        const pcv = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "pcv" }) 
+        if(bcg.length > 0) {
+          const response = bcg[0]
+          item['bcg'] = 'active'
+          item['bcg_date_scheduled'] = response.scheduled_1
+          //item['bcg_administerred_schedule'] = await administerredInfo(response.scheduled_administerred_1)
+          item['bcg_date_given'] = response.given_1
+          //item['bcg_administerred_given'] = await administerredInfo(response.given_administerred_1)
+        } else {
+          item['bcg'] = 'null'
+          item['bcg_date_scheduled'] = 'null'
+          item['bcg_administerred_schedule'] = 'null'
+          item['bcg_date_given'] = 'null'
+          item['bcg_administerred_given'] = 'null'
+        }
+        if(hepb.length > 0) {
+          const response = hepb[0]
+          item['hepb'] = 'active'
+          item['hepb_date_scheduled'] = response.scheduled_1
+          //item['hepb_administerred_schedule'] = await administerredInfo(response.scheduled_administerred_1)
+          item['hepb_date_given'] = response.given_1
+          //item['hepb_administerred_given'] = await administerredInfo(response.given_administerred_1)
+        } else {
+          item['hepb'] = 'null'
+          item['hepb_date_scheduled'] = 'null'
+          item['hepb_administerred_schedule'] = 'null'
+          item['hepb_date_given'] = 'null'
+          item['hepb_administerred_given'] = 'null'
+        }
+        if(ipv.length > 0) {
+          const response = ipv[0]
+          item['ipv'] = 'active'
+          item['ipv_date_scheduled'] = response.scheduled_1
+          //item['ipv_administerred_schedule'] = await administerredInfo(response.scheduled_administerred_1)
+          item['ipv_date_given'] = response.given_1
+          //item['ipv_administerred_given'] = await administerredInfo(response.given_administerred_1)
+        } else {
+          item['ipv'] = 'null'
+          item['ipv_date_scheduled'] = 'null'
+          item['ipv_administerred_schedule'] = 'null'
+          item['ipv_date_given'] = 'null'
+          item['ipv_administerred_given'] = 'null'
+        }
+        if(mcv.length > 0) {
+          const response = mcv[0]
+          item['mcv'] = 'active'
+          item['mcv_date_scheduled1'] = response.scheduled_1
+          //item['mcv_administerred_schedule1'] = await administerredInfo(response.scheduled_administerred_1)
+          item['mcv_date_given1'] = response.given_1
+          //item['mcv_administerred_given1'] = await administerredInfo(response.given_administerred_1)
+          item['mcv_date_scheduled2'] = response.scheduled_2
+          //item['mcv_administerred_schedule2'] = await administerredInfo(response.scheduled_administerred_2)
+          item['mcv_date_given2'] = response.given_2
+          //item['mcv_administerred_given2'] = await administerredInfo(response.given_administerred_2)
+        } else {
+          item['mcv'] = 'null'
+          item['mcv_date_scheduled1'] = 'null'
+          item['mcv_administerred_schedule1'] = 'null'
+          item['mcv_date_given1'] = 'null'
+          item['mcv_administerred_given1'] = 'null'
+          item['mcv_date_scheduled2'] = 'null'
+          item['mcv_administerred_schedule2'] = 'null'
+          item['mcv_date_given2'] = 'null'
+          item['mcv_administerred_given2'] = 'null'
+        }
+        if(pentavalent.length > 0) {
+          const response = pentavalent[0]
+          item['pentavalent'] = 'active'
+          item['pentavalent_date_scheduled1'] = response.scheduled_1
+          //item['pentavalent_administerred_schedule1'] = await administerredInfo(response.scheduled_administerred_1)
+          item['pentavalent_date_given1'] = response.given_1
+          //item['pentavalent_administerred_given1'] = await administerredInfo(response.given_administerred_1)
+          item['pentavalent_date_scheduled2'] = response.scheduled_2
+          //item['pentavalent_administerred_schedule2'] = await administerredInfo(response.scheduled_administerred_2)
+          item['pentavalent_date_given2'] = response.given_2
+          //item['pentavalent_administerred_given2'] = await administerredInfo(response.given_administerred_2)
+          item['pentavalent_date_scheduled3'] = response.scheduled_3
+          //item['pentavalent_administerred_schedule3'] = await administerredInfo(response.scheduled_administerred_3)
+          item['pentavalent_date_given3'] = response.given_3
+          //item['pentavalent_administerred_given3'] = await administerredInfo(response.given_administerred_3)
+        } else {
+          item['pentavalent'] = 'null'
+          item['pentavalent_date_scheduled1'] = 'null'
+          item['pentavalent_administerred_schedule1'] = 'null'
+          item['pentavalent_date_given1'] = 'null'
+          item['pentavalent_administerred_given1'] = 'null'
+          item['pentavalent_date_scheduled2'] = 'null'
+          item['pentavalent_administerred_schedule2'] = 'null'
+          item['pentavalent_date_given2'] = 'null'
+          item['pentavalent_administerred_given2'] = 'null'
+          item['pentavalent_date_scheduled3'] = 'null'
+          item['pentavalent_administerred_schedule3'] = 'null'
+          item['pentavalent_date_given3'] = 'null'
+          item['pentavalent_administerred_given3'] = 'null'
+        }
+        if(opv.length > 0) {
+          const response = opv[0]
+          item['opv'] = 'active'
+          item['opv_date_scheduled1'] = response.scheduled_1
+          //item['opv_administerred_schedule1'] = await administerredInfo(response.scheduled_administerred_1)
+          item['opv_date_given1'] = response.given_1
+          //item['opv_administerred_given1'] = await administerredInfo(response.given_administerred_1)
+          item['opv_date_scheduled2'] = response.scheduled_2
+          //item['opv_administerred_schedule2'] = await administerredInfo(response.scheduled_administerred_2)
+          item['opv_date_given2'] = response.given_2
+          //item['opv_administerred_given2'] = await administerredInfo(response.given_administerred_2)
+          item['opv_date_scheduled3'] = response.scheduled_3
+          //item['opv_administerred_schedule3'] = await administerredInfo(response.scheduled_administerred_3)
+          item['opv_date_given3'] = response.given_3
+          //item['opv_administerred_given3'] = await administerredInfo(response.given_administerred_3)
+        } else {
+          item['opv'] = 'null'
+          item['opv_date_scheduled1'] = 'null'
+          item['opv_administerred_schedule1'] = 'null'
+          item['opv_date_given1'] = 'null'
+          item['opv_administerred_given1'] = 'null'
+          item['opv_date_scheduled2'] = 'null'
+          item['opv_administerred_schedule2'] = 'null'
+          item['opv_date_given2'] = 'null'
+          item['opv_administerred_given2'] = 'null'
+          item['opv_date_scheduled3'] = 'null'
+          item['opv_administerred_schedule3'] = 'null'
+          item['opv_date_given3'] = 'null'
+          item['opv_administerred_given3'] = 'null'
+        }
+        if(pcv.length > 0) {
+          const response = pcv[0]
+          item['pcv'] = 'active'
+          item['pcv_date_scheduled1'] = response.scheduled_1
+          //item['pcv_administerred_schedule1'] = await administerredInfo(response.scheduled_administerred_1)
+          item['pcv_date_given1'] = response.given_1
+          //item['pcv_administerred_given1'] = await administerredInfo(response.given_administerred_1)
+          item['pcv_date_scheduled2'] = response.scheduled_2
+          //item['pcv_administerred_schedule2'] = await administerredInfo(response.scheduled_administerred_2)
+          item['pcv_date_given2'] = response.given_2
+          //item['pcv_administerred_given2'] = await administerredInfo(response.given_administerred_2)
+          item['pcv_date_scheduled3'] = response.scheduled_3
+          //item['pcv_administerred_schedule3'] = await administerredInfo(response.scheduled_administerred_3)
+          item['pcv_date_given3'] = response.given_3
+          //item['pcv_administerred_given3'] = await administerredInfo(response.given_administerred_3)
+        } else {
+          item['pcv'] = 'null'
+          item['pcv_date_scheduled1'] = 'null'
+          item['pcv_administerred_schedule1'] = 'null'
+          item['pcv_date_given1'] = 'null'
+          item['pcv_administerred_given1'] = 'null'
+          item['pcv_date_scheduled2'] = 'null'
+          item['pcv_administerred_schedule2'] = 'null'
+          item['pcv_date_given2'] = 'null'
+          item['pcv_administerred_given2'] = 'null'
+          item['pcv_date_scheduled3'] = 'null'
+          item['pcv_administerred_schedule3'] = 'null'
+          item['pcv_date_given3'] = 'null'
+          item['pcv_administerred_given3'] = 'null'
+        }
+        return {
+          ...item
+        }
+      }))
+      isDisabled.value = false // re-enable the button
+      console.log(client_data.value)
+  }
+
+  const handleClickExcel = () => {
+    if(isDisabled.value)
+      alert("Some data are still processing in excel, please wait for a while.")
+  }
+
+  const administerredInfo = async (userid:Number) => {
+    const response = await getUserInfo({ id : userid })
+    if(response)
+      return response.fname+" "+response.mname+" "+response.lname
+
+    return "null"   
+  }
+
+  const handleCloseClientForm = () => {
+    client_modal.value?.hide()
+    clientModalStatus.value = "close"
+    clearClientForm()
   }
 
 </script>
@@ -734,6 +987,25 @@
                 :before-finish   = "startDownloadExcel"
                 worksheet="Clients"
                 name="clients.xls"
+                @click="handleClickExcel"
+                v-if="isDisabled"
+              >
+              <BaseIcon :path="mdiMicrosoftExcel"/>
+              <div class="flex flex-row">
+                <p class="text-sm">Processing</p>
+                <img :src="loadingModal" alt="loading_gif" class="ml-2 w-4 h-4">
+              </div>
+              </json-excel>
+              <json-excel
+                class="w-full md:w-40 inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+                :data="client_data"
+                :fields="json_fields"
+                :before-generate = "finishDownloadExcel"
+                :before-finish   = "startDownloadExcel"
+                worksheet="Clients"
+                name="clients.xls"
+                @click="handleClickExcel"
+                v-else
               >
               <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
               </json-excel>
@@ -760,7 +1032,7 @@
 
           <NotificationMessage></NotificationMessage>
 
-          <CardBox is-form @submit.prevent="clientSubmit">
+          <CardBox is-form @submit.prevent="clientSubmit" v-if="(form.id && clientModalStatus === 'update') || clientModalStatus === 'create'">
             <FormField label="Personal Information" class="text-xl">
               <FormField label="Vaccine Card Number ID" class="text-sm">
                 <FormControl v-model="form.vaccine_id" :icon="mdiCardBulletedSettings" :readonly="true"/>
@@ -927,8 +1199,14 @@
             
             <BaseButtons>
               <BaseButton type="submit" color="info" :label="button_label" />
-              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
+              <BaseButton type="button" color="info" outline label="Close" @click="handleCloseClientForm"/>
             </BaseButtons>
+          </CardBox>
+          <CardBox v-else-if="clientModalStatus !== 'close'">
+            <div class="flex flex-row mt-2 p-10">
+              <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
+              <p class="text-xl ml-2">Processing...</p>
+            </div>
           </CardBox>
         </div>
       </div>
