@@ -1,6 +1,5 @@
 <script setup lang="ts">
-    import { reactive, ref, computed, onMounted, watch } from "vue";
-    import { useMainStore } from "@/stores/main";
+    import { ref, onMounted } from "vue";
     import { mdiMessageProcessing } from "@mdi/js"
     import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue"
     import SectionMain from "@/components/SectionMain.vue"
@@ -9,13 +8,7 @@
     import moment from "moment"
     import { getVaccineInfo } from "@/api/python"
     import { insertFirebase } from "@/utils/firebase.ts"
-
-    const mainStore = useMainStore();
     
-    const fullname = (client:{}) => {
-        return client[0].firstname+" "+client[0].lastname
-    }
-
     const seconds = ref('00')
     const minutes = ref('00')
     const hours = ref('00')
@@ -23,31 +16,43 @@
 
     const interval = ref(1000);
     const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
-    //const static_date = ref(new Date('Mar 28,2023 13:45:00'))
+    //const static_date = ref(new Date('Apr 3,2023 15:19:00'))
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 
+    const fullname = (client:{}) => {
+        return client[0].firstname+" "+client[0].lastname
+    }
+    
     onMounted(() => {
         start()
         _getVaxForText({ status: 1,for_sms: "true", filter: "overall", vaccine_status: "-3days" })
     })
 
     const vax_for_text = ref([]);
+    const vax_handler = ref([]);
     const _getVaxForText = async (params: {} = {}) => {
         const response = await getVaccineInfo(params)
         vax_for_text.value = await Promise.all(response.map(async (item: any) => {
+            vax_handler.value.push({
+                ...item,
+                contact: item.client[0].bhw_contact_number,
+                fullname: fullname(item.client),
+                handler_status: "BHW"
+            })
             return {
-            ...item
+                ...item,
+                contact: item.client[0].guardian_contact_number,
+                fullname: fullname(item.client),
+                handler_status: "Parent"
             }
         }))
-        // const num_to_text = []
-        // response.forEach(item => {
-        //     num_to_text.push(item.bhw_contact_number+"@"+item.client[0].guardian_contact_number)
-        // })
-        // num_to_text.push("REMINDER! due date 3 days before")
-        // number_to_text.value = num_to_text.join('@');
-        // console.log(number_to_text.value)
+        vax_handler.value.forEach((item) => {
+            vax_for_text.value.push(item)
+        })
+        console.log(await vax_for_text.value)
+        console.log(await vax_handler.value)
     }
 
     const reminderTextProcess = () => {
@@ -112,7 +117,7 @@
             setTimeout(() => {
                 console.log(item)
                 //insertFirebase(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
-                insertFirebase(item.client[0].guardian_contact_number+"@"+sms_message)
+                insertFirebase(item.contact+"@"+sms_message)
                 counter++
             }, 10000 * (index + 1));
         })
@@ -188,11 +193,11 @@
             </div>
             <div class="grid gap-x-8 gap-y-1 lg:grid-cols-2 mb-6 mt-6">
                 <CardBoxClient
-                    v-for="vax in vax_for_text"
+                    v-for="(vax,index) in vax_for_text"
                     :key="vax.id"
-                    :name="fullname(vax.client)"
-                    :login="fullname(vax.client)"
-                    :date="vax.client[0].guardian_contact_number"
+                    :name="index+1+'.) '+vax.fullname"
+                    :login="vax.handler_status"
+                    :date="vax.contact"
                     :progress="60"
                 />
                 <div class="clear-both"></div>
