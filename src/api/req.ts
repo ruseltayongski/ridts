@@ -9,7 +9,7 @@ declare module "axios" {
   export interface AxiosResponse<T = any> extends Promise<T> {}
 }
 
-Axios.defaults.timeout = 300000;
+Axios.defaults.timeout = 1000000;
 
 //设置请求基地址
 //Axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
