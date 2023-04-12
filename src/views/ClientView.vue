@@ -781,12 +781,19 @@
     //"PCV Administerred Given3": "pcv_administerred_given3",
   })
 
+  const isDisabled = ref(true)
   const client_data = ref([])
   const handleClientData = async (data:any) => {
     client_data.value = data
+    isDisabled.value = false // re-enable the button
   }
 
-  const handleClickExcel = async () => {    
+  const processExcelData = async () => {  
+    if(isDisabled.value) {
+      alert("Some data are still processing in excel, please wait for a while.");  
+      return;
+    }
+
     const response = await Promise.all(client_data.value.map(async (item:any) => {
       const bcg = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "bcg" }) 
       const hepb = await getVaccineClientInfo({ client_id: item.id, vaccine_type: "hepb" }) 
@@ -981,15 +988,30 @@
         <div class="flex gap-4">
             <div class="md:block">
               <json-excel
+                class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+                :fetch="processExcelData"
+                :fields="json_fields"
+                worksheet="Vaccinated"
+                name="vaccinated.xls"
+                v-if="isDisabled"
+              >
+                <BaseIcon :path="mdiMicrosoftExcel"/>
+                <div class="flex flex-row">
+                  <p class="text-sm">Processing</p>
+                  <img :src="loadingModal" alt="loading_gif" class="ml-2 w-4 h-4">
+                </div>
+              </json-excel>
+              <json-excel
                 class="w-full md:w-40 inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
-                :fetch="handleClickExcel"
+                :fetch="processExcelData"
                 :fields="json_fields"
                 :before-generate = "startDownloadExcel"
                 :before-finish   = "finishDownloadExcel"
                 worksheet="Clients"
                 name="clients.xls"
-                @click="handleClickExcel"
+                v-else
               >
+              <!-- @click="processExcelData" -->
               <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
               </json-excel>
               <BaseButton class="w-full md:w-40" @click="handleCreateClient" type="button" color="info" label="Create" :icon="mdiAccountPlus" data-bs-toggle="modal" data-bs-target="#clientModal"/>
