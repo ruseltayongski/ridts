@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
+  import { ref } from "vue";
   import loadingModal from "@/assets/spin.gif"
 
+  import { Modal, initTE } from "tw-elements";
+  initTE({ Modal }, true);
+
   const el_loading_modal = ref<HTMLInputElement | null>(null)
-  const loading_modal = ref<HTMLInputElement | null>(null)
+  const loading_modal = ref<any | null>(null)
   const handleOpenLoading = () => {
     console.log("open")
-    loading_modal.value = new Modal(el_loading_modal.value); //initialize modal instance
+    loading_modal.value = new Modal(el_loading_modal.value,{backdrop:'static'}); //initialize modal instance
     loading_modal.value?.show()
   }
 
@@ -95,16 +98,26 @@ import { ref } from "vue";
     </div>
   </NotificationGroup>
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" data-bs-backdrop="static" ref='el_loading_modal' aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
-      <div class="modal-content border-none relative flex flex-col w-full pointer-events-auto bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-body">
-          <img :src="loadingModal" alt="" class="center">
-        </div>
+  <!--Verically centered modal-->
+  <div
+    ref='el_loading_modal'
+    data-te-modal-init
+    class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+    id="exampleModalCenter"
+    tabindex="-1"
+    aria-labelledby="exampleModalCenterTitle"
+    aria-modal="true"
+    role="dialog">
+    <div
+      data-te-modal-dialog-ref
+      class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:min-h-[calc(100%-3.5rem)] min-[576px]:max-w-[500px]">
+      <div
+        class="pointer-events-auto relative flex w-full flex-col rounded-md border-none bg-clip-padding text-current outline-none dark:bg-neutral-600">
+        <img :src="loadingModal" alt="" class="center">
       </div>
     </div>
   </div>
-
+  
 </template>
 
 <style scoped>

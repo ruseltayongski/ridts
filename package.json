@@ -20,7 +20,7 @@
     "postcss-import": "^15.0.0",
     "prettier": "^2.7.1",
     "sass": "^1.56.1",
-    "tw-elements": "^1.0.0-alpha12",
+    "tw-elements": "^1.0.0-beta2",
     "unplugin-vue-components": "^0.22.9",
     "vue": "^3.2.41",
     "vue-json-excel3": "^0.0.5",

@@ -117,14 +117,14 @@
   const referring_facility_list = ref([]) 
   const referred_facility_list = ref([])
 
-  const refer_modal = ref<HTMLInputElement | null>(null)
-  const el_refer_modal = ref<HTMLInputElement | null>(null)
+  // const refer_modal = ref<HTMLInputElement | null>(null)
+  // const el_refer_modal = ref<HTMLInputElement | null>(null)
   
   onMounted(() => {
     _referringFacility()
     _referredFacility()
     _getAllClient()
-    refer_modal.value = new Modal(el_refer_modal.value); //initialize modal instance
+    //refer_modal.value = new Modal(el_refer_modal.value); //initialize modal instance
   })
 
   const _getAllClient = async (params: {} = {}) => {
@@ -403,8 +403,6 @@
               color="info"
               :icon="mdiNeedle"
               small
-              data-bs-toggle="modal" 
-              data-bs-target="#clientModal"
               @click="handleClientInfo(client.id)"
             />
             <!-- <BaseButton
@@ -455,4 +453,10 @@
     </BaseLevel>
   </div>
 </template>
+
+<style lang="scss" scoped>
+  @import "@/css/tailwind/_base.css";
+  @import "@/css/tailwind/_utilities.css";
+  @import "@/css/_table.css";
+</style>
 

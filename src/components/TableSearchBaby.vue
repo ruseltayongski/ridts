@@ -270,8 +270,7 @@
     <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
     <p class="text-xl ml-2">Processing...</p>
   </div>
-  <NotificationBar
-    v-else-if="data.length <= 0 && search_keyword && data_flag"
+  <NotificationBar v-else-if="data.length <= 0 && search_keyword && data_flag"
     color="info"
     :icon="mdiAlert"
     :outline="notificationsOutline"

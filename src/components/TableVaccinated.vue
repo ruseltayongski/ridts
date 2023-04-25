@@ -268,3 +268,9 @@
     </BaseLevel>
   </div>
 </template>
+
+<style lang="scss" scoped>
+  @import "@/css/tailwind/_base.css";
+  @import "@/css/tailwind/_utilities.css";
+  @import "@/css/_table.css";
+</style>

@@ -39,6 +39,7 @@ declare module '@vue/runtime-core' {
     JustboilLogo: typeof import('./src/components/JustboilLogo.vue')['default']
     LineChart: typeof import('./src/components/Charts/LineChart.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
+    ModalClientInfo: typeof import('./src/components/ModalClientInfo.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
     NavBarItemPlain: typeof import('./src/components/NavBarItemPlain.vue')['default']
