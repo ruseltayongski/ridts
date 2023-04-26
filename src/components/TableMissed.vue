@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { computed, ref, onMounted, watch } from "vue";
+  import { computed, ref, onMounted, watch, reactive } from "vue";
   import { useMuncityDescriptionStore } from "@/stores"
-  import { mdiNeedle } from "@mdi/js";
+  import { mdiNeedle, mdiTrashCan } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
   import BaseLevel from "@/components/BaseLevel.vue";
   import BaseButtons from "@/components/BaseButtons.vue";
@@ -9,8 +9,9 @@
   import NotificationBar from "@/components/NotificationBar.vue";
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
-  import { clientMissed } from "@/api/python"
+  import { clientMissed, deleteClient } from "@/api/python"
   import moment from "moment"
+  import { notify } from "notiwind"
   import loadingModal from "@/assets/spin.gif"
   import {
     mdiAlert
@@ -27,7 +28,6 @@
       default: null
     }
   });
-
 
   const items = computed(() => data.value);
 
@@ -146,17 +146,39 @@
   const uniqueValue = (index:any,unique:any) => {
     return index+""+unique+moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
+
+  const client_delete = reactive({
+    client_id : 0,
+    client_name : ""
+  })
+
+  const handleDeleteClient = async (client_id:any,client_name:any) => {
+    client_delete.client_id = client_id
+    client_delete.client_name = client_name
+    isModalDangerActive.value = true
+  }
+
+  const handleConfirmDelete = async () => {
+    data.value = data.value.filter((client) => client.id !== client_delete.client_id)
+    await deleteClient({ id : client_delete.client_id })
+    notify({
+      group: "error",
+      title: "Warning",
+      text: client_delete.client_name+" was successfully deleted"
+    }, 2000)
+  }
 </script>
 
 <template>
   <CardBoxModal
     v-model="isModalDangerActive"
-    title="Please confirm"
     button="danger"
     has-cancel
     has-confirm
+    title="."
+    @confirm-delete="handleConfirmDelete"
   >
-    <p>Are you sure you want to delete this client?</p>
+    <p>Are you sure you want to delete {{ client_delete.client_name }}?</p>
   </CardBoxModal>
 
   <div v-if="checkedRows.length" class="p-3 bg-gray-100/50 dark:bg-slate-800">
@@ -215,6 +237,12 @@
               :icon="mdiNeedle"
               small
               @click="handleClientInfo(client.id,client.vaccine_type)"
+            />
+            <BaseButton
+              color="danger"
+              :icon="mdiTrashCan"
+              small
+              @click="handleDeleteClient(client.id,client.firstname + ' ' + client.middlename + ' ' + client.lastname)"
             />
           </BaseButtons>
         </td>

@@ -194,7 +194,7 @@
   <LayoutAuthenticated>
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiCalendarRemoveOutline" title="Missed" main>
-        <div class="flex gap-4">
+        <div class="flex gap-2">
           <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init>
             <input type="text" v-model="dateFrom" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" placeholder="Select a date" />
             <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">From</label
@@ -205,7 +205,7 @@
             <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">To</label
             >
           </div>
-          <BaseButton class="w-full md:w-40" @click="handleDateFilter" type="button" color="info" label="Search" :icon="mdiFileSearch"/>
+          <BaseButton class="w-full md:w-40" @click="handleDateFilter" type="button" color="info" label="Filter" :icon="mdiFileSearch"/>
           <json-excel
             class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
             :data="client_data"
@@ -232,7 +232,7 @@
           >
             <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
           </json-excel>
-      </div>
+        </div>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
         <TableMissed @client-data="handleClientData" @client-info="handleClientInfo" :vaxMissedId="vaxMissedId" :dateFilter="dateFilter" checkable />
