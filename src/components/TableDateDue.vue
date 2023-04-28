@@ -1,14 +1,15 @@
 <script setup lang="ts">
-  import { computed, ref, reactive, onMounted } from "vue";
+  import { computed, ref, reactive, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import { useMuncityDescriptionStore } from "@/stores"
-  import { mdiBadgeAccount } from "@mdi/js";
+  import { mdiBadgeAccount, mdiAlert } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
   import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
   import BaseLevel from "@/components/BaseLevel.vue";
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
   import UserAvatar from "@/components/UserAvatar.vue";
+  import NotificationBar from "@/components/NotificationBar.vue";
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
   import { clientDateDue } from "@/api/python"
@@ -145,6 +146,16 @@
   const handleClientInfo = (id:Number) => {
     emit("client-info", id);
   };
+
+  const notificationSettingsModel = ref([]);
+  const notificationsOutline = computed(
+    () => notificationSettingsModel.value.indexOf("outline") > -1
+  );
+  
+  const loadFlag = ref(false)
+  watch(itemsPaginated, (value) => {
+    loadFlag.value = true
+  })
 </script>
 
 <template>
@@ -179,7 +190,7 @@
     </span>
   </div>
 
-  <table v-if="itemsPaginated.length > 0">
+  <table v-if="loadFlag && itemsPaginated.length > 0">
     <thead>
       <tr>
         <!-- <th v-if="checkable" />
@@ -247,6 +258,13 @@
       </tr>
     </tbody>
   </table>
+  <NotificationBar v-else-if="loadFlag && itemsPaginated.length === 0"
+    color="info"
+    :icon="mdiAlert"
+    :outline="notificationsOutline"
+  >
+    <b>Warning state</b>. No baby found!
+  </NotificationBar>
   <div class="flex flex-row mt-2 p-10" v-else>
     <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
     <p class="text-xl ml-2">Processing...</p>
