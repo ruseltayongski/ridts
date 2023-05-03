@@ -54,13 +54,6 @@
     form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
 
-  const customElementsForm = reactive({
-    checkbox: ["lorem"],
-    radio: "one",
-    switch: ["one"],
-    file: null,
-  });
-
   const form = reactive({
     id: 0, 
     vaccine_id : "",

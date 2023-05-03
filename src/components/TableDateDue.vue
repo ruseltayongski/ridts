@@ -2,29 +2,33 @@
   import { computed, ref, reactive, onMounted, watch } from "vue";
   import { useMainStore } from "@/stores/main";
   import { useMuncityDescriptionStore } from "@/stores"
-  import { mdiBadgeAccount, mdiAlert } from "@mdi/js";
+  import { mdiAlert, mdiNeedle, mdiTrashCan } from "@mdi/js";
   import CardBoxModal from "@/components/CardBoxModal.vue";
-  import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
   import BaseLevel from "@/components/BaseLevel.vue";
   import BaseButtons from "@/components/BaseButtons.vue";
   import BaseButton from "@/components/BaseButton.vue";
-  import UserAvatar from "@/components/UserAvatar.vue";
   import NotificationBar from "@/components/NotificationBar.vue";
   import { getUserBarangay,getUserBarangayAssignment } from '@/api/auth'
   import { useUseridStore } from "@/stores"
-  import { clientDateDue } from "@/api/python"
+  import { clientDateDue, deleteClient } from "@/api/python"
   import moment from "moment"
   import loadingModal from "@/assets/spin.gif"
 
-  defineProps({
+  import { notify } from "notiwind"
+
+  const props = defineProps({
     checkable: Boolean,
+    vaxDateDueId: {
+      type: Number,
+      default: 0
+    },
+    dateFilter: {
+      type: Object,
+      default: null
+    }
   });
 
-  const mainStore = useMainStore();
-
   const items = computed(() => data.value);
-
-  const isModalActive = ref(false);
 
   const isModalDangerActive = ref(false);
 
@@ -55,52 +59,14 @@
     return pagesList;
   });
 
-  const remove = (arr, cb) => {
-    const newArr = [];
-
-    arr.forEach((item) => {
-      if (!cb(item)) {
-        newArr.push(item);
-      }
-    });
-
-    return newArr;
-  };
-
-  const checked = (isChecked, client) => {
-    if (isChecked) {
-      checkedRows.value.push(client);
-    } else {
-      checkedRows.value = remove(
-        checkedRows.value,
-        (row) => row.id === client.id
-      );
-    }
-  };
-
-  const selectOptions = [
-    { id: 1, label: "Lahug" },
-    { id: 2, label: "Sambag II" },
-    { id: 3, label: "Day-as" },
-  ];
-
-  const form = reactive({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "",
-    department: selectOptions[0],
-    subject: "",
-    question: "",
-  });
-
   const get_barangay = ref([])
-
   onMounted(() => {
     _getUserBarangay()
     _getAllClientArchived()
   })
 
   const data = ref([])
+  const dataHandler = ref([])
   const _getAllClientArchived = async (params: {} = {}) => {
     const barangay_assign = await getUserBarangayAssignment({ userid: useUseridStore().value })
     const barangay_assignment = await Promise.all(barangay_assign.map(async (item: any) => item.id))
@@ -124,11 +90,14 @@
         }
         return {
             vaccine_type : vaccine_type,
+            vax_id : item.id,
+            overall_scheduled: item.overall_scheduled,
             sex: item.client[0].sex.charAt(0).toUpperCase() + item.client[0].sex.slice(1),
             fullname: item.client[0].firstname+" "+item.client[0].middlename+" "+item.client[0].lastname,
             ...item.client[0]
         }
     }))
+    dataHandler.value = data.value
     emit("client-data",data.value)
   }
 
@@ -143,8 +112,8 @@
   }
 
   const emit = defineEmits(["client-info","client-data"])
-  const handleClientInfo = (id:Number) => {
-    emit("client-info", id);
+  const handleClientInfo = (id:Number,vaccine_type:String) => {
+    emit("client-info", { id: id, vaccine_type: vaccine_type });
   };
 
   const notificationSettingsModel = ref([]);
@@ -156,28 +125,56 @@
   watch(itemsPaginated, (value) => {
     loadFlag.value = true
   })
+
+  const uniqueValue = (index:any,unique:any) => {
+    return index+""+unique+moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
+  }
+
+  const client_delete = reactive({
+    client_id : 0,
+    client_name : ""
+  })
+  const handleDeleteClient = async (client_id:any,client_name:any) => {
+    client_delete.client_id = client_id
+    client_delete.client_name = client_name
+    isModalDangerActive.value = true
+  }
+
+  const handleConfirmDelete = async () => {
+    data.value = data.value.filter((client) => client.id !== client_delete.client_id)
+    await deleteClient({ id : client_delete.client_id })
+    notify({
+      group: "error",
+      title: "Warning",
+      text: client_delete.client_name+" was successfully deleted"
+    }, 2000)
+  }
+
+  const vaxMissedIdComp = computed(() => props.vaxDateDueId)
+  watch(vaxMissedIdComp,(value) => {
+    data.value = data.value.filter(item => item.vax_id !== value) 
+    dataHandler.value = dataHandler.value.filter(item => item.vax_id !== value) 
+  })
+
+  const dateFilterComp = computed(() => props.dateFilter)
+  watch(dateFilterComp,(value) => {
+    data.value = dataHandler.value.filter(obj => {
+      const date = obj.overall_scheduled+"00:00:00";
+      return date >= value.dateFrom+"00:00:00" && date <= value.dateTo+"23:59:59";
+    })
+  })
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Refer Client" button="success" has-cancel has-refer>
-    <FormField label="Barangay" class="mt-6">
-      <FormControl v-model="form.department" :options="get_barangay" />
-    </FormField>
-    <FormField label="Remarks">
-      <FormControl
-        type="textarea"
-      />
-    </FormField>
-  </CardBoxModal>
-
   <CardBoxModal
     v-model="isModalDangerActive"
-    title="Please confirm"
     button="danger"
     has-cancel
     has-confirm
+    title="."
+    @confirm-delete="handleConfirmDelete"
   >
-    <p>Are you sure you want to delete this client?</p>
+    <p>Are you sure you want to delete {{ client_delete.client_name }}?</p>
   </CardBoxModal>
 
   <div v-if="checkedRows.length" class="p-3 bg-gray-100/50 dark:bg-slate-800">
@@ -193,29 +190,17 @@
   <table v-if="loadFlag && itemsPaginated.length > 0">
     <thead>
       <tr>
-        <!-- <th v-if="checkable" />
-        <th /> -->
         <th>Name</th>
         <th>Municipality</th>
         <th>Barangay</th>
         <th>Vaccine Type</th>
-        <!-- <th>Progress</th> -->
         <th>Created</th>
+        <th>Scheduled</th>
         <th />
       </tr>
     </thead>
     <tbody>
-      <tr v-for="client in itemsPaginated" :key="client.id">
-        <!-- <TableCheckboxCell
-          v-if="checkable"
-          @checked="checked($event, client)"
-        />
-        <td class="border-b-0 lg:w-6 before:hidden">
-          <UserAvatar
-          :firstname="client.firstname+client.middlename+client.lastname"
-            class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
-          />
-        </td> -->
+      <tr v-for="(client,index) in itemsPaginated" :key="uniqueValue((index+1),client.id)">
         <td data-label="Name">
           {{ client.firstname+" "+client.middlename+" "+client.lastname }}
         </td>
@@ -226,32 +211,34 @@
           {{ client.client_barangay }}
         </td>
         <td>{{ client.vaccine_type }}</td>
-        <!-- <td data-label="Progress" class="lg:w-32">
-          <progress
-            class="flex w-2/5 self-center lg:w-full"
-            max="100"
-            :value="80"
-          >
-            80
-          </progress>
-        </td> -->
         <td data-label="Created" class="lg:w-1 whitespace-nowrap">
           <small
             class="text-gray-500 dark:text-slate-400"
             :title="client.created_on"
-            >{{ moment(client.created_on).format('ll') }}</small
-          > <br>
+            >{{ moment(client.created_on).format('ll') }}</small> 
+            <br>
           <small class="text-gray-400 dark:text-slate-400">{{ moment(client.created_on).format('h:mm:ss a') }}</small>
+        </td>
+        <td>
+          <small
+            class="text-gray-500 dark:text-slate-400"
+            :title="client.overall_scheduled"
+            >{{ moment(client.overall_scheduled).format('ll') }}
+          </small> 
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
             <BaseButton
               color="info"
-              :icon="mdiBadgeAccount"
+              :icon="mdiNeedle"
               small
-              data-bs-toggle="modal" 
-              data-bs-target="#exampleModalLg"
-              @click="handleClientInfo(client.id)"
+              @click="handleClientInfo(client.id,client.vaccine_type)"
+            />
+            <BaseButton
+              color="danger"
+              :icon="mdiTrashCan"
+              small
+              @click="handleDeleteClient(client.id,client.firstname + ' ' + client.middlename + ' ' + client.lastname)"
             />
           </BaseButtons>
         </td>

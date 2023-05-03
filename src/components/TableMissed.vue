@@ -100,7 +100,6 @@
         }
     }))
     dataHandler.value = data.value
-    console.log(data.value)
     emit("client-data",data.value)
   }
 
@@ -151,7 +150,6 @@
     client_id : 0,
     client_name : ""
   })
-
   const handleDeleteClient = async (client_id:any,client_name:any) => {
     client_delete.client_id = client_id
     client_delete.client_name = client_name

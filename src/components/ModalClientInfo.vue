@@ -59,7 +59,7 @@
 
   console.log(props.updateClientModal)
 
-  const emit = defineEmits(["loading-modal-open","loading-modal-close","props-form","vax-missed"])
+  const emit = defineEmits(["loading-modal-open","loading-modal-close","props-form","vax-missed","vax-datedue"])
   
   const get_barangay = ref([])
   const get_municipality = ref({})
@@ -383,20 +383,20 @@
 
       console.log(props.pageSite)
       console.log(vaccineResponse)
-      if(props.pageSite === 'missed') {
+      if(props.pageSite === 'missed' || props.pageSite === 'datedue') {
         if(vaccineResponse.scheduled_3) {
           if(vaccineResponse.given_3) {
-            emit("vax-missed",vaccineResponse.id)
+            props.pageSite === 'missed' ? emit("vax-missed",vaccineResponse.id) : emit("vax-datedue",vaccineResponse.id)
           }
         } 
         else if(vaccineResponse.scheduled_2) {
           if(vaccineResponse.given_2) {
-            emit("vax-missed",vaccineResponse.id)
+            props.pageSite === 'missed' ? emit("vax-missed",vaccineResponse.id) : emit("vax-datedue",vaccineResponse.id)
           }
         }
         else if(vaccineResponse.scheduled_1) {
           if(vaccineResponse.given_1) {
-            emit("vax-missed",vaccineResponse.id)
+            props.pageSite === 'missed' ? emit("vax-missed",vaccineResponse.id) : emit("vax-datedue",vaccineResponse.id)
           }
         }
       }
@@ -593,7 +593,7 @@
     form.vaccine_id = response.vaccine_id
     form.created_on = response.created_on
     form.updated_on = response.updated_on
-
+    
     vaccine_button.pentavalent = await Promise.resolve(handleDose3(form.id,'pentavalent'))
     vaccine_button.opv = await Promise.resolve(handleDose3(form.id,'opv'))
     vaccine_button.pcv = await Promise.resolve(handleDose3(form.id,'pcv'))
@@ -840,7 +840,7 @@
                   :disabled="vaccineDisabled['bcg']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('bcg')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'BCG') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'BCG') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'BCG') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.hepb"
@@ -851,7 +851,7 @@
                   :disabled="vaccineDisabled['hepb']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('hepb')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'HepB') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'HepB') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'HepB') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.pentavalent"
@@ -862,7 +862,7 @@
                   :disabled="vaccineDisabled['pentavalent']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('pentavalent')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'Pentavalent') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'Pentavalent') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'Pentavalent') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.opv"
@@ -873,7 +873,7 @@
                   :disabled="vaccineDisabled['opv']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('opv')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'OPV') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'OPV') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'OPV') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.ipv"
@@ -884,7 +884,7 @@
                   :disabled="vaccineDisabled['ipv']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('ipv')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'IPV') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'IPV') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'IPV') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.pcv"
@@ -895,7 +895,7 @@
                   :disabled="vaccineDisabled['pcv']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('pcv')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'PCV') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'PCV') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'PCV') || !pageSite"
                   />
                   <BaseButton
                   :color="vaccine_button.mcv"
@@ -906,7 +906,7 @@
                   :disabled="vaccineDisabled['mcv']"
                   :rounded-full="buttonsRounded"
                   @click="handleVaccineInfo('mcv')"
-                  v-if="(pageSite === 'missed' && updateClientModal.vaccine_type === 'MCV') || !pageSite"
+                  v-if="(pageSite === 'datedue' && updateClientModal.vaccine_type === 'MCV') || (pageSite === 'missed' && updateClientModal.vaccine_type === 'MCV') || !pageSite"
                   />
               </BaseButtons>
               </FormField>
@@ -1005,57 +1005,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <div data-te-modal-init class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"  id="vaccineeModal" ref="el_dose_modal" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
-    <div data-te-modal-dialog-ref class="modal-dialog modal-md relative w-auto pointer-events-none border-4 border-indigo-500/100">
-      <div class="modal-content border-none shadow-sm relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-          <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLgLabel">
-            Dose Schedule
-          </h5>
-          <button type="button"
-            class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-            data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body relative p-4">
-          <CardBox is-form @submit.prevent="doseSubmit">
-            <FormField label="1st Dose" :status="schedule.status1" :button_type="schedule.button_type1">
-              <FormField label="Date Scheduled" :help="schedule.scheduled_1 ? schedule.scheduled_administerred_1 : ''">
-                <FormControl id="dt1" v-model="schedule.scheduled_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-              </FormField>
-              <FormField label="Date Given" :help="schedule.given_1 ? schedule.given_administerred_1 : ''">
-                <FormControl id="dt2" v-model="schedule.given_1" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-              </FormField>
-            </FormField>
-                      
-            <FormField v-if="schedule.vaccine_type =='mcv' || schedule.vaccine_type =='pentavalent' || schedule.vaccine_type =='opv' || schedule.vaccine_type =='pcv'" label="2nd Dose" :status="schedule.status2" :button_type="schedule.button_type2">
-              <FormField label="Date Scheduled" :help="schedule.scheduled_2 ? schedule.scheduled_administerred_2 : ''">
-                <FormControl id="dt3" v-model="schedule.scheduled_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-              </FormField>
-              <FormField label="Date Given" :help="schedule.given_2 ? schedule.given_administerred_2 : ''">
-                <FormControl id="dt4" v-model="schedule.given_2" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-              </FormField>
-            </FormField>
-
-            <FormField v-if="schedule.vaccine_type =='pentavalent' || schedule.vaccine_type =='opv' || schedule.vaccine_type =='pcv'" label="3rd Dose" :status="schedule.status3" :button_type="schedule.button_type3">
-              <FormField label="Date Scheduled" :help="schedule.scheduled_3 ? schedule.scheduled_administerred_3 : ''">
-                <FormControl id="dt5" v-model="schedule.scheduled_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Scheduled"/>
-              </FormField>
-              <FormField label="Date Given" :help="schedule.given_3 ? schedule.given_administerred_3 : ''">
-                <FormControl id="dt6" v-model="schedule.given_3" type="date" :icon="mdiCalendarEditOutline" placeholder="Date Given"/>
-              </FormField>
-            </FormField>
-
-            <BaseButtons>
-              <BaseButton type="submit" color="info" :label="button_label" />
-              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-            </BaseButtons>
-
-          </CardBox>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <!-- <style scoped>

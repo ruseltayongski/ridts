@@ -1,52 +1,37 @@
 <script setup lang="ts">
-  import { reactive, ref, computed, onMounted } from "vue";
+  import { reactive, ref, computed, onMounted, Ref } from "vue";
   import { useMainStore } from "@/stores/main";
   import JsonExcel from "vue-json-excel3";
   import {
-    mdiMonitorCellphone,
-    mdiTableBorder,
-    mdiTableOff,
-    mdiGithub,
-    mdiAccountCircle,
-    mdiBabyFaceOutline,
-    mdiAccountPlus,
-    mdiBallotOutline,
-    mdiAccount,
-    mdiMail,
-    mdiHomeCityOutline,
-    mdiCardAccountPhoneOutline,
-    mdiCalendarEditOutline,
-    mdiCardBulletedSettings,
-    mdiOpenInNew,
-    mdiNeedle,
     mdiTableArrowDown,
-    mdiMicrosoftExcel
+    mdiMicrosoftExcel,
+    mdiFileSearch
   } from "@mdi/js";
   import SectionMain from "@/components/SectionMain.vue";
-  import NotificationBar from "@/components/NotificationBar.vue";
   import TableDateDue from "@/components/TableDateDue.vue";
   import CardBox from "@/components/CardBox.vue";
   import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
   import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue";
   import BaseButton from "@/components/BaseButton.vue";
-  import CardBoxComponentEmpty from "@/components/CardBoxComponentEmpty.vue";
+  import ModalClientInfo from "@/components/ModalClientInfo.vue";
   import { getUserBarangay, getUserMunicipality } from '@/api/auth'
-  import { getInfoClient } from "@/api/python"
   import BaseIcon from "@/components/BaseIcon.vue";
   import loadingModal from "@/assets/spin.gif"
-
+  
   import moment from "moment"
+
+  import { Datepicker, Input, initTE } from "tw-elements";
 
   const get_barangay = ref([])
   const get_municipality = ref({})
 
   const mainStore = useMainStore();
-  const transactionBarItems = computed(() => mainStore.history);
-  const clientBarItems = computed(() => mainStore.clients.slice(0, 4));
+  const pageSite = ref('datedue')
 
   onMounted(() => {
     _getUserBarangay()
     _getUserMunicipality()
+    initTE({ Datepicker, Input });
   })
 
   const _getUserBarangay = async () => {
@@ -68,36 +53,12 @@
     form.vaccine_id = response.id+""+mainStore.userId + "-" + moment().format('YYYYMMDDHHmmss')+String(Math.random()).substring(0, 3).split('.').join("")
   }
 
-  const customElementsForm = reactive({
-    checkbox: ["lorem"],
-    radio: "one",
-    switch: ["one"],
-    file: null,
-  });
-
-  const buttonSettingsModel = ref([]);
-  const buttonsOutline = computed(
-    () => buttonSettingsModel.value.indexOf("outline") > -1
-  );
-
-  const buttonsSmall = computed(
-    () => buttonSettingsModel.value.indexOf("small") > -1
-  );
-
-  const buttonsDisabled = computed(
-    () => buttonSettingsModel.value.indexOf("disabled") > -1
-  );
-
-  const buttonsRounded = computed(
-    () => buttonSettingsModel.value.indexOf("rounded") > -1
-  );
-
-  const isModalActive = ref(false);
-
-
-  const handleClientInfo = async (id:Number) => {
-      _getInfoClient(id)
-  };
+  const handleClientInfo = (payload:Object) => {
+    console.log(payload)
+    updateClient.value.vaccine_type = payload.vaccine_type
+    updateClient.value.id = payload.id
+    updateClient.value.flag = updateClient.value.flag ? false : true
+  }
 
   const form = reactive({
     id: 0, 
@@ -129,53 +90,6 @@
     created_on: "",
     updated_on: ""
   });
-
-  const _getInfoClient = async (id:Number) => {
-    const response = await getInfoClient({ id : id })
-    console.log(response)
-    form.id = response.id
-    form.bhw_address = response.bhw_address
-    form.bhw_contact_number = response.bhw_contact_number
-    form.bhw_name = response.bhw_name
-    form.bhw_barangay = response.bhw_barangay
-    form.birthdate = response.birthdate
-    form.birthplace = response.birthplace
-    form.client_address = response.client_address
-    form.client_barangay = response.client_barangay
-    form.created_by = response.created_by
-    form.firstname = response.firstname
-    form.guardian_address = response.guardian_address
-    form.guardian_barangay = response.guardian_barangay
-    form.guardian_alternate_number = response.guardian_alternate_number
-    form.guardian_contact_number = response.guardian_contact_number
-    form.guardian_name = response.guardian_name
-    form.health_provider_address = response.health_provider_address
-    form.health_provider_barangay = response.health_provider_barangay
-    form.health_provider_contact = response.health_provider_contact
-    form.health_provider_name = response.health_provider_name
-    form.is_active = response.is_active
-    form.lastname = response.lastname
-    form.middlename = response.middlename
-    form.sex = response.sex
-    form.vaccine_id = response.vaccine_id
-    form.remarks = response.remarks
-    form.created_on = response.created_on
-    form.updated_on = response.updated_on
-  }
-
-  const getAge = (dob:any) => {
-    const check = moment(dob, 'YYYY/MM/DD');
-    const a = moment([moment().format('YYYY'), moment().format('MM'), moment().format('DD')]);
-    const b = moment([check.format('YYYY'), check.format('MM'), check.format('DD')]);
-
-    const diffDuration = moment.duration(a.diff(b));
-
-    const year = diffDuration.years()
-    const month = diffDuration.months()
-    const days = diffDuration.days()  
-    
-    return year+" Years, "+month+" month, "+days+" days"; 
-  }
 
   const json_fields = ref({
     "Vaccine ID": "vaccine_id",
@@ -212,177 +126,119 @@
       alert("Some data are still processing in excel, please wait for a while.")
   }
 
-  const startDownloadExcel = () => {
-    emit("loading-modal-open")
-  }
-
-  const finishDownloadExcel = () => {
-    setTimeout(function(){
-      emit("loading-modal-close")
-    }, 1000);
+  const vaxDateDueId = ref(0)
+  const handleVaxDateDue = (id:any) => {
+    console.log(id)
+    vaxDateDueId.value = id
   }
 
   const emit = defineEmits(["loading-modal-open","loading-modal-close"]);
+  const handleOpenLoading = () => {
+    emit("loading-modal-open")
+  }
+
+  const handleCloseLoading = () => {
+    emit("loading-modal-close")
+  }
+
+  const props_form = ref({})
+  const handlePropsForm = (data: any) => {
+    console.log(data)
+    props_form.value = data
+  }
+
+  const dateFrom = ref("")
+  const dateTo = ref("")
+  const dateFilter = ref({})
+  const handleDateFilter = () => {
+    if(!dateFrom.value) {
+      alert("PLEASE SELECT DATE FROM!")
+      return
+    }
+    if(!dateTo.value) {
+      alert("PLEASE SELECT DATE TO!")
+      return
+    }
+    if(dateFrom.value > dateTo.value) {
+      alert("DATE FROM MUST LESS THAN TO DATE TO!")
+      return
+    }
+    const date_from = moment(dateFrom.value,'DD/MM/YYYY').format("YYYY-MM-DD")
+    const date_to = moment(dateTo.value,'DD/MM/YYYY').format("YYYY-MM-DD")
+    dateFilter.value = {
+      dateFrom: date_from,
+      dateTo: date_to
+    }
+  }
+
+  interface UpdateClient {
+    flag: boolean;
+    id: number;
+    vaccine_type: String
+  }
+  const updateClient: Ref<UpdateClient> = ref({
+    flag: false,
+    id: 0,
+    vaccine_type: ""
+  });
+
 </script>
 
 <template>
+  
   <LayoutAuthenticated>
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiTableArrowDown" title="Date Due" main>
-        <json-excel
-          class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
-          :data="client_data"
-          :fields="json_fields"
-          worksheet="DateDue"
-          name="date_due.xls"
-          @click="handleClickExcel"
-          v-if="isDisabled"
-        >
-          <BaseIcon :path="mdiMicrosoftExcel"/>
-          <div class="flex flex-row">
-            <p class="text-sm">Processing</p>
-            <img :src="loadingModal" alt="loading_gif" class="ml-2 w-4 h-4">
+        <div class="flex gap-2">
+          <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init>
+            <input type="text" v-model="dateFrom" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" placeholder="Select a date" />
+            <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">From</label
+            >
           </div>
-        </json-excel>
-        <json-excel
-          class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
-          :data="client_data"
-          :fields="json_fields"
-          worksheet="DateDue"
-          name="date_due.xls"
-          @click="handleClickExcel"
-          v-else
-        >
-          <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
-        </json-excel>
+          <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init>
+            <input type="text" v-model="dateTo" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" placeholder="Select a date" />
+            <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">To</label
+            >
+          </div>
+          <BaseButton class="w-full md:w-40" @click="handleDateFilter" type="button" color="info" label="Filter" :icon="mdiFileSearch"/>
+          <json-excel
+            class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+            :data="client_data"
+            :fields="json_fields"
+            worksheet="DateDue"
+            name="date_due.xls"
+            @click="handleClickExcel"
+            v-if="isDisabled"
+          >
+            <BaseIcon :path="mdiMicrosoftExcel"/>
+            <div class="flex flex-row">
+              <p class="text-sm">Processing</p>
+              <img :src="loadingModal" alt="loading_gif" class="ml-2 w-4 h-4">
+            </div>
+          </json-excel>
+          <json-excel
+            class="inline-flex justify-center items-center whitespace-nowrap focus:outline-none transition-colors focus:ring duration-150 border cursor-pointer rounded border-yellow-600 dark:border-yellow-500 ring-yellow-300 dark:ring-yellow-700 bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 hover:border-yellow-700 hover:dark:bg-yellow-600 hover:dark:border-yellow-600 py-2 px-3"
+            :data="client_data"
+            :fields="json_fields"
+            worksheet="DateDue"
+            name="date_due.xls"
+            @click="handleClickExcel"
+            v-else
+          >
+            <BaseIcon :path="mdiMicrosoftExcel"/> Download Excel
+          </json-excel>
+        </div>
       </SectionTitleLineWithButton>
       <CardBox class="mb-6" has-table>
-        <TableDateDue @client-data="handleClientData" @client-info="handleClientInfo" checkable />
+        <TableDateDue @client-data="handleClientData" @client-info="handleClientInfo" :vaxDateDueId="vaxDateDueId" :dateFilter="dateFilter" checkable />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
 
-  <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalLg" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLgLabel" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
-      <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-        <div class="modal-body relative p-4">
-          <SectionTitleLineWithButton
-            :icon="mdiBallotOutline"
-            title="Client Info"
-            main
-          >
-          </SectionTitleLineWithButton>
-          <CardBox is-form>
-            <FormField label="Personal Information" class="text-xl">
-              <FormField label="Vaccine Card Number ID" class="text-sm">
-                {{ form.vaccine_id }}
-              </FormField>
-              <FormField label="Firstname" class="text-sm">
-                {{ form.firstname }}
-              </FormField>
-            </FormField>
-            
-            <FormField >
-              <FormField label="Middlename" class="text-sm">
-                {{ form.middlename }}
-              </FormField>
-              <FormField label="Lastname" class="text-sm">
-                {{ form.lastname }}
-              </FormField>
-            </FormField>
-
-            <FormField >
-              <FormField label="Birthdate" class="text-sm">
-                {{ moment(form.birthdate).format('ll') }}
-              </FormField>
-              <FormField label="Age" class="text-sm">
-                {{ getAge(form.birthdate) }}
-              </FormField>
-            </FormField>
-
-            <FormField>
-              <FormField label="Birthplace" class="text-sm">
-                {{ form.birthplace }}
-              </FormField>
-              <FormField label="Sex" class="text-sm">
-                {{ form.sex.charAt(0).toUpperCase() + form.sex.slice(1) }}
-              </FormField>
-            </FormField>
-
-            <FormField label="Client Address" class="text-sm">
-              {{ form.client_barangay }}
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of Parents / Guardian" class="text-sm">
-              {{ form.guardian_name }}
-            </FormField>
-
-            <FormField>
-              <FormField label="Guardian Contact Number" class="text-sm">
-                {{ form.guardian_contact_number }}
-              </FormField>
-              <FormField label="Guardian Alternate Number" class="text-sm">
-                {{ form.guardian_alternate_number }}
-              </FormField>
-            </FormField>
-
-            <FormField label="Parent/Guardian Address" class="text-sm">
-              {{ form.guardian_barangay }}
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of BHW" class="text-sm">
-              {{ form.bhw_name }}
-            </FormField>
-
-            <FormField >
-              <FormField label="BHW contact number" class="text-sm">
-                {{ form.bhw_contact_number }}
-              </FormField>
-              <FormField label="BHW Address" class="text-sm">
-                {{ form.bhw_barangay }}
-              </FormField>
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Name of Health Provider" class="text-sm">
-              {{ form.health_provider_name }}
-            </FormField>
-
-            <FormField >
-              <FormField label="Health Provider Contact Number" class="text-sm">
-                {{ form.health_provider_contact }}
-              </FormField>
-              <FormField label="Health Provider Address" class="text-sm">
-                {{ form.health_provider_barangay }}
-              </FormField>
-            </FormField>
-
-            <BaseDivider />
-
-            <FormField label="Remarks" class="text-sm">
-              {{ form.remarks }}
-            </FormField>
-
-            <BaseDivider />
-
-            <BaseButtons>
-              <BaseButton type="button" color="warning" label="Print PDF" />
-              <BaseButton type="button" color="info" outline label="Close" data-bs-dismiss="modal" aria-label="Close"/>
-            </BaseButtons>
-            
-          </CardBox>
-        </div>
-      </div>
-    </div>
-  </div>
+  <ModalClientInfo :updateClientModal="updateClient" :pageSite="pageSite" @vax-datedue="handleVaxDateDue" @props-form="handlePropsForm" @loading-modal-open="handleOpenLoading" @loading-modal-close="handleCloseLoading"></ModalClientInfo>
 
 </template>
 
 <style scoped>
-  /* @import '@/css/main.css'; */
+  
 </style>
