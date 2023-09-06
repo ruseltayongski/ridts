@@ -1412,13 +1412,6 @@ a, button {
   }
 }
 
-@media screen and (max-width: 820px) {
-  .header_hero {
-    height: 470px;
-    /* background-color: lightblue; */
-  }
-}
-
 @media screen and (max-width: 540px) {
   .header_hero {
     height: 500px;
@@ -1434,10 +1427,15 @@ a, button {
   }
 }
 
+@media screen and (max-width: 414px) {
+  .header_hero {
+    height: 630px;
+  }
+}
+
 @media screen and (max-device-width: 375px) {
   .header_hero {
-    height: 570px;
-    /* background-color: red; */
+    height: 630px;
   }
 }
 

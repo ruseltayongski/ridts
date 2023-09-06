@@ -16,7 +16,9 @@
 
     const interval = ref(1000);
     //const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
-    const static_date = ref(new Date('June 05,2023 10:54:00'))
+    const static_date = ref(new Date())
+    static_date.value.setMinutes(static_date.value.getMinutes() + 15);
+    console.log(static_date.value)
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
@@ -27,32 +29,44 @@
     
     onMounted(() => {
         start()
-        _getVaxForText({ status: 1,for_sms: "true", filter: "overall", vaccine_status: "-3days" })
+        _getVaxForText({ status: 1,for_sms: "true", filter: "overall", vaccine_status: "-3days", lapse: -3 })
     })
 
     const vax_for_text = ref([]);
-    const vax_handler = ref([]);
+    const bhw_handler = ref([]);
     const _getVaxForText = async (params: {} = {}) => {
         const response = await getVaccineInfo(params)
         vax_for_text.value = await Promise.all(response.map(async (item: any) => {
-            vax_handler.value.push({
+            bhw_handler.value.push({
                 ...item,
                 contact: item.client[0].bhw_contact_number,
                 fullname: fullname(item.client),
-                handler_status: "BHW"
+                handler_status: "BHW",
+                isCompleted: ""
             })
             return {
                 ...item,
                 contact: item.client[0].guardian_contact_number,
                 fullname: fullname(item.client),
-                handler_status: "Parent"
+                handler_status: "Parent",
+                isCompleted: ""
             }
         }))
-        vax_handler.value.forEach((item) => {
+        bhw_handler.value.forEach((item) => {
             vax_for_text.value.push(item)
         })
         console.log(await vax_for_text.value)
-        console.log(await vax_handler.value)
+        console.log(await bhw_handler.value)
+
+        // for(let i = 0; i < 2; i++) {
+        //     let item = {
+        //         contact: "123123123",
+        //         fullname: "John Doe",
+        //         handler_status: "BHW",
+        //         isCompleted: ""
+        //     };
+        //     vax_for_text.value.push(item);
+        // }
     }
 
     const reminderTextProcess = () => {
@@ -116,14 +130,14 @@
             }
             setTimeout(() => {
                 console.log(item)
-                //insertFirebase(item.client[0].bhw_contact_number+"@"+item.client[0].guardian_contact_number+"@"+sms_message)
+                item.isCompleted = "text-completed";
                 insertFirebase(item.contact+"@"+sms_message)
                 counter++
+                if (counter == vax_for_text.value.length) {
+                    console.log('Text blast finished!');
+                }
             }, 10000 * (index + 1));
         })
-        if (counter == vax_for_text.value.length-1) {
-            console.log('Text blast finished!');
-        }
     }
 
     const start = () => {
@@ -199,6 +213,7 @@
                     :login="vax.handler_status"
                     :date="vax.contact"
                     :progress="60"
+                    :class="vax.isCompleted"
                 />
                 <div class="clear-both"></div>
             </div>
@@ -207,4 +222,7 @@
 </template>
 
 <style scoped>
+    .text-completed {
+        background-color:rgb(212, 235, 212);
+    }
 </style>
