@@ -5,9 +5,17 @@
     import SectionMain from "@/components/SectionMain.vue"
     import SectionTitleLineWithButton from "@/components/SectionTitleLineWithButton.vue"
     import CardBoxClient from "@/components/CardBoxClient.vue";
+    import BaseButton from "@/components/BaseButton.vue";
+    import { mdiBomb } from "@mdi/js";
     import moment from "moment"
-    import { getVaccineInfo } from "@/api/python"
+    import { clientDateDue } from "@/api/python"
     import { insertFirebase } from "@/utils/firebase.ts"
+    import { Datepicker, Input, initTE } from "tw-elements";
+    import loadingModal from "@/assets/spin.gif"
+
+    onMounted(() => {
+        initTE({ Datepicker, Input });
+    })
     
     const seconds = ref('00')
     const minutes = ref('00')
@@ -17,37 +25,29 @@
     const interval = ref(1000);
     //const static_date = ref(new Date(moment().format('ll')+' 15:00:00'))
     const static_date = ref(new Date())
-    static_date.value.setMinutes(static_date.value.getMinutes() + 15);
+    static_date.value.setMinutes(static_date.value.getMinutes() + 3);
     console.log(static_date.value)
     const eventTime = ref(moment(static_date.value))
     const currentTime = ref(moment().format())
     const duration = ref(moment.duration(eventTime.value.diff(currentTime.value)))
 
-    const fullname = (client:{}) => {
-        return client[0].firstname+" "+client[0].lastname
-    }
-    
-    onMounted(() => {
-        start()
-        _getVaxForText({ status: 1,for_sms: "true", filter: "overall", vaccine_status: "-3days", lapse: -3 })
-    })
-
     const vax_for_text = ref([]);
     const bhw_handler = ref([]);
     const _getVaxForText = async (params: {} = {}) => {
-        const response = await getVaccineInfo(params)
+        const response = await clientDateDue(params)
+        console.log(response)
         vax_for_text.value = await Promise.all(response.map(async (item: any) => {
             bhw_handler.value.push({
                 ...item,
-                contact: item.client[0].bhw_contact_number,
-                fullname: fullname(item.client),
+                contact: item.bhw_contact_number,
+                fullname: item.fullname,
                 handler_status: "BHW",
                 isCompleted: ""
             })
             return {
                 ...item,
-                contact: item.client[0].guardian_contact_number,
-                fullname: fullname(item.client),
+                contact: item.guardian_contact_number,
+                fullname: item.fullname,
                 handler_status: "Parent",
                 isCompleted: ""
             }
@@ -74,10 +74,11 @@
         vax_for_text.value.forEach((item,index) => {
             let sms_message = ""
             sms_message = "Reminders!\n\n"
-            sms_message += "Baby "+item.client[0].firstname+" "+item.client[0].middlename+" "+item.client[0].lastname
+            sms_message += "Baby "+item.firstname+" "+item.middlename+" "+item.lastname
+            const scheduled_date = moment(dateFrom.value,'DD/MM/YYYY').format("LL");
             if(item.vaccine_type == 'bcg') {
                 sms_message += " is scheduled for BCG Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "Ang bakuna nga BCG maga protekta sa mga bata batok sa sakit nga Tuberculosis o TB. Importante nga ang bata mabakunahan sa tukmang schedule arun siya ma depensahan batok sa maong sakit.\n\n"
                 sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
@@ -85,14 +86,14 @@
             }
             else if(item.vaccine_type == 'hepb') {
                 sms_message += " is scheduled for HEPA B Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "\n\n"
                 sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
             }
             else if(item.vaccine_type == 'pentavalent') {
                 sms_message += " is scheduled for PENTAVALENT Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "Ang Pentavalent Vaccine maga protektar sa bata batok sa sakit nga Diptheria, Tetanus, Hepa B, Pertussis, Pneumonia ug Meningitis.\n\n"
                 sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n" 
@@ -100,7 +101,7 @@
             }
             else if(item.vaccine_type == 'opv') {
                 sms_message += " is scheduled for OPV Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "Ang bakuna nga OPV kon Oral Polio Vaccine maga protektar sa bata batok sa sakit nga Polio.\n\n"
                 sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
@@ -108,14 +109,14 @@
             }
             else if(item.vaccine_type == 'ipv') {
                 sms_message += " is scheduled for IPV Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "\n\n"
                 sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
             }
             else if(item.vaccine_type == 'pcv') {
                 sms_message += " is scheduled for PCV Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+"."; 
+                sms_message += " "+ scheduled_date+"."; 
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "Ang bakuna nga PCV kon Pneumococcal Conjugate Vaccine maga protektar sa bata batok sa sakit nga Pneumonia ug Meningitis.\n\n"
                 sms_message += "Importante nga ang bata mabakunahan sa tukmang schedule ug makompleto ang 3 ka dose sa bakuna arun siya ma depensahan batok sa maong mga sakit.\n\n"
@@ -123,7 +124,7 @@
             }
             else if(item.vaccine_type == 'mcv') {
                 sms_message += " is scheduled for MCV Vaccination on"
-                sms_message += " "+ moment(item.overall_scheduled).format('LL')+".";
+                sms_message += " "+ scheduled_date+".";
                 sms_message += " Please come on your schedule and bring the vaccination card when you visit the Health Center.\n\n"
                 sms_message += "\n\n"
                 sms_message += "Ang bakuna luwas ug epektibo. Ang BAKUNADO ay PROTEKTADO!"
@@ -172,6 +173,17 @@
         }
         return (zero + num).slice(-2);
     }
+
+    const dateFrom = ref("")
+    const dateTo = ref("")
+    const textBlastStarted = ref(false);
+    const startTextBlast = () => {
+        start()
+        const date_start = moment(dateFrom.value,'DD/MM/YYYY').format("YYYY-MM-DD");
+        const date_end = moment(dateTo.value,'DD/MM/YYYY').format("YYYY-MM-DD");
+        _getVaxForText({ sms: "true", start_date: date_start, end_date: date_end })
+        textBlastStarted.value = true;
+    }
 </script>
 
 <template>
@@ -202,10 +214,24 @@
                             <div class="font-mono uppercase text-sm leading-none">Seconds</div>
                         </div>
                     </div>
-                    <p class="text-sm text-center mt-3">*<a href="https://twitter.com/10DowningStreet/status/1363897254340419587" class="underline hover:text-yellow-200" target="_blank">waiting of API of</a>, Alex Jumao-as</p>
                 </div>
             </div>
-            <div class="grid gap-x-8 gap-y-1 lg:grid-cols-2 mb-6 mt-6">
+            <div v-show="!textBlastStarted">
+                <div class="flex gap-2 mt-10">
+                    <div class="relative mb-3 w-1/2" data-te-datepicker-init data-te-input-wrapper-init>
+                        <input type="text" v-model="dateFrom" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" placeholder="Select a date" />
+                        <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">From</label
+                        >
+                    </div>
+                    <div class="relative mb-3 w-1/2" data-te-datepicker-init data-te-input-wrapper-init>
+                        <input type="text" v-model="dateTo" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" placeholder="Select a date" />
+                        <label for="floatingInput" class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">To</label
+                        >
+                    </div>
+                </div>
+                <BaseButton class="w-full mt-10" @click="startTextBlast" type="button" color="danger" label="Start Text Blast" :icon="mdiBomb"/>
+            </div>
+            <div class="grid gap-x-8 gap-y-1 lg:grid-cols-2 mb-6 mt-6" v-if="vax_for_text.length > 0">
                 <CardBoxClient
                     v-for="(vax,index) in vax_for_text"
                     :key="vax.id"
@@ -216,6 +242,10 @@
                     :class="vax.isCompleted"
                 />
                 <div class="clear-both"></div>
+            </div>
+            <div class="flex flex-row mt-2 p-10" v-else-if="!vax_for_text.length && textBlastStarted">
+                <img :src="loadingModal" alt="loading_gif" class="w-10 h-10">
+                <p class="text-xl ml-2">Processing...</p>
             </div>
         </SectionMain>
     </LayoutAuthenticated>
