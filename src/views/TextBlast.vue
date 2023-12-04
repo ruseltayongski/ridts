@@ -74,7 +74,7 @@
         vax_for_text.value.forEach((item,index) => {
             let sms_message = ""
             sms_message = "Reminders!\n\n"
-            sms_message += "Baby "+item.firstname+" "+item.middlename+" "+item.lastname
+            sms_message += "Baby "+item.fullname
             const scheduled_date = moment(dateFrom.value,'DD/MM/YYYY').format("LL");
             if(item.vaccine_type == 'bcg') {
                 sms_message += " is scheduled for BCG Vaccination on"
